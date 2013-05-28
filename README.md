@@ -63,7 +63,7 @@ On your server, put together this `config.ru` Ruby task:
       end
 
       MAP = {
-        # PayPal Sandbox ID => Your target development URL
+        # PayPal Sandbox ID               => Your target development URL
         'paypal_1362421868_biz@gmail.com' => 'developmentmachine:9999/'
 
       }
