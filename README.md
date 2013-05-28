@@ -64,9 +64,10 @@ On your server, put together this `config.ru` Ruby task:
 
       MAP = {
         # PayPal Sandbox ID => Your target development URL
+        'paypal_1362421868_biz@gmail.com' => 'developmentmachine:9999/'
 
       }
-      run YARD::Server::RackAdapter.new(MAP)
+      run PaypalIpnProxy.new(MAP)
 
 ### Configure the IPN address in your PayPal sandbox(es).
 
