@@ -59,7 +59,7 @@ On your server, put together this `config.ru` Ruby task:
       # Gotta have some kind of security; this is the cheapest.
       # Feel free to use something more rigorous.
       use Rack::Auth::Basic, YARD_SERVER_TITLE_FOR_LOGIN do |username, password|
-        username == 'admin' and password == 'admin'  # Please use creds more challengine than these
+        username == 'admin' and password == 'admin'  # Please use creds more challenging than these
       end
 
       MAP = {
