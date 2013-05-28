@@ -77,7 +77,7 @@ TODO: provide information on where to do this in PayPal, at least a link.
 
 ### Run on Your Server
 
-_NOTE: Recommend using +thin+ if you are using more than one PayPal sandbox.
+_NOTE: Recommend using `thin` if you are using more than one PayPal sandbox._
 
 On your server:
 
