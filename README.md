@@ -1,16 +1,16 @@
-# A Proxy to Forward your PayPal Sandbox's IPN's to your laptop
+# A Proxy to Forward your PayPal Sandbox's IPN's to your Development Machine
 
 You can already set up PayPal sandboxes to interact with for your credit-card and other monetary handlings.
 Indeed, your development machine can "talk" directly w/ the sandbox.  However, if your production system
 receives IPN notifications from PayPal, you have probably already encountered the following problem:
 
-Can the PayPal sandbox "talk" directly to your laptop?  Not unless your laptop has a static IP address
+Can the PayPal sandbox "talk" directly to your development computer?  Not unless your development computer has a static IP address
 (which many find problematic -- security concerns, etc) or a public domain.
 
 Hence, if not, then you know you are unable to do "end-to-end" testing because you cannot test the PayPal IPN
 notification.
 
-So, you're stuck, unless you can find a way to forward PayPal sandbox IPN addresses to your laptop.  That
+So, you're stuck, unless you can find a way to forward PayPal sandbox IPN addresses to your development computer.  That
 is the purpose of this project.
 
 ## Features
@@ -37,7 +37,7 @@ If you have these resources, then this project may be useful to you:
 ## Installation
 
 You will need the identifiers for your PayPal sandboxes and your corresponding
-development laptops as follows:
+development computers as follows:
 
 ### PayPal Sandbox ID
 
@@ -83,7 +83,7 @@ On your server:
 
       rackup -p <whatever port is set up to receive the PayPal IPN messages> -s thin
 
-### Start your Laptop server that talks w/ its PayPal sandbox
+### Start your Development computer's server that talks w/ its PayPal sandbox
 
 When you set up recurring payments on PayPal, PayPal will start sending IPN notifications to you whenever
 it deems necessary.  This will happen, among other activities, when it notifies you that it charged
