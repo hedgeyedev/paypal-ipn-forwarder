@@ -1,0 +1,6 @@
+PayPal->Server: IPN Request
+Note left of Server: Assume good request\nand ack immediately
+Server->PayPal: IPN Response
+Server->Computer: IPN Request
+Note left of Computer: Response is probably\nthrown away
+Computer->Server: IPN Response

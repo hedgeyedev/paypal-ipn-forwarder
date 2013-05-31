@@ -1,0 +1,18 @@
+Participant PayPal1
+Participant PayPal2
+Participant Server
+Participant Queue
+Participant Computer1
+Participant Computer2
+PayPal1->Server: IPN Request1
+Server->Queue: Queue Request1
+Queue-->Server: Got IPN Req 1
+Server-->PayPal1: IPN Response1
+PayPal2->Server: IPN Request2
+Server->Queue: Queue Request2
+Queue-->Server: Got IPN Req 2
+Server-->PayPal2: IPN Response2
+Queue->Computer1: IPN Request1
+Computer1-->Queue: IPN Response1
+Queue->Computer2: IPN Request2
+Computer2-->Queue: IPN Response2
