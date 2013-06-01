@@ -1,5 +1,7 @@
 # A Proxy to Forward your PayPal Sandbox's IPN's to your Development Machine
 
+## The Problem!
+
 You can already set up PayPal sandboxes to interact with for your credit-card and other monetary handlings.
 Indeed, your development machine can "talk" directly w/ the sandbox.  However, if your production system
 receives IPN notifications from PayPal, you have probably already encountered the following problem:
@@ -7,11 +9,31 @@ receives IPN notifications from PayPal, you have probably already encountered th
 Can the PayPal sandbox "talk" directly to your development computer?  Not unless your development computer has a static IP address
 (which many find problematic -- security concerns, etc) or a public domain.
 
+![Blocked!](http://s3.hedgeye.com/dev_images/paypal_ipn_proxy/blocked.svg)
+
 Hence, if not, then you know you are unable to do "end-to-end" testing because you cannot test the PayPal IPN
 notification.
 
-So, you're stuck, unless you can find a way to forward PayPal sandbox IPN addresses to your development computer.  That
-is the purpose of this project.
+So, you're stuck, unless you can find a way to forward PayPal sandbox IPN addresses to your development computer.
+
+## The Solution!
+
+If you have a *virtual private network* (VPN) with a server with the following attributes:
+
+* local to that VPN that can identify your development
+* exposed to the outside internet with a static IP (or even better, a domain)
+* can host a Sinatra application
+
+then `paypal_ipn_proxy` can be installed on such a *server* to
+can act as a proxy to forward the PayPal requests to your development computer as shown:
+
+![Forwarder/Proxy](http://s3.hedgeye.com/dev_images/paypal_ipn_proxy/simple.svg)
+
+Ultimately, you probably have multiple development computers that you'd like to have a PayPal sandbox for
+each one.  The server running `paypal_ipn_proxy` can manage multiple connections; here's what the
+communication could look like:
+
+![Forwarder/Proxy multiple](http://s3.hedgeye.com/dev_images/paypal_ipn_proxy/multiple.svg)
 
 ## Features
 
@@ -89,6 +111,6 @@ When you set up recurring payments on PayPal, PayPal will start sending IPN noti
 it deems necessary.  This will happen, among other activities, when it notifies you that it charged
 a credit card or that someone issued a refund on the PayPal sandbox side.
 
-### Future Features
+## Future Features
 
 1.  Find a way to configure one PayPal sandbox to service multiple development machines.

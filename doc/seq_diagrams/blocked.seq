@@ -1,0 +1,4 @@
+Participant PayPal
+Participant Computer
+Note over Computer: Can't get through;\nNo static IP or domain
+PayPal-->Computer: IPN Request
