@@ -27,14 +27,6 @@ Then(/^the server purges the IPN from the queue$/) do
   pending # express the regexp above with the code you wish you had
 end
 
-Given(/^that the server has an IPN to send to the developer computer$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-When(/^it sends the IPN to the specified computer$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
 Then(/^it gets no response$/) do
   pending # express the regexp above with the code you wish you had
 end
