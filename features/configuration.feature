@@ -4,6 +4,10 @@ Feature: Match PayPal sandboxes with developer computers
   So that I can use the sandbox confident that it is not receiving other developers' requests.
 
   Scenario: My computer receives an IPN from my assigned sandbox
+    Given that the server has an IPN to deliver to my computer
+    When the server sends the IPN to my computer
+    Then my computer receives it
+    And it acknowledges that it received it.
 
   Scenario: My computer does NOT receive an IPN from a sandbox not assigned to me
     Given that a sandbox not assigned to me has an IPN notification to send
