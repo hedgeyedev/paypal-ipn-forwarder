@@ -10,7 +10,7 @@ Feature: forward an IPN from PayPal to a development machine
 
   Scenario: Server sends IPN to specific developer computer
     Given the server has an IPN in the queue
-    When it sends the IPN to the specified developer computer
+    When it sends an IPN to the specified computer
     Then the development computer sends a successful response back to the server
     And the server purges the IPN from the queue
 

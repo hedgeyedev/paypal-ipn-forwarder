@@ -10,7 +10,7 @@ Then(/^my computer does not receive it$/) do
   pending # express the regexp above with the code you wish you had
 end
 
-When(/^(the|a) (.+?) sends an IPN( for the recurring payment|) to (my|the|an|a|)\s+(specified |)(\w+)$/) do |dummy, source, payment, dummy2,dummy3 , destination|
+When(/^(the|a|it) (.*?)sends (an|the) IPN( for the recurring payment|) to (my|the|an|a|)\s+(specified |recalcitrant |)(\w+)$/) do |dummy, source, dummy5, payment, dummy2, dummy3, destination|
   pending # express the regexp above with the code you wish you had
 end
 
@@ -26,10 +26,6 @@ Then(/^(the server|it) (notifies|has notified)\s+(.+?)(\d+) days$/) do |dummy, d
   pending # express the regexp above with the code you wish you had
 end
 
-When(/^it sends the IPN request for the recurring payment to the server$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
 Then(/^the server puts the IPN into a queue$/) do
   pending # express the regexp above with the code you wish you had
 end
@@ -39,10 +35,6 @@ Then(/^it sends a successful response back to the sandbox$/) do
 end
 
 Given(/^the server has an IPN in the queue$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-When(/^it sends the IPN to the specified developer computer$/) do
   pending # express the regexp above with the code you wish you had
 end
 
@@ -59,10 +51,6 @@ Then(/^it gets no response$/) do
 end
 
 When(/^the server waits (\d+) seconds$/) do |arg1|
-  pending # express the regexp above with the code you wish you had
-end
-
-When(/^it resends the IPN to the recalcitrant computer$/) do
   pending # express the regexp above with the code you wish you had
 end
 
