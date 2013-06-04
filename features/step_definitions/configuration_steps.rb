@@ -10,7 +10,7 @@ Then(/^my computer does not receive it$/) do
   pending # express the regexp above with the code you wish you had
 end
 
-When(/^(the|a) (.+?) sends an IPN to (my|the|an|)\s+(\w+)$/) do |dummy, source, dummy2, destination|
+When(/^(the|a) (.+?) sends an IPN( for the recurring payment|) to (my|the|an|a|)\s+(specified |)(\w+)$/) do |dummy, source, payment, dummy2,dummy3 , destination|
   pending # express the regexp above with the code you wish you had
 end
 

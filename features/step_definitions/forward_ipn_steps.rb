@@ -1,15 +1,3 @@
-Given(/^that the server has an IPN to deliver to my computer$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-When(/^the server sends the IPN to my computer$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^my computer receives it$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
 Then(/^it acknowledges that it received it\.$/) do
   pending # express the regexp above with the code you wish you had
 end
@@ -19,10 +7,6 @@ Given(/^that a sandbox not assigned to me has an IPN notification to send$/) do
 end
 
 When(/^it sends the IPN to the server$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^my computer does not receive it$/) do
   pending # express the regexp above with the code you wish you had
 end
 
@@ -62,7 +46,7 @@ Then(/^it notifies all of the developers that the zombie computer's owner has no
   pending # express the regexp above with the code you wish you had
 end
 
-Given(/^that the sandbox has a recurring payment to notify Hedgeye about$/) do
+Given(/^the sandbox has a recurring payment to notify Hedgeye about$/) do
   pending # express the regexp above with the code you wish you had
 end
 
@@ -78,7 +62,7 @@ Then(/^it sends a successful response back to the sandbox$/) do
   pending # express the regexp above with the code you wish you had
 end
 
-Given(/^that the server has an IPN in the queue$/) do
+Given(/^the server has an IPN in the queue$/) do
   pending # express the regexp above with the code you wish you had
 end
 

@@ -4,10 +4,9 @@ Feature: forward an IPN from PayPal to a development machine
   So I can more fully simulate the PayPal production environment in my development space.
 
   Scenario: PayPal sandbox sends IPN to common server
-    Given the sandbox has a recurring payment to notify Hedgeye about
-    When it sends the IPN request for the recurring payment to the server
+    When the sandbox sends an IPN for the recurring payment to the server
     Then the server puts the IPN into a queue
-    And it sends a succesful response back to the sandbox
+    And it sends a successful response back to the sandbox
 
   Scenario: Server sends IPN to specific developer computer
     Given the server has an IPN in the queue
@@ -16,8 +15,7 @@ Feature: forward an IPN from PayPal to a development machine
     And the server purges the IPN from the queue
 
   Scenario: Developer computer is offline and the server bangs on it until it comes back
-    Given the server has an IPN to send to the developer computer
-    When it sends the IPN to the specified computer
+    When the server sends an IPN to a specified computer
     Then it gets no response
     When the server waits 5 seconds
     And it resends the IPN to the recalcitrant computer
