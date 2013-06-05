@@ -1,12 +1,11 @@
 Feature: Match PayPal sandboxes with developer computers
   As a developer
-  I would like to have my own PayPal sandbox assigned my my local development only
+  I would like to have my own PayPal sandbox assigned to my local development computer only
   So I can use the sandbox confident that it is not receiving other developers' requests.
 
   Scenario: My computer receives an IPN from my assigned sandbox
     When the server sends an IPN to my computer
-    Then my computer receives it
-    And it sends a successful response back to the server
+    And my computer returns a successful response back to the server
 
   Scenario: My computer does NOT receive an IPN from a sandbox not assigned to me
     When a sandbox not assigned to me sends an IPN to the server
