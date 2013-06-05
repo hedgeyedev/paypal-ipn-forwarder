@@ -46,16 +46,4 @@ end
 
 When(/^the server waits (\d+) seconds$/) do |arg1|
   pending # express the regexp above with the code you wish you had
-<<<<<<< HEAD
 end
-
-Then(/^the computer sends a successful response back$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^the server purges the IPN from the queue\.$/) do
-  pending # express the regexp above with the code you wish you had
-end
-=======
-end
->>>>>>> master
