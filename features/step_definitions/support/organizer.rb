@@ -10,8 +10,8 @@ class Organizer
 
   end
 
-  def source
-    Server.new
+  def source(ipn=nil)
+    Server.new(ipn)
   end
 
   def destination

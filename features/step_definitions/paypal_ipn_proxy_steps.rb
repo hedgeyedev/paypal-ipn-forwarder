@@ -1,5 +1,5 @@
 Then(/^.+? receives (it|no response)$/) do |responce|
-  pending # express the regexp above with the code you wish you had
+  @source.send_ipn.should == "a response"
 end
 
 Then(/^my computer does not receive it$/) do
@@ -11,17 +11,16 @@ def configure(source_blob, destination_blob)
   source_id      = cuke_cleaner.clean(source_blob)
   destination_id = cuke_cleaner.clean(destination_blob)
   organizer      = Organizer.new(source_id, destination_id)
-  source         = organizer.source
-  destination    = organizer.destination
-  return source, destination
+  generator = TestIpnGenerator.new
+  @ipn = generator.ipn
+  @source         = organizer.source(@ipn)
+  @destination    = organizer.destination
 end
 
 # When the server sends an ipn to my computer
 When(/^(the|a|it) (.*?)sends (an|the) IPN( for the recurring payment|) to (my|the|an|a|)\s+(specified |recalcitrant |)(\w+)$/) do |dummy, source_blob, dummy5, payment, dummy2, dummy3, destination_blob|
-  source, destination = configure(source_blob, destination_blob)
-  source.configure_ipn
-  destination.should_receive(:request).with(ipn).and_return(response)
-  source.send
+
+  configure(source_blob, destination_blob)
 end
 
 Then(/^the server notifies the developers about the unknown PayPal sandbox$/) do
