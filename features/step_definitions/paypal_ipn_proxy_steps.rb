@@ -1,5 +1,5 @@
 Then(/^.+? receives (it|no response)$/) do |responce|
-  @source.send_ipn.should == "a response"
+  pending
 end
 
 Then(/^my computer does not receive it$/) do
@@ -39,8 +39,8 @@ Given(/^the server (has|puts|purges) .+? IPN (in|into|from) the queue$/) do |act
   pending # express the regexp above with the code you wish you had
 end
 
-Then(/.+?sends a successful response back to the (server|sandbox)$/) do |destination|
-  pending # express the regexp above with the code you wish you had
+Then(/.+?returns a successful response back to the (server|sandbox)$/) do |destination|
+  @source.send_ipn.should == "a response"
 end
 
 When(/^the server waits (\d+) seconds$/) do |arg1|
