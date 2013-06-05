@@ -6,7 +6,7 @@ Feature: forward an IPN from PayPal to a development machine
   Scenario: PayPal sandbox sends IPN to common server
     When the sandbox sends an IPN for the recurring payment to the server
     Then the server puts the IPN into a queue
-    And it sends a successful response back to the sandbox
+    And it sends a succesful response back to the sandbox
 
   Scenario: Server sends IPN to specific developer computer
     Given the server has an IPN in the queue
