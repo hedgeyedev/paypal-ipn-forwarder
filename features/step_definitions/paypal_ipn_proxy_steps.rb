@@ -1,4 +1,4 @@
-Then(/^my computer receives it$/) do
+Then(/^.+? receives (it|no response)$/) do |responce|
   pending # express the regexp above with the code you wish you had
 end
 
@@ -22,27 +22,11 @@ Then(/^(the server|it) (notifies|has notified)\s+(.+?)(\d+) days$/) do |dummy, d
   pending # express the regexp above with the code you wish you had
 end
 
-Then(/^the server puts the IPN into a queue$/) do
+Given(/^the server (has|puts|purges) .+? IPN (in|into|from) the queue$/) do |action, dummy|
   pending # express the regexp above with the code you wish you had
 end
 
-Then(/^it sends a successful response back to the sandbox$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Given(/^the server has an IPN in the queue$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/.+? sends a successful response back to the server$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^the server purges the IPN from the queue$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^it gets no response$/) do
+Then(/.+?sends a successful response back to the (server|sandbox)$/) do |destination|
   pending # express the regexp above with the code you wish you had
 end
 
