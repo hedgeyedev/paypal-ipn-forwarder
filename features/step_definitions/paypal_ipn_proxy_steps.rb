@@ -2,10 +2,6 @@ Then(/^my computer receives it$/) do
   pending # express the regexp above with the code you wish you had
 end
 
-Then(/^it acknowledges\s+(that |)it received it$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
 Then(/^my computer does not receive it$/) do
   pending # express the regexp above with the code you wish you had
 end
@@ -52,7 +48,7 @@ Given(/^the server has an IPN in the queue$/) do
   pending # express the regexp above with the code you wish you had
 end
 
-Then(/^the development computer sends a successful response back to the server$/) do
+Then(/.+? sends a successful response back to the server$/) do
   pending # express the regexp above with the code you wish you had
 end
 
@@ -66,6 +62,7 @@ end
 
 When(/^the server waits (\d+) seconds$/) do |arg1|
   pending # express the regexp above with the code you wish you had
+<<<<<<< HEAD
 end
 
 Then(/^the computer sends a successful response back$/) do
@@ -75,3 +72,6 @@ end
 Then(/^the server purges the IPN from the queue\.$/) do
   pending # express the regexp above with the code you wish you had
 end
+=======
+end
+>>>>>>> master
