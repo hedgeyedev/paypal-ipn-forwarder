@@ -11,7 +11,7 @@ Feature: forward an IPN from PayPal to a development machine
   Scenario: Server sends IPN to specific developer computer
     Given the server has an IPN in the queue
     When it sends an IPN to the specified computer
-    Then the development computer sends a successful response back to the server
+    Then the computer sends a successful response back to the server
     And the server purges the IPN from the queue
 
   Scenario: Developer computer is offline and the server bangs on it until it comes back
@@ -19,7 +19,7 @@ Feature: forward an IPN from PayPal to a development machine
     Then it gets no response
     When the server waits 5 seconds
     And it resends the IPN to the recalcitrant computer
-    Then the computer sends a successful response back
+    Then the computer sends a successful response back to the server
     And the server purges the IPN from the queue
 
 # The developer computer doesn't have a notion of being online or not
