@@ -1,4 +1,4 @@
-Then(/^.+? receives (it|no response)$/) do |responce|
+Then(/^it receives no response$/) do
   pending
 end
 
