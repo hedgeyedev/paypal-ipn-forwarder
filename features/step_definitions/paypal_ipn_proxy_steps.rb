@@ -39,7 +39,7 @@ Given(/^the server (has|puts|purges) .+? IPN (in|into|from) the queue$/) do |act
   pending # express the regexp above with the code you wish you had
 end
 
-Then(/.+?returns a successful response back to the (server|sandbox)$/) do |destination|
+Then(/.+?a successful response back to the (server|sandbox)$/) do |destination|
   @source.send_ipn.should == "a response"
 end
 
