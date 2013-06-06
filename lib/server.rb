@@ -1,5 +1,5 @@
 require 'cgi'
-require 'sinatra'
+require 'sinatra/base'
 require 'rest_client'
 
 class Server
@@ -25,7 +25,7 @@ class Server
       MAP[paypal_id]
   end
 
-  #post '/*' do
+  #post '/?' do
     #@ipn = params[:splat].first
     #url = “https://www.sandbox.paypal.com/cgi-bin/webscr”
     #RestClient.post url, @ipn
