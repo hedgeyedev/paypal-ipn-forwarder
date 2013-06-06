@@ -1,6 +1,4 @@
 require 'cgi'
-require_relative 'map'
-require 'sinatra/base'
 
 class Server
    MAP = {
@@ -21,7 +19,7 @@ class Server
     params["receiver_email"].first
   end
 
-  def computer_id
+  def computer_id(paypal_id)
       MAP[paypal_id]
   end
 

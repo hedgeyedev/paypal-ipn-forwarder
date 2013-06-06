@@ -27,8 +27,7 @@ EOF
 
     it 'identifies the target computer from the IPN' do
       server = Server.new(SAMPLE_IPN)
-      map = Map.new
-      computer_id = map.computer(server.paypal_id)
+      computer_id = server.computer_id(server.paypal_id)
       computer_id.should == 'developer_one'
 
 
