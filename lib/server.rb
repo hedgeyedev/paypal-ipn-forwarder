@@ -1,4 +1,5 @@
 require 'cgi'
+require 'sinatra'
 
 class Server
    MAP = {
@@ -22,5 +23,9 @@ class Server
   def computer_id(paypal_id)
       MAP[paypal_id]
   end
+
+  #post '/*' do
+    #@ipn = params[:splat].first
+  #end
 
 end
