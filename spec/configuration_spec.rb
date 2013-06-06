@@ -39,9 +39,7 @@ EOF
       actual_paypal_email_id.should == 'gpmac_1231902686_biz@paypal.com'
     end
 
-
-    it 'retrieves the Paypal sandbox id from the Computer responce' do
-    end
+    
 
   end
 end
