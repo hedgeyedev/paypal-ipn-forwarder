@@ -6,5 +6,11 @@ class Computer
   def send_ipn(ipn)
     "a response"
   end
+  def receive_ipn(ipn)
+    @ipn = ipn
+  end
+  def ipn
+    @ipn
+  end
 
 end
