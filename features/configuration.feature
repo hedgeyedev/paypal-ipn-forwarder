@@ -15,12 +15,10 @@ Feature: Match PayPal sandboxes with developer computers
     When a sandbox unknown to the server sends an IPN to the server
     Then the server notifies the developers about the unknown PayPal sandbox
 
-    #timecop gem
   Scenario: Server has sandbox box entry matching computer doesn't response for too long a time
     When the server sends an IPN repeatedly for 2 days to a computer that doesn't respond
     Then the server notifies the developer that his computer hasn't responded for 2 days
-    
-    #timecop gem
+
   Scenario: Server has sandbox box entry but matching computer URL doesn't match any existing computer
     Given the server has notified a developer that his computer hasn't responded for 2 days
     When it sends the IPN repeatedly for 5 more days without response
