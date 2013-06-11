@@ -4,7 +4,7 @@ class Sandbox
    def ipn(bool)
      if(bool)
        email = @correct_email
-      else
+     else
         email = @incorrect_email
       end
    @sample_ipn = <<EOF
