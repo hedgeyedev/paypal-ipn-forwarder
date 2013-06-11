@@ -15,8 +15,8 @@ Feature: forward an IPN from PayPal to a development machine
     And the server purges the IPN
 
   Scenario: Developer computer is offline
-    Given that the server has an IPN available to a computer
-    When the computer does not poll the server
+    Given the server has an IPN available to a computer
+    When the computer does not poll the server for an IPN
     Then the IPN continues to be stored in the server
 
   Scenario: Developer computer polls and server has no IPN for it

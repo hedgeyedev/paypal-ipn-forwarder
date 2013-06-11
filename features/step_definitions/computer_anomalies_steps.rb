@@ -1,24 +1,16 @@
-Given(/^that my computer is in PayPal IPN testing mode$/) do
+Given(/^my computer (is|is not) in PayPal IPN testing mode$/) do |mode|
   pending # express the regexp above with the code you wish you had
 end
 
-Given(/^a test has started$/) do
+Given(/^a test (has|has not) started$/) do |started|
   pending # express the regexp above with the code you wish you had
 end
 
-When(/^the computer has not polled after (\d+) hour$/) do |arg1|
+When(/^the computer has not polled after (\d+) (hour|days)$/) do |time, time_unit|
   pending # express the regexp above with the code you wish you had
 end
 
 Then(/^the computer's developer is notified that his computer has not polled for (\d+) hour$/) do |arg1|
-  pending # express the regexp above with the code you wish you had
-end
-
-Given(/^a test has not started$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-When(/^the computer has not polled after (\d+) days$/) do |arg1|
   pending # express the regexp above with the code you wish you had
 end
 
@@ -27,10 +19,6 @@ Then(/^the server turns off my computer's test mode$/) do
 end
 
 Then(/^it notifies me that, after (\d+) days of no polling, my test mode has been turned off$/) do |arg1|
-  pending # express the regexp above with the code you wish you had
-end
-
-Given(/^that my computer is not in PayPal IPN testing mode$/) do
   pending # express the regexp above with the code you wish you had
 end
 

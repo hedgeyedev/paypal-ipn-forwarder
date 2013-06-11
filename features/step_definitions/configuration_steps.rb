@@ -10,19 +10,15 @@ Given(/^the server contains an IPN assigned to my computer$/) do
   pending # express the regexp above with the code you wish you had
 end
 
-When(/^my computer polls the server for an IPN$/) do
+When(/^(.*?)computer( does not|) poll(.*?)the server (.*?)an IPN$/) do |action|
   pending # express the regexp above with the code you wish you had
 end
 
-Then(/^the server returns the IPN$/) do
+Then(/^the server returns (the|no) IPN$/) do |content|
   pending # express the regexp above with the code you wish you had
 end
 
 Given(/^the server only contains an IPN for another computer$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^the server returns no IPN$/) do
   pending # express the regexp above with the code you wish you had
 end
 
