@@ -18,22 +18,60 @@ So, you're stuck, unless you can find a way to forward PayPal sandbox IPN addres
 
 ## The Solution!
 
-If you have a *virtual private network* (VPN) with a server with the following attributes:
+In addition to setting up this tool, you need a public facing *server*.  A cloud-based server
+such as Heroku will work fine. One of the gems in this project will operate as a Sinatra
+server to receive and queue the PayPal IPN requests.
 
-* local to that VPN that can identify your development
-* exposed to the outside internet with a static IP (or even better, a domain)
-* can host a Sinatra application
+Your development machine must be run the other gem in this project; this will
+send HTTP requests to this public facing server to retrieve the
+IPN records in the *server*'s queue.  For each IPN record retrieved, this gem will
+forward it to your PayPal client as though PayPal had sent it directly.
 
-then `paypal_ipn_proxy` can be installed on such a *server* to
-can act as a proxy to forward the PayPal requests to your development computer as shown:
+When your PayPal client
+responds, this gem will relay the response back to the *server*, which will in turn relay the response
+to the PayPal sandbox that made the request.
+
+### In More Detail
+
+Here are the components that play together:
+
+PayPal
+The *PayPal sandbox* that you want to include in your end-to-end testing.
+
+Server
+: This package's gem implements a Sinatra server for the *PayPal sandbox* that stores the IPNs in a queue.  This Sinatra
+must run on a server exposed to the *PayPal sandbox*.
+
+Queue
+: Part of the Sinatra server.  The Sinatra server puts IPN requests from the *PayPal sandbox* into the *queue*.  The *router*
+retrieves them.
+
+Router
+: Part of the gem running as a process on the development computer.  It retrieves IPNs from the *queue* and relays them
+as requests to the *PayPal client*.
+
+PayPal Client
+: Part of the developer's business application that receives and processes IPN requests from (normally) the *PayPal sandbox*.
+Of course, in this case, it will be receiving the requests from the *router* instead.
+
+The sequence diagram shows how the messages are exchanged.
 
 ![Forwarder/Proxy](http://s3.hedgeye.com/dev_images/paypal_ipn_proxy/simple.svg)
 
-Ultimately, you probably have multiple development computers that you'd like to have a PayPal sandbox for
-each one.  The server running `paypal_ipn_proxy` can manage multiple connections; here's what the
-communication could look like:
+Notice some assumptions that are implied from this flow:
 
-![Forwarder/Proxy multiple](http://s3.hedgeye.com/dev_images/paypal_ipn_proxy/multiple.svg)
+1.  This setup assumes that all requests are successful.  This is a tradeoff to prevent the multiple hops and router queuing
+    from inadvertently timing out the PayPal sandbox's request.  Hence, for this reason, the *server* completes the HTTP cycle
+    as soon as it's stored the IPN into the queue.
+
+1.  While the *server* is filling the *queue*, the *router* is polling the *queue* to see if any IPNs have arrived for it to retrieve.
+    If there is, then the *router* retrives it, pops it off the *queue* so that it isn't reused, and passes it via
+    an HTTP request to the *PayPal client*.  The *PayPal client*'s response is accepted as "good".  We're considering an
+    enhancement in which whether the response should be `success` or `failure` can be programmed into the *server*/*queue* to
+    test the `failure` path.
+
+Ultimately, you probably have multiple development computers that you'd like to have a PayPal sandbox for
+each one.  The *server* can manage multiple connections; this will be described later.
 
 ## Features
 
@@ -48,11 +86,9 @@ communication could look like:
 
 If you have these resources, then this project may be useful to you:
 
-1. A _Virtual Private Network_ (VPN) that your development machine is connected to.
-1. On this network, you need to have an available server that you can set up a
-   [Sinatra](http://www.sinatrarb.com/) application on.
-1. This server must have a publicly exposed static IP or domain that is available for PayPal
-   sandbox to send IPN HTTP requests to.  This must be available for your Sinatra sandbox to serve.
+1. A publicly-facing server that can host this project's Sinatra gem. Both your PayPal sandbox and development
+   computer must be able to perform HTTP requests against this server.
+
 1. This server must have a Ruby 1.9 or later to run this project with, and must be able to accept
    gems (such as [Sinatra](https://github.com/sinatra/sinatra/#readme)).
 
@@ -67,10 +103,7 @@ For this, you can identify this in the IPN in the `receiver_email`.
 
 ### Development Machine ID
 
-This can be found in your development machine's network connection; simply identify its network address.
-
-_Hint: if you can successfully use the development computer's network **name** instead of *IP*, that
-will likely be more stable._
+Invent a unique development "name" for each development computer that you want to hook up to a PayPal sandbox.
 
 ### Assemble a config.ru file:
 
@@ -85,17 +118,22 @@ On your server, put together this `config.ru` Ruby task:
       end
 
       MAP = {
-        # PayPal Sandbox ID               => Your target development URL
-        'paypal_1362421868_biz@gmail.com' => 'developmentmachine:9999/'
+        # PayPal Sandbox ID               => Your target development computer name
+        'paypal_1362421868_biz@gmail.com' => 'joe blow\'s machine'
 
       }
       run PaypalIpnProxy.new(MAP)
 
 ### Configure the IPN address in your PayPal sandbox(es).
 
-In each PayPal sandbox, configure the target URL for PayPal to send the IPN messages to.
+In each PayPal sandbox, configure the *server*'s URL for PayPal to send the IPN messages to.
 
 TODO: provide information on where to do this in PayPal, at least a link.
+
+### Configure the Router Component on Each Development Computer
+
+This consists of installing the *router* gem and configuring it with the development computer's
+"name" described above so that the queue knows which IPNs belong to it.
 
 ### Run on Your Server
 

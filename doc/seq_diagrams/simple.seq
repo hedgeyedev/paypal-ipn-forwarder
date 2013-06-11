@@ -1,6 +1,13 @@
+Participant PayPal
+Participant Server
+Participant Queue
+Participant Router
+Participant PayPal\nClient
 PayPal->Server: IPN Request
-Note left of Server: Assume good request\nand ack immediately
-Server->PayPal: IPN Response
-Server->Computer: IPN Request
-Note left of Computer: Response is probably\nthrown away
-Computer->Server: IPN Response
+Server->Queue: Queue Request
+Queue-->Server: Got IPN Req
+Server-->PayPal: IPN Response
+Router->Queue: Poll Request
+Queue-->Router: IPN Request
+Router->PayPal\nClient: IPN Request
+PayPal\nClient-->Router: IPN Response
