@@ -22,11 +22,7 @@ Then(/^it notifies me that, after (\d+) days of no polling, my test mode has bee
   pending # express the regexp above with the code you wish you had
 end
 
-Given(/^it is polling the server$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-When(/^the server receives a poll request from my computer$/) do
+When(/^the server receives a poll request from my computer.*?$/) do
   pending # express the regexp above with the code you wish you had
 end
 

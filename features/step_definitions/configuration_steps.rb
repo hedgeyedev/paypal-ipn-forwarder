@@ -6,15 +6,7 @@ Then(/^the server hangs onto it until my assigned computer retrieves it$/) do
   pending # express the regexp above with the code you wish you had
 end
 
-Given(/^the server contains an IPN assigned to my computer$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-When(/^(.*?)computer( does not|) poll(.*?)the server (.*?)an IPN$/) do |action|
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^the server returns (the|no) IPN$/) do |content|
+When(/^(:?.*?)computer( does not|) poll(:?.*?)the server (:?.*?)an IPN$/) do |action|
   pending # express the regexp above with the code you wish you had
 end
 

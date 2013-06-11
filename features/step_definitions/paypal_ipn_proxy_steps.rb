@@ -34,7 +34,7 @@ Then(/^(?:the server|it) (?:notifies|has notified)\s+(.+?)(\d+) days$/) do |prea
   pending # express the regexp above with the code you wish you had
 end
 
-Given(/^the server (has|puts|purges) .+? IPN (?:in|into|from) the queue$/) do |action|
+Given(/^the server (has|puts|purges) .+? IPN (?:in|into) the queue$/) do |action|
   pending # express the regexp above with the code you wish you had
 end
 

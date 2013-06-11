@@ -15,13 +15,13 @@ Feature: forward an IPN from PayPal to a development machine
     And the server purges the IPN
 
   Scenario: Developer computer is offline
-    Given the server has an IPN available to a computer
-    When the computer does not poll the server for an IPN
+    Given the server has an IPN available for my computer
+    When my computer does not poll the server for an IPN
     Then the IPN continues to be stored in the server
 
   Scenario: Developer computer polls and server has no IPN for it
-    Given the server has no IPN available for a computer
-    When the computer polls the server
+    Given the server has no IPN available for my computer
+    When my computer polls the server
     Then the server returns no IPN available
 
 # The developer computer doesn't have a notion of being online or not
