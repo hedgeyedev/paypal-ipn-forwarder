@@ -1,4 +1,8 @@
 require 'cgi'
+require 'sinatra/base'
+require 'rest_client'
+
+require_relative 'computer'
 
 class Server
    MAP = {
@@ -9,7 +13,8 @@ class Server
     @ipn = ipn unless ipn.nil?
   end
 
-  def send_ipn
+  def send_ipn(id)
+    @comp_id = id
     computer = Computer.new
     computer.send_ipn @ipn
   end
@@ -22,5 +27,19 @@ class Server
   def computer_id(paypal_id)
       MAP[paypal_id]
   end
+
+  def receive_ipn(ipn=nil)
+    @ipn = ipn unless ipn.nil?
+    pay_id = paypal_id
+    comp_id = computer_id(pay_id)
+    #comp_id.should == "developer_one"
+    comp_id
+  end
+
+  #post '/?' do
+    #@ipn = params[:splat].first
+    #url = “https://www.sandbox.paypal.com/cgi-bin/webscr”
+    #RestClient.post url, @ipn
+  #end
 
 end
