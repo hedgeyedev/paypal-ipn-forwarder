@@ -1,11 +1,3 @@
-Then(/^it receives no response$/) do
-  pending
-end
-
-Then(/^my computer does not receive it$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
 def configure(source_blob, destination_blob)
   cuke_cleaner   = CukeCleaner.new
   source_id      = cuke_cleaner.clean(source_blob)
@@ -42,6 +34,3 @@ Then(/.+?a successful response back to the (server|sandbox)$/) do |destination|
   @source.send_ipn.should == "a response"
 end
 
-When(/^the server waits (\d+) seconds$/) do |seconds|
-  pending # express the regexp above with the code you wish you had
-end
