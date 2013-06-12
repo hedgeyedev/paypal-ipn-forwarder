@@ -22,6 +22,9 @@ Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN .*?(
   pending # express the regexp above with the code you wish you had
 end
 
+Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN$/) do |action, existance|
+end
+
 Then(/(?:.+?)a successful response back to the (server|sandbox)$/) do |destination|
   @source.send_ipn.should == "a response"
 end
