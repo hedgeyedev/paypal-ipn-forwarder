@@ -8,7 +8,7 @@ Feature: Setup
     Then henceforth the server accumulates any IPNs for my computer sent to it
 
   Scenario: turn off PayPal IPN testing
-    When my computer notifies the server that the computer is offline
+   When my computer turns off test mode
     Then henceforth any IPNs received from my computer's PayPal sandbox are simply acknowledged successfully
     And the IPNs are not accumulated
 

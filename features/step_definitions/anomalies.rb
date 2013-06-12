@@ -14,7 +14,7 @@ Then(/^the computer's developer is notified that his computer has not polled for
   pending # express the regexp above with the code you wish you had
 end
 
-Then(/^the server turns off my computer's test mode$/) do
+Then(/^(the server|my computer) turns off (?:my computer's |)test mode$/) do |subject|
   pending # express the regexp above with the code you wish you had
 end
 
@@ -50,7 +50,7 @@ When(/^I go into test mode$/) do
   pending # express the regexp above with the code you wish you had
 end
 
-When(/^my computer.*?the server that (I'm in test mode|the computer is offline)$/) do |state|
+When(/^my computer.*?the server that I'm in test mode$/) do
   pending # express the regexp above with the code you wish you had
 end
 
