@@ -1,7 +1,3 @@
-Given(/^the server is in test mode for a sandbox$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
 Given(/^an IPN generating test has started$/) do
   pending # express the regexp above with the code you wish you had
 end
@@ -14,7 +10,7 @@ Then(/^the server notifies me that it is not receiving any IPNs from my sandbox$
   pending # express the regexp above with the code you wish you had
 end
 
-Given(/^my computer is in test mode$/) do
+Given(/^my computer (is|is not) in test mode$/) do |state|
   pending # express the regexp above with the code you wish you had
 end
 
