@@ -26,7 +26,7 @@ Then(/^(?:the server|it) (?:notifies|has notified)\s+(.+?)(\d+) days$/) do |prea
   pending # express the regexp above with the code you wish you had
 end
 
-Given(/^the server (has|puts|purges) .+? IPN (?:in|into) the queue$/) do |action|
+Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN .*?(?:in|into|from|to|for|available for)(my computer in|another computer in|) the queue$/) do |action, existance ,assignment_blob|
   pending # express the regexp above with the code you wish you had
 end
 
@@ -42,18 +42,6 @@ Then(/^the server hangs onto it until my assigned computer retrieves it$/) do
 end
 
 When(/^(:?.*?)computer( does not|) poll(:?.*?)the server (:?.*?)an IPN$/) do |action|
-  pending # express the regexp above with the code you wish you had
-end
-
-Given(/^the server only contains an IPN for another computer$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^the server purges the IPN$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Given(/^(?:the |)server (?:contains|has) (an|no) IPN.*?$/) do |content|
   pending # express the regexp above with the code you wish you had
 end
 

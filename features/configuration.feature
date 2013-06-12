@@ -9,12 +9,12 @@ Feature: Match PayPal sandboxes with developer computers
     Then the server hangs onto it until my assigned computer retrieves it
 
   Scenario: My computer receives an IPN assigned to it from the server
-    Given the server contains an IPN assigned to my computer
+    Given the server contains an IPN assigned to my computer in the queue
     When my computer polls the server for an IPN
     Then the server returns the IPN
 
   Scenario: My computer does NOT receive an IPN from a sandbox not assigned to me
-    Given the server only contains an IPN for another computer
+    Given the server only contains an IPN for another computer in the queue
     When my computer polls the server for an IPN
     Then the server returns no IPN
 

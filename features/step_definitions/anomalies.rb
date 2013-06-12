@@ -51,7 +51,6 @@ When(/^I go into test mode$/) do
 end
 
 When(/^my computer.*?the server that (I'm in test mode|the computer is offline)$/) do |state|
-  #the two versions where: I'm in test mode, and it wants to process IPNs which are the same in my opinion. Comment if you disagree
   pending # express the regexp above with the code you wish you had
 end
 
