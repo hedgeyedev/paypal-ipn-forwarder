@@ -11,7 +11,7 @@ Feature: forward an IPN from PayPal to a development machine
     Given the server has an IPN available for my computer
     When the computer polls the server to retrieve an IPN
     Then the server returns the IPN back to the computer as part of the computer's request
-    And the server purges the IPN from the server
+    And the server purges the IPN
 
   Scenario: Developer computer is offline
     Given the server has an IPN available for my computer
