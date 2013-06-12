@@ -1,4 +1,4 @@
-Given(/^my computer (is|is not) in PayPal IPN testing mode$/) do |mode|
+Given(/^(?:the|my) (computer|server) (is|is not) in (?:PayPal IPN |)test.*?mode.*?$/) do |subject, mode|
   pending # express the regexp above with the code you wish you had
 end
 
@@ -6,7 +6,7 @@ Given(/^a test (has|has not) started$/) do |started|
   pending # express the regexp above with the code you wish you had
 end
 
-When(/^the computer has not polled after (\d+) (hour|days)$/) do |time, time_unit|
+When(/^(?:the server|the computer) has not.*? polled .*?(\d+) (hour|days)$/) do |time, time_unit|
   pending # express the regexp above with the code you wish you had
 end
 
@@ -42,14 +42,6 @@ When(/^the server has not received an IPN from the sandbox for \? minutes$/) do
   pending # express the regexp above with the code you wish you had
 end
 
-Then(/^the server notifies me that it is not receiving any IPNs from my sandbox$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Given(/^my computer (is|is not) in test mode$/) do |state|
-  pending # express the regexp above with the code you wish you had
-end
-
 Given(/^the server is not launched$/) do
   pending # express the regexp above with the code you wish you had
 end
@@ -67,10 +59,6 @@ When(/^the server doesn't respond$/) do
   pending # express the regexp above with the code you wish you had
 end
 
-Then(/^my computer alerts me that the server didn't respond$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
 Given(/^the server knows that my computer is in test mode$/) do
   pending # express the regexp above with the code you wish you had
 end
@@ -80,17 +68,5 @@ When(/^an actual IPN generating test sequence has started on my computer$/) do
 end
 
 When(/^polling has not retrieved any IPNs for this test for (\d+) minutes$/) do |arg1|
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^my computer notifies me that it is not receiving any IPNs from the server$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Given(/^the (server|computer) is in test mode.*?$/) do |subject|
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^my computer notifies me that the server is not responding to polling$/) do
   pending # express the regexp above with the code you wish you had
 end

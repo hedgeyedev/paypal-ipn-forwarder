@@ -14,7 +14,7 @@ When(/^(?:the|a|it) (.*?)sends (?:an|the) IPN(?: for the recurring payment|) to 
   configure(source_blob, destination_blob)
 end
 
-Then(/^the server notifies the developers about the unknown PayPal sandbox$/) do
+Then(/^(the server|my computer) (?:notifies|alerts) (the developers|me) (.*?)$/) do |source, destinaton, problem|
   pending # express the regexp above with the code you wish you had
 end
 
@@ -32,5 +32,52 @@ end
 
 Then(/.+?a successful response back to the (server|sandbox)$/) do |destination|
   @source.send_ipn.should == "a response"
+end
+When(/^the server receives an IPN from my assigned sandbox$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Then(/^the server hangs onto it until my assigned computer retrieves it$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+When(/^(:?.*?)computer( does not|) poll(:?.*?)the server (:?.*?)an IPN$/) do |action|
+  pending # express the regexp above with the code you wish you had
+end
+
+Given(/^the server only contains an IPN for another computer$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Then(/^the server purges the IPN$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Given(/^(?:the |)server (?:contains|has) (an|no) IPN.*?$/) do |content|
+  pending # express the regexp above with the code you wish you had
+end
+
+Then(/^the IPN continues to be stored in the server$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+When(/^.*?poll.*?the server$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Then(/^the server returns (no|the) IPN.*?$/) do |content|
+  pending # express the regexp above with the code you wish you had
+end
+
+Then(/^henceforth the server accumulates any IPNs for my computer sent to it$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Then(/^henceforth any IPNs received from my computer's PayPal sandbox are simply acknowledged successfully$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Then(/^the IPNs are not accumulated$/) do
+  pending # express the regexp above with the code you wish you had
 end
 

@@ -5,7 +5,7 @@ Feature: gracefully handle server anomalies
 
   Scenario: Server is not started
     Given the server is not launched
-    And my computer is not in test mode
+    And my computer is not in PayPal IPN testing mode
     When I go into test mode
     And my computer informs the server that I'm in test mode
     And the server doesn't respond
@@ -19,7 +19,7 @@ Feature: gracefully handle server anomalies
 
   Scenario: Server not responding to computer polling requests
     Given the server is in test mode
-    And my computer is in test mode
+    And my computer is in PayPal IPN testing mode
     When my computer polls the server
     And the server doesn't respond
     Then my computer notifies me that the server is not responding to polling
