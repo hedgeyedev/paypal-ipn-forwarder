@@ -18,8 +18,7 @@ Feature: gracefully handle server anomalies
     Then my computer notifies me that it is not receiving any IPNs from the server
 
   Scenario: Server not responding to computer polling requests
-    Given the server is in test mode
-    And my computer is in PayPal IPN testing mode
+    Given my computer is in PayPal IPN testing mode
     When my computer polls the server
     And the server doesn't respond
     Then my computer notifies me that the server is not responding to polling
