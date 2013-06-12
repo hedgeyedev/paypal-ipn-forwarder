@@ -18,11 +18,11 @@ Then(/^(the server|my computer) (?:notifies|alerts) (the developers|the develope
   pending # express the regexp above with the code you wish you had
 end
 
-Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN .*?(?:in|into|from|to|for|available for)(my computer in|another computer in|) the queue$/) do |action, existance ,assignment_blob|
+Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN .*?(?:in|into|from|to|for|available for) (my computer|another computer|the server)$/) do |action, existance ,assignment_blob|
   pending # express the regexp above with the code you wish you had
 end
 
-Then(/.+?a successful response back to the (server|sandbox)$/) do |destination|
+Then(/(?:.+?)a successful response back to the (server|sandbox)$/) do |destination|
   @source.send_ipn.should == "a response"
 end
 When(/^the server receives an IPN from my assigned sandbox$/) do

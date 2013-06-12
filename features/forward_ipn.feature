@@ -5,24 +5,23 @@ Feature: forward an IPN from PayPal to a development machine
 
   Scenario: PayPal sandbox sends IPN to common server
     When the sandbox sends an IPN for the recurring payment to the server
-    Then the server puts the IPN into the queue
-    And it returns a successful response back to the sandbox
+    Then it returns a successful response back to the sandbox
 
   Scenario: Developer computer retrieves IPN from server
-    Given the server has an IPN available to the computer in the queue
+    Given the server has an IPN available for my computer
     When the computer polls the server to retrieve an IPN
     Then the server returns the IPN back to the computer as part of the computer's request
-    And the server purges the IPN from the queue
+    And the server purges the IPN from the server
 
   Scenario: Developer computer is offline
-    Given the server has an IPN available for my computer in the queue
+    Given the server has an IPN available for my computer
     When my computer does not poll the server for an IPN
     Then the IPN continues to be stored in the server
 
   Scenario: Developer computer polls and server has no IPN for it
-    Given the server has no IPN available for my computer in the queue
+    Given the server has no IPN available for my computer
     When my computer polls the server
-    Then the server returns no IPN available in the queue
+    Then the server returns no IPN available
 
 # The developer computer doesn't have a notion of being online or not
 #  Scenario: Developer computer is online but doesn't send a response
