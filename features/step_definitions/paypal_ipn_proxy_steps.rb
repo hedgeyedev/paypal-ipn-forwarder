@@ -14,15 +14,7 @@ When(/^(?:the|a|it) (.*?)sends (?:an|the) IPN(?: for the recurring payment|) to 
   configure(source_blob, destination_blob)
 end
 
-Then(/^(the server|my computer) (?:notifies|alerts) (the developers|me) (.*?)$/) do |source, destinaton, problem|
-  pending # express the regexp above with the code you wish you had
-end
-
-When(/^(?:the server|it) sends (?:an|the) IPN repeatedly for (\d+)(?: more|) days.+$/) do |days|
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^(?:the server|it) (?:notifies|has notified)\s+(.+?)(\d+) days$/) do |preamble, days|
+Then(/^(the server|my computer) (?:notifies|alerts) (the developers|the developer|me|all of the developers) (.*?)$/) do |source, destinaton, problem|
   pending # express the regexp above with the code you wish you had
 end
 

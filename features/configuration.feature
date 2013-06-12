@@ -30,11 +30,6 @@ Feature: Match PayPal sandboxes with developer computers
     When the server has not been polled by a computer for 4 days
     Then the server notifies all of the developers that his computer hasn't responded for 4 days
 
-  Scenario: Server has sandbox box entry but matching computer URL doesn't match any existing computer
-    Given the server has notified a developer that his computer hasn't responded for 2 days
-    When it sends the IPN repeatedly for 5 more days without response
-    Then it notifies all of the developers that the zombie computer's owner has not responded for 5 days
-
   Scenario: PayPal sandbox repeatedly sends same IPN to unresponsive server
 
   Scenario: PayPal sandbox sends recurring payment IPN one year after test set up payment.
