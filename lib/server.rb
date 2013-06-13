@@ -13,6 +13,11 @@ class Server
         'developer_one' => false,
         'developmentmachine:9999/' => false
     }
+
+  def ipn
+    @ipn
+  end
+
   def initialize(ipn=nil)
     @ipn = ipn unless ipn.nil?
   end
