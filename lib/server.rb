@@ -57,10 +57,6 @@ class Server
     COMPUTERS_TESTING[id] = false
   end
 
-  #post '/?' do
-    #@ipn = params[:splat].first
-    #url = “https://www.sandbox.paypal.com/cgi-bin/webscr”
-    #RestClient.post url, @ipn
-  #end
+
 
 end
