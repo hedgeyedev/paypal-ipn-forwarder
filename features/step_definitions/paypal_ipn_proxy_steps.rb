@@ -31,7 +31,11 @@ Then(/(?:.+?)a successful response back to the (server|sandbox)$/) do |destinati
 end
 
 When(/^the server receives an IPN from my assigned sandbox$/) do
-  pending # express the regexp above with the code you wish you had
+  organizer = Sb_Server_Organizer.new
+  source = organizer.source
+  destination = organizer.destination
+  destination.receive_ipn(source.send)
+  destination.ipn.should == source.send
 end
 
 Then(/^the server hangs onto it until my assigned computer retrieves it$/) do
