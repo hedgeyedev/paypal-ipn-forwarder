@@ -7,4 +7,5 @@ group :test do
   gem 'cucumber'
   gem 'rspec'
   gem 'rest-client'
+  gem 'sucker_punch'
 end

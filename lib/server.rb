@@ -1,6 +1,7 @@
 require 'cgi'
 require 'sinatra/base'
 require 'rest_client'
+require 'sucker_punch'
 
 require_relative 'computer'
 
@@ -9,12 +10,16 @@ class Server
           'gpmac_1231902686_biz@paypal.com' => 'developer_one',
           'paypal@gmail.com' => 'developmentmachine:9999/'
           }
+    COMPUTERS_TESTING = {
+        'developer_one' => false,
+        'developmentmachine:9999/' => false
+    }
   def initialize(ipn=nil)
     @ipn = ipn unless ipn.nil?
   end
 
-  def send_ipn(id)
-    @comp_id = id
+  def send_ipn
+    #@comp_id = id
     computer = Computer.new
     computer.send_ipn @ipn
   end
@@ -32,8 +37,19 @@ class Server
     @ipn = ipn unless ipn.nil?
     pay_id = paypal_id
     comp_id = computer_id(pay_id)
-    #comp_id.should == "developer_one"
     comp_id
+  end
+
+  def dev_online(id)
+    COMPUTERS_TESTING[id] = true
+  end
+
+  def computer_online_query(id)
+    COMPUTERS_TESTING[id]
+  end
+
+  def dev_offline(id)
+    COMPUTERS_TESTING[id] = false
   end
 
   #post '/?' do
