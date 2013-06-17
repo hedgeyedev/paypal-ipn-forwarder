@@ -11,7 +11,7 @@ class MailJobDelivery
   end
 
   def deliver!(mail)
-    Job.enqueue!('Hedgeye::MailJob', :from_background_fu, paramify(mail))
+    Job.enqueue!('Hedgeye::MailJob', :from_sucker_punch, paramify(mail))
   end
 
   private
