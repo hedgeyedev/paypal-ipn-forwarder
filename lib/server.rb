@@ -57,6 +57,4 @@ class Server
     COMPUTERS_TESTING[id] = false
   end
 
-
-
 end

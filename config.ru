@@ -8,11 +8,6 @@ class Demo < Sinatra::Base
     'Hello, world!'
   end
 
-  get '/payments' do
-      url = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
-      @ipn = " _notify-validate&"
-      RestClient.post url, @ipn
-  end
   post 'payments/ipn' do
     url = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
     ipn = request.body.read
