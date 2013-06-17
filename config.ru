@@ -13,6 +13,12 @@ class Demo < Sinatra::Base
       @ipn = " _notify-validate&"
       RestClient.post url, @ipn
   end
+  post 'payments/ipn' do
+    url = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+    ipn = request.body.read
+    ipn = "_notify-validate&" + ipn
+    RestClient.post url, ipn unless ipn == 'VERIFIED' || ipn == 'INVALID'
+  end
 
   get '/launch' do
     url = 'http://localhost:7810/server/recieve'
