@@ -23,13 +23,19 @@ Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN .*?(
 end
 
 Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN$/) do |action, existance|
+  pending
 end
 
 Then(/(?:.+?)a successful response back to the (server|sandbox)$/) do |destination|
   @source.send_ipn.should == "a response"
 end
+
 When(/^the server receives an IPN from my assigned sandbox$/) do
-  pending # express the regexp above with the code you wish you had
+  organizer = Sb_Server_Organizer.new
+  source = organizer.source
+  destination = organizer.destination
+  destination.receive_ipn(source.send)
+  destination.ipn.should == source.send
 end
 
 Then(/^the server hangs onto it until my assigned computer retrieves it$/) do
