@@ -2,6 +2,7 @@ require 'sinatra/base'
 require 'rest_client'
 # Run a demo to see if the port is opened up on the superbox
 
+
 class Demo < Sinatra::Base
 
   get '/' do
@@ -9,10 +10,13 @@ class Demo < Sinatra::Base
   end
 
   post 'payments/ipn' do
-    url = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+    puts "got the post request"
     ipn = request.body.read
-    ipn = "_notify-validate&" + ipn
-    RestClient.post url, ipn unless ipn == 'VERIFIED' || ipn == 'INVALID'
+    unless ipn == 'VERIFIED' || ipn == 'INVALID'
+      url = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+      ipn = "cmd=_notify-validate&" + ipn
+      RestClient.post url, ipn
+    end
   end
 
   get '/launch' do
@@ -44,7 +48,8 @@ EOF
 
   post '/back/to/paypal' do
     ipn = request.body.read
-    url = 'http://localhost:5810/message'
+    url = 'http://superbox.hedgeye.com:8810/payments/ipn'
+    #url = 'http://localhost:5810/message'
     sample_ipn = <<EOF
 mc_gross=19.95&protection_eligibility=Eligible&address_status=confirmed&pay\
 er_id=LPLWNMTBWMFAY&tax=0.00&address_street=1+Main+St&payment_date=20%3A12%\
@@ -61,10 +66,10 @@ e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
 ross=19.95&shipping=0.00
 EOF
 
-    if ipn == "_notify-validate&"+sample_ipn
-      message = 'verified'+ipn
+    if ipn == "cmd=_notify-validate&"+sample_ipn
+      message = 'VERIFIED'
     else
-      message = 'invalid'+ipn
+      message = 'INVALID'
     end
 
     RestClient.post url, message
