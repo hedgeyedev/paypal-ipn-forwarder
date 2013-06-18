@@ -14,9 +14,6 @@ Then(/^the computer's developer is notified that his computer has not polled for
   pending # express the regexp above with the code you wish you had
 end
 
-Then(/^(the server|my computer) turns off (?:my computer's |)test mode$/) do |subject|
-  pending # express the regexp above with the code you wish you had
-end
 
 Then(/^it notifies me that, after (\d+) days of no polling, my test mode has been turned off$/) do |arg1|
   pending # express the regexp above with the code you wish you had
@@ -51,7 +48,18 @@ When(/^I go into test mode$/) do
 end
 
 When(/^my computer.*?the server that I'm in test mode$/) do
-  pending # express the regexp above with the code you wish you had
+  server = Server.new
+  id = "developer_one"
+  server.dev_online(id)
+  server.computer_online_query('developer_one').should == true
+end
+
+#When my computer turns off test mode
+Then(/^(the server|my computer) turns off (?:my computer's |)test mode$/) do |subject|
+  server = Server.new
+  id = "developer_one"
+  server.dev_offline(id)
+  server.computer_online_query('developer_one').should == false
 end
 
 When(/^the server doesn't respond$/) do
