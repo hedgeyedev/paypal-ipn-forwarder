@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 require_relative '../lib/mail_sender'
 require_relative '../lib/send_grid_mail_creator'
 
-describe SendGridMailCreator do
+describe MailSender do
 
   YAML_HASH = {
     'first' => 'the_worst',
@@ -20,33 +20,13 @@ describe SendGridMailCreator do
       'second' => 'the_best',
       'third' => 'the_hairy_chest'
     }
-
-  it 'should load a yml file with all the private options for sending an email' do
-    sgrid = SendGridMailCreator.new
-    hash = sgrid.load_yml
-    YAML_HASH.each_key do |key|
-      YAML_HASH[key].should == hash[key]
-    end
-
-  end
-
-  it 'should put together the fed in paramaters into the hash' do
-    sgrid = SendGridMailCreator.new
-    sgrid.create_email
-    hash = sgrid.combine_params(YAML_HASH)
+  it 'should create the email content from mail_sender' do
+    sender = MailSender.new
+    hash = sender.create(EX)
     YAML_HASH.each_key do |key|
       YAML_HASH[key].should == hash[key]
     end
   end
 
-  it 'should combine the fed in parameters and the private paramaters'
-    sgrid = SendGridMailCreator.new
-    hash = sgrid.create(EX)
-    YAML_HASH.each_key do |key|
-      YAML_HASH[key].should == hash[key]
-    end
-
-  it 'should overwrite paramaters that are handfed and match the YAML file paramaters'
-  #or backwards? discuss which implmentation would be better with James or Scott
 
 end
