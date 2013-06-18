@@ -1,3 +1,4 @@
+require 'pony'
 class MailSender
 
   def send(mail)

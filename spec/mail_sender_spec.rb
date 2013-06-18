@@ -28,5 +28,10 @@ describe MailSender do
     end
   end
 
+  it 'should send an email' do
+    sender = MailSender.new
+    hash = sender.create(TO)
+    #sender.send_email
+  end
 
 end
