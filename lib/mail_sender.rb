@@ -1,7 +1,7 @@
-class Mail_Sender
+class MailSender
 
-  def create(mail)
-    @email_creator(default:Send_Grid_Mail_Creater.new)
+  def create(mail, gateway=nil)
+    @email_creator = gateway || SendGridMailCreator.new
     @email_content = @email_creator.create(mail)
   end
 
