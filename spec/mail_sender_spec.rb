@@ -20,6 +20,11 @@ describe MailSender do
       'second' => 'the_best',
       'third' => 'the_hairy_chest'
     }
+    TO = {
+      :to => 'dmitri.ostapenko@gmail.com'
+      :body => 'this is a test email body message. HEY scott or Dmitri or James'
+      :subject => 'test email from hedgeye. is this working? '
+    }
   it 'should create the email content from mail_sender' do
     sender = MailSender.new
     hash = sender.create(EX)
@@ -31,7 +36,7 @@ describe MailSender do
   it 'should send an email' do
     sender = MailSender.new
     hash = sender.create(TO)
-    #sender.send_email
+    sender.send_email
   end
 
 end
