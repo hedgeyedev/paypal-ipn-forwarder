@@ -39,12 +39,13 @@ describe SendGridMailCreator do
     end
   end
 
-  it 'should combine the fed in parameters and the private paramaters'
+  it 'should combine the fed in parameters and the private paramaters' do
     sgrid = SendGridMailCreator.new
     hash = sgrid.create(EX)
     YAML_HASH.each_key do |key|
       YAML_HASH[key].should == hash[key]
     end
+  end
 
   it 'should overwrite paramaters that are handfed and match the YAML file paramaters'
   #or backwards? discuss which implmentation would be better with James or Scott
