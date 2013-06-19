@@ -1,4 +1,5 @@
 require 'pony'
+require_relative 'mail_creator'
 class MailSender
 
   def send(mail)

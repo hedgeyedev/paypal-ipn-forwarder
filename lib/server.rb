@@ -45,8 +45,6 @@ class Server
   def receive_ipn(ipn=nil)
     @ipn = ipn unless ipn.nil?
     pay_id = paypal_id
-    comp_id = computer_id(pay_id)
-    comp_id
   end
 
   def dev_online(id)

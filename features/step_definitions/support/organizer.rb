@@ -1,6 +1,7 @@
 require_relative '../../../lib/server'
 require_relative '../../../lib/computer'
 require_relative '../../../lib/sandbox'
+require_relative '../../../lib/mail_sender'
 
 class Organizer
 
@@ -21,6 +22,10 @@ class Organizer
 
   def destination
     Computer.new
+  end
+
+  def email
+    MailSender.new
   end
 
 end

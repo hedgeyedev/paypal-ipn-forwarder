@@ -4,15 +4,39 @@ def configure(sandbox_id= nil, destination_id=nil)
   @server         = organizer.server(@ipn)
   @destination    = organizer.destination
   @sandbox = organizer.sandbox
+  @email = organizer.email
 end
 
 # When the server sends an ipn to my computer--deleted due to change of server-computer communication
+# When a sandbox unknown to the server sends an IPN to the server
 When(/^(?:the|a|) sandbox( unknown to the server|) sends an IPN( for the recurring payment|) to the server$/)do |state, paymenttype|
-  pending
+  unless(state == "")
+    configure
+    @ipn = @sandbox.send_fail
+    @server.receive_ipn(@ipn)
+  end
 end
 
-Then(/^(the server|my computer) (?:notifies|alerts) (the developers|the developer|me|all of the developers) (.*?)$/) do |source, destinaton, problem|
-  pending # express the regexp above with the code you wish you had
+Then(/^the server notifies (?:.*?)(developer|developers) (.*?)$/) do |destinaton, problem|
+  configure
+
+  if(destinaton == "developers")
+    to = "developers"
+  else
+    to = "developer"
+  end
+
+  cleaner = ProblemCleaner.new
+  problem = cleaner.clean(problem)
+
+  EMAIL = {
+    :to => to,
+    :from => "email-proxy-problems@superbox.com",
+    :subject => problem,
+    :body => "on the Superbox IPN forwarder, this error occured:\n" + problem + "\nplease address it.\nThank You"
+  }
+
+  @email.send(EMAIL)
 end
 
 Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN .*?(?:in|into|from|to|for|available for) (my computer|another computer|the server)$/) do |action, existance ,assignment_blob|
