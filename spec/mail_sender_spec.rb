@@ -21,8 +21,8 @@ describe MailSender do
       'third' => 'the_hairy_chest'
     }
     TO = {
-      :to => 'dmitri.ostapenko@gmail.com'
-      :body => 'this is a test email body message. HEY scott or Dmitri or James'
+      :to => 'dmitri.ostapenko@gmail.com',
+      :body => 'this is a test email body message. HEY scott or Dmitri or James',
       :subject => 'test email from hedgeye. is this working? '
     }
   it 'should create the email content from mail_sender' do
