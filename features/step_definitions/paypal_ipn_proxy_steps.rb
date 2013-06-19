@@ -1,21 +1,42 @@
-def configure(source_blob, destination_blob)
-  cuke_cleaner   = CukeCleaner.new
-  source_id      = cuke_cleaner.clean(source_blob)
-  destination_id = cuke_cleaner.clean(destination_blob)
-  organizer      = Organizer.new(source_id, destination_id)
+def configure
+  organizer      = Organizer.new
   generator = TestIpnGenerator.new
-  @ipn = generator.ipn
-  @source         = organizer.source(@ipn)
-  @destination    = organizer.destination
+  @server         = organizer.server
+  @computer    = organizer.computer
+  @sandbox = organizer.sandbox
+  @email = organizer.mail_sender
 end
 
-# When the server sends an ipn to my computer
-When(/^(?:the|a|it) (.*?)sends (?:an|the) IPN(?: for the recurring payment|) to (?:my|the|an|a|)\s+(?:specified |recalcitrant |)(\w+)$/) do |source_blob, destination_blob|
-  configure(source_blob, destination_blob)
+# When the server sends an ipn to my computer--deleted due to change of server-computer communication
+# When a sandbox unknown to the server sends an IPN to the server
+When(/^(?:the|a|) sandbox( unknown to the server|) sends an IPN( for the recurring payment|) to the server$/)do |state, paymenttype|
+  unless(state == "")
+    configure
+    @ipn = @sandbox.send_fail
+    @server.receive_ipn(@ipn)
+  end
 end
 
-Then(/^(the server|my computer) (?:notifies|alerts) (the developers|the developer|me|all of the developers) (.*?)$/) do |source, destinaton, problem|
-  pending # express the regexp above with the code you wish you had
+Then(/^the server notifies (?:.*?)(developer|developers|me) (.*?)$/) do |destinaton, problem|
+  configure
+
+  if(destinaton == "developers")
+    to = "developers"
+  else
+    to = "developer"
+  end
+
+  cleaner = ProblemCleaner.new
+  problem = cleaner.clean(problem)
+
+  EMAIL = {
+    :to => to,
+    :from => "email-proxy-problems@superbox.com",
+    :subject => problem,
+    :body => "on the Superbox IPN forwarder, this error occured:\n" + problem + "\nplease address it.\nThank You"
+  }
+
+  @email.send(EMAIL)
 end
 
 Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN .*?(?:in|into|from|to|for|available for) (my computer|another computer|the server)$/) do |action, existance ,assignment_blob|
@@ -23,17 +44,30 @@ Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN .*?(
 end
 
 Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN$/) do |action, existance|
+  pending
 end
 
-Then(/(?:.+?)a successful response back to the (server|sandbox)$/) do |destination|
-  @source.send_ipn.should == "a response"
+Then(/it returns a successful response back to the sandbox$/) do
+  pending #@source.send_ipn.should == "a response" -- will be deleted: outdated
 end
+
 When(/^the server receives an IPN from my assigned sandbox$/) do
-  pending # express the regexp above with the code you wish you had
+  configure
+  my_id = 'developer_one'
+  @ipn = @sandbox.send
+  @server.receive_ipn(@ipn)
+  paypal_id  = @server.paypal_id
+  my_id.should ==  @server.computer_id(paypal_id)
+  @server.ipn.should == @sandbox.send
 end
 
 Then(/^the server hangs onto it until my assigned computer retrieves it$/) do
-  pending # express the regexp above with the code you wish you had
+  @server.create_queue
+  size_before = @server.queue_size
+  @server.queue_push(@ipn)
+  @server.queue_size.should == size_before+1
+
+
 end
 
 When(/^(:?.*?)computer( does not|) poll(:?.*?)the server (:?.*?)an IPN$/) do |action|

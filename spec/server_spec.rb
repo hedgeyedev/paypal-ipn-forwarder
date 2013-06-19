@@ -9,7 +9,7 @@ describe Server do
     sb = Sandbox.new
     ipn = sb.send
     server = Server.new
-    comp_id = server.receive_ipn(ipn)
+    sandbox_id = server.receive_ipn(ipn)
     computer = Computer.new
     computer.receive_ipn(ipn)
     computer.ipn.should == ipn
@@ -21,7 +21,8 @@ describe Server do
       sb = Sandbox.new
       ipn = sb.send_fail
       server = Server.new
-      comp_id = server.receive_ipn(ipn)
+      sandbox_id = server.receive_ipn(ipn)
+      comp_id = server.computer_id(sandbox_id)
       comp_id.should == nil
       computer = Computer.new
       computer.receive_ipn(ipn) unless comp_id == nil
