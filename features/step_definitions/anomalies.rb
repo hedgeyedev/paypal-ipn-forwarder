@@ -51,6 +51,7 @@ When(/^I go into test mode$/) do
   pending # express the regexp above with the code you wish you had
 end
 
+#my computer notifies the server that I'm in test mode
 When(/^my computer.*?the server that I'm in test mode$/) do
   server = Server.new
   id = "developer_one"

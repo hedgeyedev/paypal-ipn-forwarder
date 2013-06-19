@@ -1,4 +1,4 @@
-def configure(sandbox_id= nil, destination_id=nil)
+def configure
   organizer      = Organizer.new(destination_id)
   generator = TestIpnGenerator.new
   @server         = organizer.server(@ipn)
