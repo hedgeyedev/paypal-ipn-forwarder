@@ -7,8 +7,8 @@ class MailSender
     send_email
   end
 
-  def create(mail, gateway=nil)
-    @email_creator = gateway || MailCreator.new
+  def create(mail, mail_generator=nil)
+    @email_creator = mail_generator || MailCreator.new
     @email_content = @email_creator.create(mail)
     @email_content
   end

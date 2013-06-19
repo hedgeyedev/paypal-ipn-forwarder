@@ -1,10 +1,10 @@
 def configure
   organizer      = Organizer.new
   generator = TestIpnGenerator.new
-  @server         = organizer.server(@ipn)
-  @destination    = organizer.destination
+  @server         = organizer.server
+  @computer    = organizer.computer
   @sandbox = organizer.sandbox
-  @email = organizer.email
+  @email = organizer.mail_sender
 end
 
 # When the server sends an ipn to my computer--deleted due to change of server-computer communication

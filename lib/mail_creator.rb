@@ -3,8 +3,6 @@ require 'yaml'
 class MailCreator
 
   def create(mail)
-    @mail = mail
-    #email = Hash.new
     load_yml("_test")# needs to feed in no params in the prod version
     create_email
     @email = @config.clone
