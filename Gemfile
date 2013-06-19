@@ -7,8 +7,6 @@ group :test do
   gem 'cucumber'
   gem 'rspec'
   gem 'rest'
-  gem 'sucker_punch'
-  gem 'sendgrid'
   gem 'rest-client'
   gem 'pony'
 end
