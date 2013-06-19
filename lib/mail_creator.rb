@@ -1,6 +1,6 @@
 require 'yaml'
 
-class SendGridMailCreator
+class MailCreator
 
   def create(mail)
     @mail = mail

@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 require_relative '../lib/mail_sender'
 require_relative '../lib/send_grid_mail_creator'
 
-describe SendGridMailCreator do
+describe MailCreator do
 
   YAML_HASH = {
     'first' => 'the_worst',
