@@ -7,7 +7,7 @@ class MailSender
   end
 
   def create(mail, gateway=nil)
-    @email_creator = gateway || SendGridMailCreator.new
+    @email_creator = gateway || MailCreator.new
     @email_content = @email_creator.create(mail)
     @email_content
   end
