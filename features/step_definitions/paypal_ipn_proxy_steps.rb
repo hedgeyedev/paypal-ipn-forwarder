@@ -1,5 +1,5 @@
 def configure
-  organizer      = Organizer.new(destination_id)
+  organizer      = Organizer.new
   generator = TestIpnGenerator.new
   @server         = organizer.server(@ipn)
   @destination    = organizer.destination
@@ -17,7 +17,7 @@ When(/^(?:the|a|) sandbox( unknown to the server|) sends an IPN( for the recurri
   end
 end
 
-Then(/^the server notifies (?:.*?)(developer|developers) (.*?)$/) do |destinaton, problem|
+Then(/^the server notifies (?:.*?)(developer|developers|me) (.*?)$/) do |destinaton, problem|
   configure
 
   if(destinaton == "developers")

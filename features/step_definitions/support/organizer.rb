@@ -8,7 +8,7 @@ class Organizer
   # Set up this object with names that can be used to look up objects needed to run this test
   # @param [String] source_id the unique name for the source object
   # @param [String] destination_id the unique name for the destination object
-  def initialize(destination_id)
+  def initialize()
 
   end
 

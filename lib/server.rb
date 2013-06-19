@@ -1,7 +1,6 @@
 require 'cgi'
 require 'sinatra/base'
 require 'rest_client'
-require 'sucker_punch'
 
 require_relative 'computer'
 
@@ -47,15 +46,15 @@ class Server
     pay_id = paypal_id
   end
 
-  def dev_online(id)
+  def computer_online(id)
     COMPUTERS_TESTING[id] = true
   end
 
-  def computer_online_query(id)
+  def computer_online?(id)
     COMPUTERS_TESTING[id]
   end
 
-  def dev_offline(id)
+  def computer_offline(id)
     COMPUTERS_TESTING[id] = false
   end
 
