@@ -5,7 +5,7 @@ class MailCreator
   def create(mail)
     @mail = mail
     #email = Hash.new
-    load_yml
+    load_yml("_test")# needs to feed in no params in the prod version
     create_email
     @email = @config.clone
     combine_params(mail)
@@ -17,8 +17,8 @@ class MailCreator
     @email = Hash.new
   end
 
-  def load_yml
-    @config = YAML::load_file(File.expand_path("../../config/configure.yml", __FILE__))
+  def load_yml(dev_version=nil)
+    @config = YAML::load_file(File.expand_path("../../config/configure#{dev_version}.yml", __FILE__))
   end
 
   def combine_params(mail)

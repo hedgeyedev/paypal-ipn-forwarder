@@ -1,6 +1,6 @@
 require_relative 'spec_helper'
 require_relative '../lib/mail_sender'
-require_relative '../lib/send_grid_mail_creator'
+require_relative '../lib/mail_creator'
 
 describe MailSender do
 

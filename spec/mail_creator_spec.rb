@@ -1,6 +1,6 @@
 require_relative 'spec_helper'
 require_relative '../lib/mail_sender'
-require_relative '../lib/send_grid_mail_creator'
+require_relative '../lib/mail_creator'
 
 describe MailCreator do
 
@@ -22,8 +22,8 @@ describe MailCreator do
     }
 
   it 'should load a yml file with all the private options for sending an email' do
-    sgrid = SendGridMailCreator.new
-    hash = sgrid.load_yml
+    sgrid = MailCreator.new
+    hash = sgrid.load_yml("_test")
     YAML_HASH.each_key do |key|
       YAML_HASH[key].should == hash[key]
     end
@@ -31,7 +31,7 @@ describe MailCreator do
   end
 
   it 'should put together the fed in paramaters into the hash' do
-    sgrid = SendGridMailCreator.new
+    sgrid = MailCreator.new
     sgrid.create_email
     hash = sgrid.combine_params(YAML_HASH)
     YAML_HASH.each_key do |key|
@@ -40,7 +40,7 @@ describe MailCreator do
   end
 
   it 'should combine the fed in parameters and the private paramaters' do
-    sgrid = SendGridMailCreator.new
+    sgrid = MailCreator.new
     hash = sgrid.create(EX)
     YAML_HASH.each_key do |key|
       YAML_HASH[key].should == hash[key]
