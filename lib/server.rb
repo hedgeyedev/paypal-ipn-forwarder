@@ -19,6 +19,10 @@ class Server
     @ipn
   end
 
+  def create_queue
+    @queue = Queue.new
+  end
+
   def initialize(ipn=nil)
     @ipn = ipn unless ipn.nil?
   end
@@ -57,4 +61,11 @@ class Server
     COMPUTERS_TESTING[id] = false
   end
 
+  def queue_push(ipn)
+    @queue.push(ipn)
+  end
+
+  def queue_size
+    @queue.size
+  end
 end

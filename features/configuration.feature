@@ -6,15 +6,16 @@ Feature: Match PayPal sandboxes with developer computers
 
   Scenario: Server receives an IPN from a sandbox assigned to my computer
     When the server receives an IPN from my assigned sandbox
+    And my computer is in test mode
     Then the server hangs onto it until my assigned computer retrieves it
 
   Scenario: My computer receives an IPN assigned to it from the server
-    Given the server contains an IPN assigned to my computer 
+    Given the server contains an IPN assigned to my computer
     When my computer polls the server for an IPN
     Then the server returns the IPN
 
   Scenario: My computer does NOT receive an IPN from a sandbox not assigned to me
-    Given the server only contains an IPN for another computer 
+    Given the server only contains an IPN for another computer
     When my computer polls the server for an IPN
     Then the server returns no IPN
 

@@ -1,5 +1,9 @@
+#my computer is in test mode
 Given(/^(?:the|my) (computer|server) (is|is not) in (?:PayPal IPN |)test.*?mode.*?$/) do |subject, mode|
-  pending # express the regexp above with the code you wish you had
+  server = Server.new
+  dev_id = 'developer_one'
+  server.dev_online(dev_id)
+  server.computer_online_query(dev_id).should == true
 end
 
 Given(/^a test (has|has not) started$/) do |started|

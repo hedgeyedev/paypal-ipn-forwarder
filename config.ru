@@ -9,7 +9,7 @@ class Demo < Sinatra::Base
     'Hello, world!'
   end
 
-  post 'payments/ipn' do
+  post '/payments/ipn' do
     puts "got the post request"
     ipn = request.body.read
     unless ipn == 'VERIFIED' || ipn == 'INVALID'

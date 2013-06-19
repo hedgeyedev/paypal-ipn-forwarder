@@ -1,17 +1,14 @@
-def configure(source_blob, destination_blob)
-  cuke_cleaner   = CukeCleaner.new
-  source_id      = cuke_cleaner.clean(source_blob)
-  destination_id = cuke_cleaner.clean(destination_blob)
-  organizer      = Organizer.new(source_id, destination_id)
+def configure(sandbox_id= nil, destination_id=nil)
+  organizer      = Organizer.new(destination_id)
   generator = TestIpnGenerator.new
-  @ipn = generator.ipn
-  @source         = organizer.source(@ipn)
+  @server         = organizer.server(@ipn)
   @destination    = organizer.destination
+  @sandbox = organizer.sandbox
 end
 
-# When the server sends an ipn to my computer
-When(/^(?:the|a|it) (.*?)sends (?:an|the) IPN(?: for the recurring payment|) to (?:my|the|an|a|)\s+(?:specified |recalcitrant |)(\w+)$/) do |source_blob, destination_blob|
-  configure(source_blob, destination_blob)
+# When the server sends an ipn to my computer--deleted due to change of server-computer communication
+When(/^(?:the|a|) sandbox( unknown to the server|) sends an IPN( for the recurring payment|) to the server$/)do |state, paymenttype|
+  pending
 end
 
 Then(/^(the server|my computer) (?:notifies|alerts) (the developers|the developer|me|all of the developers) (.*?)$/) do |source, destinaton, problem|
@@ -26,20 +23,27 @@ Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN$/) d
   pending
 end
 
-Then(/(?:.+?)a successful response back to the (server|sandbox)$/) do |destination|
-  @source.send_ipn.should == "a response"
+Then(/it returns a successful response back to the sandbox$/) do
+  pending #@source.send_ipn.should == "a response" -- will be deleted: outdated
 end
 
 When(/^the server receives an IPN from my assigned sandbox$/) do
-  organizer = Sb_Server_Organizer.new
-  source = organizer.source
-  destination = organizer.destination
-  destination.receive_ipn(source.send)
-  destination.ipn.should == source.send
+  configure
+  my_id = 'developer_one'
+  @ipn = @sandbox.send
+  @server.receive_ipn(@ipn)
+  paypal_id  = @server.paypal_id
+  my_id.should ==  @server.computer_id(paypal_id)
+  @server.ipn.should == @sandbox.send
 end
 
 Then(/^the server hangs onto it until my assigned computer retrieves it$/) do
-  pending # express the regexp above with the code you wish you had
+  @server.create_queue
+  size_before = @server.queue_size
+  @server.queue_push(@ipn)
+  @server.queue_size.should == size_before+1
+
+
 end
 
 When(/^(:?.*?)computer( does not|) poll(:?.*?)the server (:?.*?)an IPN$/) do |action|
