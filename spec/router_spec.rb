@@ -1,5 +1,4 @@
 require 'rspec'
-
 require_relative '../lib/router'
 
 describe Router do
@@ -14,7 +13,9 @@ describe Router do
 
   context 'exists' do
 
-    @router = Router.new
+    before(:each) do
+      @router = Router.new
+    end
 
     context 'when destroying' do
 
@@ -45,11 +46,39 @@ describe Router do
     context 'handshake between router and CMS' do
 
       def create_an_ipn_somehow
-        raise 'solve this problem'
+        sample_ipn = <<EOF
+mc_gross=19.95&protection_eligibility=Eligible&address_status=confirmed&pay\
+er_id=LPLWNMTBWMFAY&tax=0.00&address_street=1+Main+St&payment_date=20%3A12%\
+3A59+Jan+13%2C+2009+PST&payment_status=Completed&charset=windows-\
+1252&address_zip=95131&first_name=Test&mc_fee=0.88&address_country_code=US&\
+address_name=Test+User&notify_version=2.6&custom=&payer_status=verified&add\
+ress_country=United+States&address_city=San+Jose&quantity=1&verify_sign=Atk\
+OfCXbDm2hu0ZELryHFjY-Vb7PAUvS6nMXgysbElEn9v-\
+1XcmSoGtf&payer_email=gpmac_1231902590_per%40paypal.com&txn_id=61E67681CH32\
+38416&payment_type=instant&last_name=User&address_state=CA&receiver_email=email\
+&payment_fee=0.88&receiver_id=S8XGHLYDW9T3S\
+&txn_type=express_checkout&item_name=&mc_currency=USD&item_number=&residenc\
+e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
+ross=19.95&shipping=0.00
+EOF
       end
 
       def create_ipn_response_somehow
-        raise 'solve this problem'
+        verified_ipn = <<EOF
+cmd=_notify-validate&mc_gross=19.95&protection_eligibility=Eligible&address_status=confirmed&pay\
+er_id=LPLWNMTBWMFAY&tax=0.00&address_street=1+Main+St&payment_date=20%3A12%\
+3A59+Jan+13%2C+2009+PST&payment_status=Completed&charset=windows-\
+1252&address_zip=95131&first_name=Test&mc_fee=0.88&address_country_code=US&\
+address_name=Test+User&notify_version=2.6&custom=&payer_status=verified&add\
+ress_country=United+States&address_city=San+Jose&quantity=1&verify_sign=Atk\
+OfCXbDm2hu0ZELryHFjY-Vb7PAUvS6nMXgysbElEn9v-\
+1XcmSoGtf&payer_email=gpmac_1231902590_per%40paypal.com&txn_id=61E67681CH32\
+38416&payment_type=instant&last_name=User&address_state=CA&receiver_email=email\
+&payment_fee=0.88&receiver_id=S8XGHLYDW9T3S\
+&txn_type=express_checkout&item_name=&mc_currency=USD&item_number=&residenc\
+e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
+ross=19.95&shipping=0.00
+EOF
       end
 
       before(:each) do
@@ -61,7 +90,7 @@ describe Router do
       it 'processes an IPN' do
         ipn          = create_an_ipn_somehow
         ipn_response = create_ipn_response_somehow
-        @cms.stub!(:send_ipn).with(ipn).and_return(ipn_response)
+        @cms.stub!(:send_ipn).with(ipn).and_return(ipn_response).to(self)
         @cms.should_receive(:verified)
         @router.send_ipn(ipn)
       end

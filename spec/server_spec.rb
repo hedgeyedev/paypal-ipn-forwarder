@@ -30,5 +30,14 @@ describe Server do
   end
 
   it 'sends an email to the developers when it receives an ipn from a sandbox that has no associated computer'
-
+  
+  it 'records that it has received an IPN response from a specific CMS'
+  
+  it 'confirms a IPN response for a polling request from the router for that IPN response' do
+    server = Server.new
+    
+  end
+  
+  it 'denies an IPN response for a polling request from a router because none exists'
+  
 end
