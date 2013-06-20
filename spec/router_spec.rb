@@ -45,14 +45,10 @@ describe Router do
     context 'handshake between router and CMS' do
 
       def create_an_ipn_somehow
-        raise "solve this problem"
+        raise 'solve this problem'
       end
 
-      def create_a_success_ipn_response_somehow
-        raise "solve this problem"
-      end
-
-      def create_a_failure_ipn_response_somehow
+      def create_ipn_response_somehow
         raise 'solve this problem'
       end
 
@@ -62,19 +58,11 @@ describe Router do
 
       # TODO: @cms and @router are going to have to be tied together
 
-      it 'verifies when CMS processes an IPN successfully' do
+      it 'processes an IPN' do
         ipn          = create_an_ipn_somehow
-        ipn_response = create_a_success_ipn_response_somehow
+        ipn_response = create_ipn_response_somehow
         @cms.stub!(:send_ipn).with(ipn).and_return(ipn_response)
         @cms.should_receive(:verified)
-        @router.send_ipn(ipn)
-      end
-
-      it 'reports invalid when CMS does not process the IPN successfully' do
-        ipn          = create_an_ipn_somehow
-        ipn_response = create_a_failure_ipn_response_somehow
-        @cms.stub!(:send_ipn).with(ipn).and_return(ipn_response)
-        @cms.should_receive(:notvalid)
         @router.send_ipn(ipn)
       end
 
