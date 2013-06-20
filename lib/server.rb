@@ -5,14 +5,6 @@ require 'rest_client'
 require_relative 'computer'
 
 class Server
-   MAP = {
-          'gpmac_1231902686_biz@paypal.com' => 'developer_one',
-          'paypal@gmail.com' => 'developmentmachine:9999/'
-          }
-    COMPUTERS_TESTING = {
-        'developer_one' => false,
-        'developmentmachine:9999/' => false
-    }
 
   def ipn
     @ipn
@@ -22,6 +14,14 @@ class Server
     @queue = Queue.new
   end
 
+  MAP = {
+        'gpmac_1231902686_biz@paypal.com' => 'devloper_one',
+        'paypal@gmail.com' => 'developmentmachine:9999/'
+        }
+  COMPUTERS_TESTING = {
+      'developer_one' => false,
+      'developmentmachine:9999/' => false
+  }
   def initialize(ipn=nil)
     @ipn = ipn unless ipn.nil?
   end
@@ -41,9 +41,12 @@ class Server
       MAP[paypal_id]
   end
 
+  # FIXME: This didn't merge cleanly; bet it doesn't work.
   def receive_ipn(ipn=nil)
     @ipn = ipn unless ipn.nil?
-    pay_id = paypal_id
+    response = IpnResponse.new(@ipn)
+    response.success = 'successful' # again, find out what PayPal _really_ wants
+    response
   end
 
   def computer_online(id)
