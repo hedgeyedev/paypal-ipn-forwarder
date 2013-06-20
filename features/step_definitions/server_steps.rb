@@ -7,11 +7,21 @@ def configure(source_blob, destination_blob)
   @ipn = generator.ipn
   @source         = organizer.source(@ipn)
   @destination    = organizer.destination
+  @is_incoming_msg = msg_incoming?
 end
 
-# When the server sends an ipn to my computer
-When(/^(?:the|a|it) (.*?)sends (?:an|the) IPN(?: for the recurring payment|) to (?:my|the|an|a|)\s+(?:specified |recalcitrant |)(\w+)$/) do |source_blob, destination_blob|
-  configure(source_blob, destination_blob)
+# From information about the configuration, determine whether
+# the step definition is defining a message going into the server
+# or a message that the server is sending out.
+def msg_incoming?
+  # don't know how to do this yet.
+end
+
+# Handle an IPN being processed by the server, either receiving from the PayPal sandbox or being sent to the computer
+When(/^(?:the|a|it) (sandbox|server) sends (?:an|the) IPN(?: for the recurring payment|) to (?:my|the|an|a|)\s+(?:specified |recalcitrant |)(\w+)$/) do |source, destination_blob|
+  configure(source, destination_blob)
+
+  @ipn_response = @source.send_ipn
 end
 
 Then(/^(the server|my computer) (?:notifies|alerts) (the developers|the developer|me|all of the developers) (.*?)$/) do |source, destinaton, problem|
@@ -26,8 +36,12 @@ Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN$/) d
   pending
 end
 
-Then(/(?:.+?)a successful response back to the (server|sandbox)$/) do |destination|
-  @source.send_ipn.should == "a response"
+Then(/(?:it|the server) a successful response back to the (server|sandbox)$/) do |destination|
+  @ipn_response.should == "a response"
+end
+
+Then(/^the server returns a successful response back to the sandbox$/) do
+  @ipn_response.success.should == 'successful' # PayPal-specific; get the right key and value
 end
 
 When(/^the server receives an IPN from my assigned sandbox$/) do
