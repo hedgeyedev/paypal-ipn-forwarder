@@ -8,7 +8,7 @@ Feature:
     Given the server knows that my computer is in test mode
     When an actual IPN generating test sequence has started on my computer
     And polling has not retrieved any IPNs for this test for 10 minutes
-    Then my computer notifies me that it is not receiving any IPNs from the server
+    Then my computer alerts me that it is not receiving any IPNs from the server
 
   Scenario: Server is not started
     Given the server is not launched
