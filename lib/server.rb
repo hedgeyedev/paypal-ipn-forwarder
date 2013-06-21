@@ -5,15 +5,6 @@ require 'rest_client'
 require_relative 'computer'
 
 class Server
-
-  def ipn
-    @ipn
-  end
-
-  def create_queue
-    @queue = Queue.new
-  end
-
   MAP = {
         'gpmac_1231902686_biz@paypal.com' => 'developer_one',
         'paypal@gmail.com' => 'developmentmachine:9999/'
@@ -26,6 +17,15 @@ class Server
     'developer_one' => nil,
     'developmentmachine:9999/' => nil
   }
+
+  def ipn
+    @ipn
+  end
+
+  def create_queue
+    @queue = Queue.new
+  end
+
   def initialize(ipn=nil)
     @ipn = ipn unless ipn.nil?
   end
@@ -48,6 +48,8 @@ class Server
   # FIXME: This didn't merge cleanly; bet it doesn't work.
   def receive_ipn(ipn=nil)
     @ipn = ipn unless ipn.nil?
+
+    #changes from scott: break tests and unsure of their significance
     #response = IpnResponse.new(@ipn)
     #response.success = 'successful' # again, find out what PayPal _really_ wants
     #response
@@ -71,6 +73,10 @@ class Server
 
   def queue_size
     @queue.size
+  end
+
+  def queue_pop
+    @queue.pop
   end
 
   def receive_ipn_response(ipn_response)

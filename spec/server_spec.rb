@@ -58,4 +58,19 @@ describe Server do
     server = Server.new
     server.ipn_response_present?('developer_one').should == nil
   end
+
+  context 'queue' do
+    it 'stores IPNs sent from a sandbox when a computer is testing' do
+      server = Server.new
+      sb = Sandbox.new
+      dev_id = 'developer_one'
+      server.computer_online(dev_id)
+      ipn = sb.send
+      server.receive_ipn(ipn)
+      server.create_queue
+      server.queue_push(ipn)
+      ipn.should == server.queue_pop
+      #what happens if there are 2 developers testing. Intresting scenario which needs discussion
+    end
+  end
 end
