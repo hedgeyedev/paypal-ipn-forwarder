@@ -27,4 +27,14 @@ class Router
     @cms.receive_verification
   end
 
+  def start_polling
+    url = 'http://superbox.hedgeye.com:8810/ipn-response'
+    message = "this machine has started testing"
+    #RestClient.post url, 
+    #TODO:figure out how to identify each computer. i.e. how does computer specify itself.
+    #currently through email and id which is based on email
+  end
+
+  def end_polling
+  end
 end

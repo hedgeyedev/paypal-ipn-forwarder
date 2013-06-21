@@ -31,8 +31,6 @@ describe Server do
       computer.ipn.should == nil
   end
 
-  it 'sends an email to the developers when it receives an ipn from a sandbox that has no associated computer'
-
   it 'records that it has received an IPN response from a specific CMS' do
     server = Server.new
     cms = Cms.new
