@@ -13,5 +13,7 @@ class Router
 
   def receive_ipn_response
   end
+  
+  def poll_for_ipn_response
 
 end

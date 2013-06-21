@@ -1,7 +1,9 @@
 require_relative 'spec_helper'
 require_relative '../lib/server'
 require_relative '../lib/sandbox'
+require_relative '../lib/cms'
 require_relative '../lib/computer'
+
 
 describe Server do
 
@@ -30,14 +32,30 @@ describe Server do
   end
 
   it 'sends an email to the developers when it receives an ipn from a sandbox that has no associated computer'
-  
-  it 'records that it has received an IPN response from a specific CMS'
-  
+
+  it 'records that it has received an IPN response from a specific CMS' do
+    server = Server.new
+    cms = Cms.new
+    ipn_response = cms.send_ipn_response
+    server.receive_ipn_response(ipn_response)
+    paypal_id = server.paypal_id(ipn_response)
+    computer_id = server.computer_id(paypal_id)
+    server.ipn_response_present?(computer_id).should == "VERIFIED"
+  end
+
   it 'confirms a IPN response for a polling request from the router for that IPN response' do
     server = Server.new
-    
+    cms = Cms.new
+    ipn_response = cms.send_ipn_response
+    server.receive_ipn_response(ipn_response)
+    paypal_id = server.paypal_id(ipn_response)
+    computer_id = server.computer_id(paypal_id)
+    server.ipn_response_present?(computer_id).should == "VERIFIED"
+
   end
-  
-  it 'denies an IPN response for a polling request from a router because none exists'
-  
+
+  it 'denies an IPN response for a polling request from a router because none exists' do
+    server = Server.new
+    server.ipn_response_present?('developer_one').should == nil
+  end
 end
