@@ -24,4 +24,7 @@ EOF
   def receive_ipn
   end
 
+  def receive_verificaiton
+  end
+
 end

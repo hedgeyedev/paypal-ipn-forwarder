@@ -86,7 +86,7 @@ EOF
       end
 
       # TODO: @cms and @router are going to have to be tied together
-
+      #this fails. has to be changed to fit with new implementation
       it 'processes an IPN' do
         ipn          = create_an_ipn_somehow
         ipn_response = create_ipn_response_somehow
@@ -94,6 +94,10 @@ EOF
         @cms.should_receive(:verified)
         @router.send_ipn(ipn)
       end
+
+      it 'polls the server for a verfication message'
+
+      it 'send a verification message'
 
     end
 
