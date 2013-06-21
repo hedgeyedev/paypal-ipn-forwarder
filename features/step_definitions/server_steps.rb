@@ -47,7 +47,7 @@ Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN$/) d
   pending
 end
 
-Then(/it returns a successful response back to the sandbox$/) do
+Then(/the server returns a successful response back to the sandbox$/) do
   pending #@source.send_ipn.should == "a response" -- will be deleted: outdated
 end
 
@@ -56,7 +56,7 @@ When(/^the server receives an IPN from my assigned sandbox$/) do
   my_id = 'developer_one'
   @ipn = @sandbox.send
   @server.receive_ipn(@ipn)
-  paypal_id  = @server.paypal_id
+  paypal_id  = @server.paypal_id(@ipn)
   my_id.should ==  @server.computer_id(paypal_id)
   @server.ipn.should == @sandbox.send
 end

@@ -5,6 +5,18 @@ require 'rest_client'
 require_relative 'computer'
 
 class Server
+  MAP = {
+        'gpmac_1231902686_biz@paypal.com' => 'developer_one',
+        'paypal@gmail.com' => 'developmentmachine:9999/'
+        }
+  COMPUTERS_TESTING = {
+      'developer_one' => false,
+      'developmentmachine:9999/' => false
+  }
+  IPN_RESPONSE = {
+    'developer_one' => nil,
+    'developmentmachine:9999/' => nil
+  }
 
   def ipn
     @ipn
@@ -14,14 +26,6 @@ class Server
     @queue = Queue.new
   end
 
-  MAP = {
-        'gpmac_1231902686_biz@paypal.com' => 'devloper_one',
-        'paypal@gmail.com' => 'developmentmachine:9999/'
-        }
-  COMPUTERS_TESTING = {
-      'developer_one' => false,
-      'developmentmachine:9999/' => false
-  }
   def initialize(ipn=nil)
     @ipn = ipn unless ipn.nil?
   end
@@ -32,8 +36,8 @@ class Server
     computer.send_ipn @ipn
   end
 
-  def paypal_id
-    params = CGI::parse(@ipn)
+  def paypal_id(ipn)
+    params = CGI::parse(ipn)
     params["receiver_email"].first
   end
 
@@ -44,9 +48,11 @@ class Server
   # FIXME: This didn't merge cleanly; bet it doesn't work.
   def receive_ipn(ipn=nil)
     @ipn = ipn unless ipn.nil?
-    response = IpnResponse.new(@ipn)
-    response.success = 'successful' # again, find out what PayPal _really_ wants
-    response
+
+    #changes from scott: break tests and unsure of their significance
+    #response = IpnResponse.new(@ipn)
+    #response.success = 'successful' # again, find out what PayPal _really_ wants
+    #response
   end
 
   def computer_online(id)
@@ -68,4 +74,25 @@ class Server
   def queue_size
     @queue.size
   end
+
+  def queue_pop
+    @queue.pop
+  end
+
+  def receive_ipn_response(ipn_response)
+    paypal_id = paypal_id(ipn_response)
+    computer_id = computer_id(paypal_id)
+    store_ipn_response(computer_id, ipn_response)
+  end
+
+  def store_ipn_response(computer_id, ipn_response)
+    IPN_RESPONSE[computer_id] = "VERIFIED"
+  end
+
+  def ipn_response_present?(computer_id)
+    ipn_response = IPN_RESPONSE[computer_id]
+    IPN_RESPONSE[computer_id] = nil
+    ipn_response
+  end
+
 end

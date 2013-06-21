@@ -39,7 +39,7 @@ Given(/^an IPN generating test has started$/) do
   pending # express the regexp above with the code you wish you had
 end
 
-When(/^the server has not received an IPN from the sandbox for \? minutes$/) do
+When(/^the server has not received an IPN from the sandbox for (\d+) minutes$/) do
   pending # express the regexp above with the code you wish you had
 end
 
