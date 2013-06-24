@@ -7,17 +7,17 @@ describe Router do
   context 'when created' do
 
     it 'tells the server that test mode has started' do
-      server = Server.new
+      server = mock('Server')
+      server.should_receive(:computer_online).with('developer_one')
       router = Router.new
       router.test_mode_on
-      server.computer_online('developer_one')
-      server.computer_online?('developer_one').should == true
     end
-    #TODO:figure out how to identify each computer. i.e. how does computer specify itself.
-    #currently through email and id which is based on email
 
-    it 'starts polling the server'
-
+    it 'starts polling the server' do
+      router = Router.new
+      router.retrieve_ipn.should == "IPN"
+      #not sure how to test the actuall poll aka the http request
+    end
   end
 
   context 'exists' do
@@ -29,9 +29,15 @@ describe Router do
 
     context 'when destroying' do
 
-      it 'stops polling the server'
+      it 'stops polling the server' do
+        router = Router.new
+        router.test_mode_on
+        router.test_mode_off
+        defined?(router).should be false
+      end
 
       it 'tells the server that test mode has finished' do
+        #needs to be changed based on changes on line 9-14 which were made with Scott's help
         server = Server.new
         router = Router.new
         router.test_mode_off
@@ -48,14 +54,17 @@ describe Router do
       it 'retrieves an IPN when the server has one to return'
 
       it 'initiates a protocol to send the IPN to cms'
+      #unsure of what url the http protocol will use to interact with cms
 
       it 'polls the server again 5 seconds after finishing the protocol with cms'
+      #unsure how to test
 
     end
 
     context 'polling does not retrieve an IPN' do
 
       it 'polls again 5 seconds later'
+      #unsure how to test
 
     end
 
@@ -104,17 +113,19 @@ EOF
         ipn          = create_an_ipn_somehow
         ipn_response = create_ipn_response_somehow
         @target.stub!(:send_ipn).with(ipn).and_return(ipn_response)
-        @target.should_receive(:verified)
         @router.send_ipn(ipn)
-        @router.send_verified()
 
       end
 
       it 'polls the server for a verfication message'
 
+
       it 'send a verification message' do
         @target.should_receive(:verified)
-        @router.send_verified()
+        server = Server.new
+        server.store_ipn_response('developer_one')
+        server.send_response_to_computer('developer_one').should == "VERIFIED"
+        @router.forward_ipn(server.send_response_to_computer('developer_one'))
       end
 
     end

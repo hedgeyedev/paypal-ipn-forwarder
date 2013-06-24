@@ -1,9 +1,10 @@
 require 'sinatra/base'
 require 'rest_client'
+require File.expand_path('../lib/server', __FILE__)
 
 # Run a demo to see if the port is opened up on the superbox
 
-class Demo < Sinatra::Base
+class ServerRack < Sinatra::Base
 
   def initialize(server = Server.new)
     @server = server
@@ -17,11 +18,14 @@ class Demo < Sinatra::Base
     launch_ipn
   end
 
+  get '/ipn-response' do
+    "VERIFIED"
+  end
+
   post '/payments/ipn' do
     ipn = params[:splat].first
     @server.receive_ipn(ipn)
     response = @server.ip_response(ipn)
-    url = “https://www.sandbox.paypal.com/cgi-bin/webscr” # this value needs to be verified
     RestClient.post url, response
   end
 
@@ -109,7 +113,7 @@ EOF
 
 end
 
-run Demo
+run ServerRack
 
 
 
