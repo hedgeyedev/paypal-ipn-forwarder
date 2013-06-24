@@ -1,11 +1,20 @@
 require 'rspec'
 require_relative '../lib/router'
+require_relative '../lib/server'
 
 describe Router do
 
   context 'when created' do
 
-    it 'tells the server that test mode has started'
+    it 'tells the server that test mode has started' do
+      server = Server.new
+      router = Router.new
+      router.test_mode_on
+      server.computer_online('developer_one')
+      server.computer_online?('developer_one').should == true
+    end
+    #TODO:figure out how to identify each computer. i.e. how does computer specify itself.
+    #currently through email and id which is based on email
 
     it 'starts polling the server'
 
@@ -14,14 +23,21 @@ describe Router do
   context 'exists' do
 
     before(:each) do
-      @router = Router.new
+      @target = mock('target')
+      @router = Router.new(@target)
     end
 
     context 'when destroying' do
 
       it 'stops polling the server'
 
-      it 'tells the server that test mode has finished'
+      it 'tells the server that test mode has finished' do
+        server = Server.new
+        router = Router.new
+        router.test_mode_off
+        server.computer_offline('developer_one')
+        server.computer_online?('developer_one').should == false
+      end
 
       it 'self-destructs'
 
@@ -81,23 +97,25 @@ ross=19.95&shipping=0.00
 EOF
       end
 
-      before(:each) do
-        @cms = mock('CMS Ipn server')
-      end
+
 
       # TODO: @cms and @router are going to have to be tied together
-      #this fails. has to be changed to fit with new implementation
       it 'processes an IPN' do
         ipn          = create_an_ipn_somehow
         ipn_response = create_ipn_response_somehow
-        @cms.stub!(:send_ipn).with(ipn).and_return(ipn_response).to(self)
-        @cms.should_receive(:verified)
+        @target.stub!(:send_ipn).with(ipn).and_return(ipn_response)
+        @target.should_receive(:verified)
         @router.send_ipn(ipn)
+        @router.send_verified()
+
       end
 
       it 'polls the server for a verfication message'
 
-      it 'send a verification message'
+      it 'send a verification message' do
+        @target.should_receive(:verified)
+        @router.send_verified()
+      end
 
     end
 

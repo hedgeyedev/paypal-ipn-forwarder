@@ -1,6 +1,5 @@
 require 'cgi'
 require 'sinatra/base'
-require 'rest_client'
 
 require_relative 'computer'
 
@@ -47,12 +46,14 @@ class Server
 
   # FIXME: This didn't merge cleanly; bet it doesn't work.
   def receive_ipn(ipn=nil)
-    @ipn = ipn unless ipn.nil?
+    unless(recurring?(ipn))
+      @ipn = ipn unless ipn.nil?
+    end
+  end
 
-    #changes from scott: break tests and unsure of their significance
-    #response = IpnResponse.new(@ipn)
-    #response.success = 'successful' # again, find out what PayPal _really_ wants
-    #response
+  def ipn_response(ipn)
+    response = 'cmd=_notify-validate&' + ipn
+    response
   end
 
   def computer_online(id)
@@ -93,6 +94,16 @@ class Server
     ipn_response = IPN_RESPONSE[computer_id]
     IPN_RESPONSE[computer_id] = nil
     ipn_response
+  end
+
+  def recurring?(ipn)
+    params = CGI::parse(ipn)
+    recurring = params["recurring"].first
+    unless(recurring = "")
+      true
+    else
+      false
+    end
   end
 
 end

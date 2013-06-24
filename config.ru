@@ -19,10 +19,10 @@ class Demo < Sinatra::Base
 
   post '/payments/ipn' do
     ipn = params[:splat].first
-    response = @server.receive_ipn(ipn)
+    @server.receive_ipn(ipn)
+    response = @server.ip_response(ipn)
     url = “https://www.sandbox.paypal.com/cgi-bin/webscr” # this value needs to be verified
-
-    RestClient.post url, ipn
+    RestClient.post url, response
   end
 
   # Pretend to be the PayPal sandbox you're sending the response back to
