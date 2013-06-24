@@ -17,11 +17,14 @@ class Demo < Sinatra::Base
     launch_ipn
   end
 
+  get '/ipn-response' do
+    "VERIFIED"
+  end
+
   post '/payments/ipn' do
     ipn = params[:splat].first
     response = @server.receive_ipn(ipn)
-    url = “https://www.sandbox.paypal.com/cgi-bin/webscr” # this value needs to be verified
-
+    url = "https://www.sandbox.paypal.com/cgi-bin/webscr" # this value needs to be verified
     RestClient.post url, ipn
   end
 
