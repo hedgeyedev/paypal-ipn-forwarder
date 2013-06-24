@@ -112,7 +112,10 @@ EOF
 
       it 'polls the server for a verfication message'
 
-      it 'send a verification message'
+      it 'send a verification message' do
+        @target.should_receive(:verified)
+        @router.send_verified()
+      end
 
     end
 

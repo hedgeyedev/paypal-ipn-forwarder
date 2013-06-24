@@ -40,4 +40,9 @@ class Router
     #TODO:figure out how to identify each computer. i.e. how does computer specify itself.
     #currently through email and id which is based on email
   end
+  
+  def poll_for_ipn
+    
+  end
+  
 end
