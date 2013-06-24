@@ -1,6 +1,5 @@
 require 'cgi'
 require 'sinatra/base'
-require 'rest_client'
 
 require_relative 'computer'
 
