@@ -7,17 +7,16 @@ describe Router do
   context 'when created' do
 
     it 'tells the server that test mode has started' do
-      server = Server.new
+      server = mock('Server')
+      server.should_receive(:computer_online).with('developer_one')
       router = Router.new
       router.test_mode_on
-      server.computer_online('developer_one')
-      server.computer_online?('developer_one').should == true
     end
 
     it 'starts polling the server' do
-      @target = mock('target')
       router = Router.new
       router.retrieve_ipn.should == "IPN"
+      #not sure how to test the actuall poll aka the http request
     end
   end
 
@@ -30,9 +29,15 @@ describe Router do
 
     context 'when destroying' do
 
-      it 'stops polling the server'
+      it 'stops polling the server' do
+        router = Router.new
+        router.test_mode_on
+        router.test_mode_off
+        defined?(router).should be false
+      end
 
       it 'tells the server that test mode has finished' do
+        #needs to be changed based on changes on line 9-14 which were made with Scott's help
         server = Server.new
         router = Router.new
         router.test_mode_off
@@ -49,6 +54,7 @@ describe Router do
       it 'retrieves an IPN when the server has one to return'
 
       it 'initiates a protocol to send the IPN to cms'
+      #unsure of what url the http protocol will use to interact with cms
 
       it 'polls the server again 5 seconds after finishing the protocol with cms'
       #unsure how to test
@@ -111,10 +117,8 @@ EOF
 
       end
 
-      it 'polls the server for a verfication message' do
-        ipn = create_an_ipn_somehow
-        @router.retrieve_ipn.should == ipn
-      end
+      it 'polls the server for a verfication message'
+
 
       it 'send a verification message' do
         @target.should_receive(:verified)

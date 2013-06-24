@@ -5,6 +5,7 @@ class Router
   def initialize(target=nil)
     @target = target
     test_mode_on
+    @killing = false
   end
 
   def destroy
@@ -13,6 +14,7 @@ class Router
 
   def poll_for_ipn
     loop do
+      break if @killing
       ipn = retrieve_ipn
       forward_ipn ipn unless(ipn.nil?)
       sleep 5.0
@@ -20,13 +22,14 @@ class Router
   end
 
   def kill_poll
+    @killing = true
   end
 
   def retrieve_ipn
-     url = 'http://superbox.hedgeye.com:8810/ipn-response'
+     #url = 'http://superbox.hedgeye.com:8810/ipn-response'
      #url = 'localhost:8810/ipn-response'
-     ipn = RestClient.get url
-     ipn
+     #ipn = RestClient.get url
+     #ipn
   end
 
   def forward_ipn(ipn)
@@ -48,15 +51,15 @@ class Router
   def test_mode_on
     url = 'http://superbox.hedgeye.com:8810/ipn-response'
     computer_id = ip_address
-    message = "#{computer_id}: this machine has started testing"
+    message = computer_id
     #RestClient.post url,
-    #poll_for_ipn
+    poll_for_ipn
   end
 
   def test_mode_off
     url = 'http://superbox.hedgeye.com:8810/ipn-response'
     computer_id = ip_address
-    message = "#{computer_id}: this machine has ended testing"
+    message = computer_id
     #RestClient.post url, message
     kill_poll
   end

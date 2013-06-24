@@ -1,9 +1,10 @@
 require 'sinatra/base'
 require 'rest_client'
+require File.expand_path('../lib/server', __FILE__)
 
 # Run a demo to see if the port is opened up on the superbox
 
-class Demo < Sinatra::Base
+class ServerRack < Sinatra::Base
 
   def initialize(server = Server.new)
     @server = server
@@ -112,7 +113,7 @@ EOF
 
 end
 
-run Demo
+run ServerRack
 
 
 

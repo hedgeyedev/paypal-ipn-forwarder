@@ -16,6 +16,9 @@ class Server
     'developer_one' => nil,
     'developmentmachine:9999/' => nil
   }
+  COMPUTER_MAP = {#another possible implementation will be to use the actuall IP addresses in the MAP, IPN_RESPONSE, and COMPUTERS_TESTING hash and delete this hash
+    "10.10.--.---" => 'developer_one'#not sure if this is safe to be put on github as opensource
+  }
 
   def ipn
     @ipn
@@ -57,11 +60,13 @@ class Server
   end
 
   def computer_online(id)
-    COMPUTERS_TESTING[id] = true
+    computer = COMPUTER_MAP[id]
+    COMPUTERS_TESTING[computer] = true
   end
 
   def computer_online?(id)
-    COMPUTERS_TESTING[id]
+    computer = COMPUTER_MAP[id]
+    COMPUTERS_TESTING[computer]
   end
 
   def computer_offline(id)
