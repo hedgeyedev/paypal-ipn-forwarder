@@ -100,11 +100,7 @@ class Server
 
   def ipn_response_present?(computer_id)
     ipn_response = IPN_RESPONSE[computer_id]
-    unless(ipn_response == nil)
-      true
-    else
-      false
-    end
+    !ipn.response.nil?
   end
 
   def send_response_to_computer(computer_id)
