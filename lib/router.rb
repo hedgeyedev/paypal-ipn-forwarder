@@ -50,7 +50,7 @@ class Router
 
   def test_mode_on
     url = 'http://superbox.hedgeye.com:8810/ipn-response'
-    computer_id = ip_address
+    computer_id = my_ip_address?
     message = computer_id
     #RestClient.post url,
     poll_for_ipn
@@ -58,13 +58,13 @@ class Router
 
   def test_mode_off
     url = 'http://superbox.hedgeye.com:8810/ipn-response'
-    computer_id = ip_address
+    computer_id = my_ip_address?
     message = computer_id
     #RestClient.post url, message
     kill_poll
   end
 
-  def ip_address #from: http://claudiofloreani.blogspot.com/2011/10/ruby-how-to-get-my-private-and-public.html
+  def my_ip_address? #from: http://claudiofloreani.blogspot.com/2011/10/ruby-how-to-get-my-private-and-public.html
     Socket.ip_address_list.detect{|intf| intf.ipv4_private?}.ip_address
   end
 

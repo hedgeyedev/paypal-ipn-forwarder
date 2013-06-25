@@ -1,5 +1,6 @@
 require 'cgi'
 require 'sinatra/base'
+require 'yaml'
 
 require_relative 'computer'
 
@@ -16,9 +17,9 @@ class Server
     'developer_one' => nil,
     'developmentmachine:9999/' => nil
   }
-  COMPUTER_MAP = {#another possible implementation will be to use the actuall IP addresses in the MAP, IPN_RESPONSE, and COMPUTERS_TESTING hash and delete this hash
-    "10.10.--.---" => 'developer_one'#not sure if this is safe to be put on github as opensource
-  }
+
+    COMPUTER_MAP = {
+    }
 
   def ipn
     @ipn
@@ -121,6 +122,14 @@ class Server
       true
     else
       false
+    end
+  end
+
+  def load_computer_map
+    content = YAML::load_file(File.expand_path("../../config/ip.yml", __FILE__))
+    content.each_key do |key, value|
+      value = content[key]
+      COMPUTER_MAP[value] = key
     end
   end
 
