@@ -1,12 +1,11 @@
 require 'cgi'
 require 'sinatra/base'
-require 'rest_client'
 
 require_relative 'computer'
 
 class Server
   MAP = {
-        'gpmac_1231902686_biz@paypal.com' => 'developer_one',
+        'gpmac_1231902686_biz.api@paypal.com' => 'developer_one',
         'paypal@gmail.com' => 'developmentmachine:9999/'
         }
   COMPUTERS_TESTING = {
@@ -16,6 +15,9 @@ class Server
   IPN_RESPONSE = {
     'developer_one' => nil,
     'developmentmachine:9999/' => nil
+  }
+  COMPUTER_MAP = {#another possible implementation will be to use the actuall IP addresses in the MAP, IPN_RESPONSE, and COMPUTERS_TESTING hash and delete this hash
+    "10.10.--.---" => 'developer_one'#not sure if this is safe to be put on github as opensource
   }
 
   def ipn
@@ -30,10 +32,12 @@ class Server
     @ipn = ipn unless ipn.nil?
   end
 
-  def send_ipn
-    #@comp_id = id
-    computer = Computer.new
-    computer.send_ipn @ipn
+  def send_ipn #send_ipn is refactored due to new aproach. Now, all that is needed is to return the ipn to the get request
+    @ipn
+  end
+
+  def send_verification(computer_id)
+    "VERIFIED"
   end
 
   def paypal_id(ipn)
@@ -47,20 +51,24 @@ class Server
 
   # FIXME: This didn't merge cleanly; bet it doesn't work.
   def receive_ipn(ipn=nil)
-    @ipn = ipn unless ipn.nil?
+    unless(recurring?(ipn))
+      @ipn = ipn unless ipn.nil?
+    end
+  end
 
-    #changes from scott: break tests and unsure of their significance
-    #response = IpnResponse.new(@ipn)
-    #response.success = 'successful' # again, find out what PayPal _really_ wants
-    #response
+  def ipn_response(ipn)
+    response = 'cmd=_notify-validate&' + ipn
+    response
   end
 
   def computer_online(id)
-    COMPUTERS_TESTING[id] = true
+    computer = COMPUTER_MAP[id]
+    COMPUTERS_TESTING[computer] = true
   end
 
   def computer_online?(id)
-    COMPUTERS_TESTING[id]
+    computer = COMPUTER_MAP[id]
+    COMPUTERS_TESTING[computer]
   end
 
   def computer_offline(id)
@@ -82,17 +90,38 @@ class Server
   def receive_ipn_response(ipn_response)
     paypal_id = paypal_id(ipn_response)
     computer_id = computer_id(paypal_id)
-    store_ipn_response(computer_id, ipn_response)
+    store_ipn_response(computer_id)
   end
 
-  def store_ipn_response(computer_id, ipn_response)
+  def store_ipn_response(computer_id)
     IPN_RESPONSE[computer_id] = "VERIFIED"
   end
 
   def ipn_response_present?(computer_id)
     ipn_response = IPN_RESPONSE[computer_id]
-    IPN_RESPONSE[computer_id] = nil
-    ipn_response
+    unless(ipn_response == nil)
+      true
+    else
+      false
+    end
+  end
+
+  def send_response_to_computer(computer_id)
+    if ipn_response_present?(computer_id)
+      send_verification(computer_id)
+    else
+      send_ipn
+    end
+  end
+
+  def recurring?(ipn)
+    params = CGI::parse(ipn)
+    recurring = params["recurring"].first
+    unless(recurring = "")
+      true
+    else
+      false
+    end
   end
 
 end

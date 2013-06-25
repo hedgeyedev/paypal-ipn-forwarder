@@ -9,10 +9,15 @@ end
 
 # When the server sends an ipn to my computer--deleted due to change of server-computer communication
 # When a sandbox unknown to the server sends an IPN to the server
-When(/^(?:the|a|) sandbox( unknown to the server|) sends an IPN( for the recurring payment|) to the server$/)do |state, paymenttype|
+# When the sandbox sends an IPN for the recurring payment to the server
+When(/^(?:the|a|) sandbox( unknown to the server|) sends an IPN( for the recurring payment|) to the server$/)do |state, payment_type|
   unless(state == "")
     configure
-    @ipn = @sandbox.send_fail
+    if(payment_type == "")
+      @ipn = @sandbox.send_fail
+    else
+      @ipn = @sandbox.send_recurring
+    end
     @server.receive_ipn(@ipn)
   end
 end
@@ -48,7 +53,9 @@ Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN$/) d
 end
 
 Then(/the server returns a successful response back to the sandbox$/) do
-  pending #@source.send_ipn.should == "a response" -- will be deleted: outdated
+    configure
+    @ipn = @sandbox.send_recurring
+    @server.ipn_response(@ipn)
 end
 
 When(/^the server receives an IPN from my assigned sandbox$/) do
@@ -66,8 +73,6 @@ Then(/^the server hangs onto it until my assigned computer retrieves it$/) do
   size_before = @server.queue_size
   @server.queue_push(@ipn)
   @server.queue_size.should == size_before+1
-
-
 end
 
 When(/^(:?.*?)computer( does not|) poll(:?.*?)the server (:?.*?)an IPN$/) do |action|
