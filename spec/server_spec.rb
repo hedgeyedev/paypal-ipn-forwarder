@@ -62,7 +62,7 @@ describe Server do
       server = Server.new
       sb = Sandbox.new
       dev_id = 'developer_one'
-      server.computer_online(dev_id)
+      server.computer_testing(dev_id)
       ipn = sb.send
       server.receive_ipn(ipn)
       server.create_queue

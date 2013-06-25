@@ -1,5 +1,6 @@
 require 'rspec'
 require_relative '../lib/router'
+require_relative '../lib/router_handler'
 require_relative '../lib/server'
 
 describe Router do
@@ -8,14 +9,17 @@ describe Router do
 
     it 'tells the server that test mode has started' do
       server = mock('Server')
-      server.should_receive(:computer_online).with('developer_one')
+      server.should_receive(:computer_testing).with('10.10.0.88')
       router = Router.new
-      router.test_mode_on
+      router_handler = RouterHandler.new(router)
+      router.server_mock(server)
+      router_handler.test_mode_on
     end
 
     it 'starts polling the server' do
       router = Router.new
-      router.retrieve_ipn.should == "IPN"
+      router_handler = RouterHandler.new(router)
+      router_handler.retrieve_ipn.should == "IPN"
       #not sure how to test the actuall poll aka the http request
     end
   end
@@ -25,14 +29,15 @@ describe Router do
     before(:each) do
       @target = mock('target')
       @router = Router.new(@target)
+      @router_handler = RouterHandler.new(@router)
     end
 
     context 'when destroying' do
 
       it 'stops polling the server' do
         router = Router.new
-        router.test_mode_on
-        router.test_mode_off
+        @router_handler.test_mode_on
+        @router_handler.test_mode_off
         defined?(router).should be false
       end
 
@@ -40,8 +45,8 @@ describe Router do
         #needs to be changed based on changes on line 9-14 which were made with Scott's help
         server = Server.new
         router = Router.new
-        router.test_mode_off
-        server.computer_offline('developer_one')
+        @router_handler.test_mode_off
+        server.computer_testing('developer_one')
         server.computer_online?('developer_one').should == false
       end
 
@@ -113,7 +118,7 @@ EOF
         ipn          = create_an_ipn_somehow
         ipn_response = create_ipn_response_somehow
         @target.stub!(:send_ipn).with(ipn).and_return(ipn_response)
-        @router.send_ipn(ipn)
+        @router.forward_ipn(ipn)
 
       end
 
