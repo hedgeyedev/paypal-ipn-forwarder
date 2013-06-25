@@ -8,7 +8,8 @@ class RouterHandler
   def retrieve_ipn
      url = 'http://superbox.hedgeye.com:8810/'
      #url = 'localhost:8810/ipn-response'
-     ipn = RestClient.get url
+     message = ip_address
+     ipn = RestClient.get url, message
      ipn
   end
 

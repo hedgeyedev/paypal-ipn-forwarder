@@ -19,7 +19,9 @@ class ServerRack < Sinatra::Base
   end
 
   get '/ipn-response' do
-    "VERIFIED"
+    comp_id = request.body.read
+    puts comp_id# make sure request.body.read works
+    @server.send_response_to_computer(comp_id)
   end
 
   post '/payments/ipn' do

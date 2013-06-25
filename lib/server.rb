@@ -32,11 +32,14 @@ class Server
     @ipn = ipn unless ipn.nil?
   end
 
-  def send_ipn #send_ipn is refactored due to new aproach. Now, all that is needed is to return the ipn to the get request
-    @ipn
+  def send_ipn
+    if(ipn_present?)
+      ipn = queue_pop
+      ipn
+    end
   end
 
-  def send_verification(computer_id)
+  def send_verification
     "VERIFIED"
   end
 
@@ -87,6 +90,10 @@ class Server
     @queue.pop
   end
 
+  def ipn_present?
+    queue_size >= 1
+  end
+
   def receive_ipn_response(ipn_response)
     paypal_id = paypal_id(ipn_response)
     computer_id = computer_id(paypal_id)
@@ -108,7 +115,7 @@ class Server
 
   def send_response_to_computer(computer_id)
     if ipn_response_present?(computer_id)
-      send_verification(computer_id)
+      send_verification
     else
       send_ipn
     end
