@@ -89,7 +89,9 @@ ross=19.95&shipping=0.00
 EOF
       end
 
-
+      it 'automatically identifies the developer computer' do
+        @router.my_ip_address.should =~ /\d+\.\d+\.\d+\.\d+/
+      end
 
       # TODO: @cms and @router are going to have to be tied together
       it 'processes an IPN' do
