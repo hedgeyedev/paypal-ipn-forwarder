@@ -3,9 +3,7 @@ class Router
 
   def initialize(target)
     @target  = target
-    @killing = false
   end
-
 
   def forward_ipn(ipn)
     if (ipn == 'VERIFIED')
