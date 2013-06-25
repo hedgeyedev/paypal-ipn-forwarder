@@ -26,4 +26,9 @@ EOF
     string_ipn
   end
 
+  def send_recurring
+    string_ipn = ipn + "&recurring=1"
+    string_ipn
+  end
+
 end

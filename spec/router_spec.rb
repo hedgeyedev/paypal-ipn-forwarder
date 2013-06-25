@@ -1,27 +1,49 @@
 require 'rspec'
 require_relative '../lib/router'
+require_relative '../lib/server'
 
 describe Router do
 
   context 'when created' do
 
-    it 'tells the server that test mode has started'
+    it 'tells the server that test mode has started' do
+      server = mock('Server')
+      server.should_receive(:computer_online).with('developer_one')
+      router = Router.new
+      router.test_mode_on
+    end
 
-    it 'starts polling the server'
-
+    it 'starts polling the server' do
+      router = Router.new
+      router.retrieve_ipn.should == "IPN"
+      #not sure how to test the actuall poll aka the http request
+    end
   end
 
   context 'exists' do
 
     before(:each) do
-      @router = Router.new
+      @target = mock('target')
+      @router = Router.new(@target)
     end
 
     context 'when destroying' do
 
-      it 'stops polling the server'
+      it 'stops polling the server' do
+        router = Router.new
+        router.test_mode_on
+        router.test_mode_off
+        defined?(router).should be false
+      end
 
-      it 'tells the server that test mode has finished'
+      it 'tells the server that test mode has finished' do
+        #needs to be changed based on changes on line 9-14 which were made with Scott's help
+        server = Server.new
+        router = Router.new
+        router.test_mode_off
+        server.computer_offline('developer_one')
+        server.computer_online?('developer_one').should == false
+      end
 
       it 'self-destructs'
 
@@ -32,14 +54,17 @@ describe Router do
       it 'retrieves an IPN when the server has one to return'
 
       it 'initiates a protocol to send the IPN to cms'
+      #unsure of what url the http protocol will use to interact with cms
 
       it 'polls the server again 5 seconds after finishing the protocol with cms'
+      #unsure how to test
 
     end
 
     context 'polling does not retrieve an IPN' do
 
       it 'polls again 5 seconds later'
+      #unsure how to test
 
     end
 
@@ -81,23 +106,27 @@ ross=19.95&shipping=0.00
 EOF
       end
 
-      before(:each) do
-        @cms = mock('CMS Ipn server')
-      end
+
 
       # TODO: @cms and @router are going to have to be tied together
-      #this fails. has to be changed to fit with new implementation
       it 'processes an IPN' do
         ipn          = create_an_ipn_somehow
         ipn_response = create_ipn_response_somehow
-        @cms.stub!(:send_ipn).with(ipn).and_return(ipn_response).to(self)
-        @cms.should_receive(:verified)
+        @target.stub!(:send_ipn).with(ipn).and_return(ipn_response)
         @router.send_ipn(ipn)
+
       end
 
       it 'polls the server for a verfication message'
 
-      it 'send a verification message'
+
+      it 'send a verification message' do
+        @target.should_receive(:verified)
+        server = Server.new
+        server.store_ipn_response('developer_one')
+        server.send_response_to_computer('developer_one').should == "VERIFIED"
+        @router.forward_ipn(server.send_response_to_computer('developer_one'))
+      end
 
     end
 

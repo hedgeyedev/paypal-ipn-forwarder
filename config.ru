@@ -1,9 +1,10 @@
 require 'sinatra/base'
 require 'rest_client'
+require File.expand_path('../lib/server', __FILE__)
 
 # Run a demo to see if the port is opened up on the superbox
 
-class Demo < Sinatra::Base
+class ServerRack < Sinatra::Base
 
   def initialize(server = Server.new)
     @server = server
@@ -17,12 +18,18 @@ class Demo < Sinatra::Base
     launch_ipn
   end
 
-  post '/payments/ipn' do
-    ipn = params[:splat].first
-    response = @server.receive_ipn(ipn)
-    url = “https://www.sandbox.paypal.com/cgi-bin/webscr” # this value needs to be verified
+  get '/ipn-response' do
+    "VERIFIED"
+  end
 
-    RestClient.post url, ipn
+  post '/payments/ipn' do
+    ipn = request.body.read
+    unless ipn == 'VERIFIED' || ipn == 'INVALID'
+      @server.receive_ipn(ipn)
+      response = @server.ipn_response(ipn)
+      url = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+      RestClient.post url, response
+    end
   end
 
   # Pretend to be the PayPal sandbox you're sending the response back to
@@ -32,16 +39,6 @@ class Demo < Sinatra::Base
 
   get '/' do
     # return a 404
-  end
-
-  post '/payments/ipn' do
-    puts "got the post request"
-    ipn = request.body.read
-    unless ipn == 'VERIFIED' || ipn == 'INVALID'
-      url = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
-      ipn = "cmd=_notify-validate&" + ipn
-      RestClient.post url, ipn
-    end
   end
 
   get '/launch' do
@@ -109,7 +106,7 @@ EOF
 
 end
 
-run Demo
+run ServerRack
 
 
 
