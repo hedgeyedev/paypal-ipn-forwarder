@@ -5,12 +5,15 @@ require_relative '../lib/server'
 
 describe Router do
 
+  before(:each) do
+    @target = mock('target')
+  end
+
   context 'when created' do
 
     it 'tells the server that test mode has started' do
       server_url = YAML::load_file(File.expand_path('../../config/config.yml', __FILE__))
-      target = mock('target')
-      router = Router.new(target)
+      router = Router.new(@target)
       RestClient.should_receive(:post).with(server_url, router.my_ip_address)
       router.test_mode_on
     end
@@ -20,7 +23,6 @@ describe Router do
   context 'exists' do
 
     before(:each) do
-      @target = mock('target')
       @router = Router.new(@target)
       @poll = Poller.new(@router, 'http://superbox.hedgeye.com:8810/test')
     end
