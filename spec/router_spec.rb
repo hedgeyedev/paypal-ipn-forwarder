@@ -48,12 +48,12 @@ describe Router do
 
     context 'polling retrieves an IPN' do
 
-      it 'initiates a protocol to send the IPN to cms'
-      #unsure of what url the http protocol will use to interact with cms
+      it 'initiates a protocol to send the IPN to the development computer'
+      #unsure of what url the http protocol will use to interact with development computer
 
     end
 
-    context 'handshake between router and CMS' do
+    context 'handshake between router and development computer' do
 
       def create_an_ipn_somehow
         sample_ipn = <<EOF
@@ -95,7 +95,7 @@ EOF
         @router.my_ip_address.should =~ /\d+\.\d+\.\d+\.\d+/
       end
 
-      # TODO: @cms and @router are going to have to be tied together
+      # TODO: development computer and @router are going to have to be tied together
       it 'processes an IPN' do
         ipn          = create_an_ipn_somehow
         ipn_response = create_ipn_response_somehow
