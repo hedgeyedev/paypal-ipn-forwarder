@@ -11,7 +11,7 @@ class Organizer
   # @param [String] source_id the unique name for the source object
   # @param [String] destination_id the unique name for the destination object
   def initialize
-    @server = Server.new
+    @server_client = Server.new
     @sandbox = Sandbox.new
     @computer = Computer.new
     @mail_sender = MailSender.new

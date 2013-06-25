@@ -1,7 +1,7 @@
 def configure
   organizer      = Organizer.new
   generator = TestIpnGenerator.new
-  @server         = organizer.server
+  @server_client         = organizer.server_client
   @computer    = organizer.computer
   @sandbox = organizer.sandbox
   @email = organizer.mail_sender
@@ -18,7 +18,7 @@ When(/^(?:the|a|) sandbox( unknown to the server|) sends an IPN( for the recurri
     else
       @ipn = @sandbox.send_recurring
     end
-    @server.receive_ipn(@ipn)
+    @server_client.receive_ipn(@ipn)
   end
 end
 
@@ -55,24 +55,24 @@ end
 Then(/the server returns a successful response back to the sandbox$/) do
     configure
     @ipn = @sandbox.send_recurring
-    @server.ipn_response(@ipn)
+    @server_client.ipn_response(@ipn)
 end
 
 When(/^the server receives an IPN from my assigned sandbox$/) do
   configure
   my_id = 'developer_one'
   @ipn = @sandbox.send
-  @server.receive_ipn(@ipn)
-  paypal_id  = @server.paypal_id(@ipn)
-  my_id.should ==  @server.computer_id(paypal_id)
-  @server.ipn.should == @sandbox.send
+  @server_client.receive_ipn(@ipn)
+  paypal_id  = @server_client.paypal_id(@ipn)
+  my_id.should ==  @server_client.computer_id(paypal_id)
+  @server_client.ipn.should == @sandbox.send
 end
 
 Then(/^the server hangs onto it until my assigned computer retrieves it$/) do
-  @server.create_queue
-  size_before = @server.queue_size
-  @server.queue_push(@ipn)
-  @server.queue_size.should == size_before+1
+  @server_client.create_queue
+  size_before = @server_client.queue_size
+  @server_client.queue_push(@ipn)
+  @server_client.queue_size.should == size_before+1
 end
 
 When(/^(:?.*?)computer( does not|) poll(:?.*?)the server (:?.*?)an IPN$/) do |action|

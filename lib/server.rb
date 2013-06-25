@@ -1,5 +1,6 @@
 require 'cgi'
 require 'sinatra/base'
+require 'yaml'
 
 require_relative 'computer'
 
@@ -16,9 +17,9 @@ class Server
     'developer_one' => nil,
     'developmentmachine:9999/' => nil
   }
-  COMPUTER_MAP = {#another possible implementation will be to use the actuall IP addresses in the MAP, IPN_RESPONSE, and COMPUTERS_TESTING hash and delete this hash
-    "10.10.--.---" => 'developer_one'#not sure if this is safe to be put on github as opensource
-  }
+
+    COMPUTER_MAP = {
+    }
 
   def ipn
     @ipn
@@ -32,11 +33,14 @@ class Server
     @ipn = ipn unless ipn.nil?
   end
 
-  def send_ipn #send_ipn is refactored due to new aproach. Now, all that is needed is to return the ipn to the get request
-    @ipn
+  def send_ipn
+    if(ipn_present?)
+      ipn = queue_pop
+      ipn
+    end
   end
 
-  def send_verification(computer_id)
+  def send_verification
     "VERIFIED"
   end
 
@@ -61,18 +65,18 @@ class Server
     response
   end
 
-  def computer_online(id)
-    computer = COMPUTER_MAP[id]
-    COMPUTERS_TESTING[computer] = true
+  def computer_testing(id)
+    computer_id = COMPUTER_MAP[id]
+    unless(computer_online?(id))
+      COMPUTERS_TESTING[computer_id] = true
+    else
+      COMPUTERS_TESTING[computer_id] = false
+    end
   end
 
   def computer_online?(id)
     computer = COMPUTER_MAP[id]
     COMPUTERS_TESTING[computer]
-  end
-
-  def computer_offline(id)
-    COMPUTERS_TESTING[id] = false
   end
 
   def queue_push(ipn)
@@ -87,6 +91,10 @@ class Server
     @queue.pop
   end
 
+  def ipn_present?
+    queue_size >= 1
+  end
+
   def receive_ipn_response(ipn_response)
     paypal_id = paypal_id(ipn_response)
     computer_id = computer_id(paypal_id)
@@ -99,16 +107,12 @@ class Server
 
   def ipn_response_present?(computer_id)
     ipn_response = IPN_RESPONSE[computer_id]
-    unless(ipn_response == nil)
-      true
-    else
-      false
-    end
+    !ipn_response.nil?
   end
 
   def send_response_to_computer(computer_id)
     if ipn_response_present?(computer_id)
-      send_verification(computer_id)
+      send_verification
     else
       send_ipn
     end
@@ -117,10 +121,18 @@ class Server
   def recurring?(ipn)
     params = CGI::parse(ipn)
     recurring = params["recurring"].first
-    unless(recurring = "")
+    unless(recurring == "")
       true
     else
       false
+    end
+  end
+
+  def load_computer_map
+    content = YAML::load_file(File.expand_path("../../config/ip.yml", __FILE__))
+    content.each_key do |key, value|
+      value = content[key]
+      COMPUTER_MAP[value] = key
     end
   end
 
