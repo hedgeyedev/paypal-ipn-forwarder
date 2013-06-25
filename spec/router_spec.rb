@@ -1,6 +1,6 @@
 require 'rspec'
 require_relative '../lib/router'
-require_relative '../lib/router_handler'
+require_relative '../lib/poller'
 require_relative '../lib/server'
 
 describe Router do
@@ -11,17 +11,10 @@ describe Router do
       server = mock('Server')
       server.should_receive(:computer_testing).with('10.10.0.88')
       router = Router.new
-      router_handler = RouterHandler.new(router)
       router.server_mock(server)
-      router_handler.test_mode_on
+      router.test_mode_on
     end
 
-    it 'starts polling the server' do
-      router = Router.new
-      router_handler = RouterHandler.new(router)
-      router_handler.retrieve_ipn.should == "IPN"
-      #not sure how to test the actuall poll aka the http request
-    end
   end
 
   context 'exists' do
@@ -29,23 +22,22 @@ describe Router do
     before(:each) do
       @target = mock('target')
       @router = Router.new(@target)
-      @router_handler = RouterHandler.new(@router)
+      @poll = Poller.new(@router, 'http://superbox.hedgeye.com:8810/test')
     end
 
     context 'when destroying' do
 
       it 'stops polling the server' do
         router = Router.new
-        @router_handler.test_mode_on
-        @router_handler.test_mode_off
+        @router.test_mode_on
+        @router.test_mode_off
         defined?(router).should be false
       end
 
       it 'tells the server that test mode has finished' do
         #needs to be changed based on changes on line 9-14 which were made with Scott's help
         server = Server.new
-        router = Router.new
-        @router_handler.test_mode_off
+        @router.test_mode_off
         server.computer_testing('developer_one')
         server.computer_online?('developer_one').should == false
       end
