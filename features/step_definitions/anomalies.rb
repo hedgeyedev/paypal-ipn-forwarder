@@ -2,7 +2,7 @@
 Given(/^(?:the|my) (computer|server) (is|is not) in (?:PayPal IPN |)test.*?mode.*?$/) do |subject, mode|
   server = Server.new
   dev_id = 'developer_one'
-  server.computer_online(dev_id)
+  server.computer_testing(dev_id)
   server.computer_online?(dev_id).should == true
 end
 
@@ -55,7 +55,7 @@ end
 When(/^my computer.*?the server that I'm in test mode$/) do
   server = Server.new
   id = "developer_one"
-  server.computer_online(id)
+  server.computer_testing(id)
   server.computer_online?('developer_one').should == true
 end
 
@@ -63,7 +63,7 @@ end
 Then(/^(the server|my computer) turns off (?:my computer's |)test mode$/) do |subject|
   server = Server.new
   id = "developer_one"
-  server.computer_offline(id)
+  server.computer_testing(id)
   server.computer_online?('developer_one').should == false
 end
 

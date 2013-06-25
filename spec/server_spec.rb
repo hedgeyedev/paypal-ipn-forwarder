@@ -38,7 +38,7 @@ describe Server do
     server.receive_ipn_response(ipn_response)
     paypal_id = server.paypal_id(ipn_response)
     computer_id = server.computer_id(paypal_id)
-    server.ipn_response_present?(computer_id).should == "VERIFIED"
+    server.ipn_response_present?(computer_id).should == true
   end
 
   it 'confirms a IPN response for a polling request from the router for that IPN response' do
@@ -48,13 +48,13 @@ describe Server do
     server.receive_ipn_response(ipn_response)
     paypal_id = server.paypal_id(ipn_response)
     computer_id = server.computer_id(paypal_id)
-    server.ipn_response_present?(computer_id).should == "VERIFIED"
+    server.ipn_response_present?(computer_id).should == true
 
   end
 
   it 'denies an IPN response for a polling request from a router because none exists' do
     server = Server.new
-    server.ipn_response_present?('developer_one').should == nil
+    server.ipn_response_present?('developer_one').should == false
   end
 
   context 'queue' do
@@ -62,7 +62,7 @@ describe Server do
       server = Server.new
       sb = Sandbox.new
       dev_id = 'developer_one'
-      server.computer_online(dev_id)
+      server.computer_testing(dev_id)
       ipn = sb.send
       server.receive_ipn(ipn)
       server.create_queue

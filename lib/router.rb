@@ -1,70 +1,44 @@
-require 'rest_client'
-require 'socket'
+require_relative 'poller'
 class Router
 
-  def initialize(target=nil)
+  def initialize(target, server_client)
     @target = target
-    test_mode_on
     @killing = false
+    @server_client = server_client
   end
 
-  def destroy
-    test_mode_off
-  end
-
-  def poll_for_ipn
-    loop do
-      break if @killing
-      ipn = retrieve_ipn
-      forward_ipn ipn unless(ipn.nil?)
-      sleep 5.0
-    end
-  end
-
-  def kill_poll
-    @killing = true
-  end
-
-  def retrieve_ipn
-     #url = 'http://superbox.hedgeye.com:8810/ipn-response'
-     #url = 'localhost:8810/ipn-response'
-     #ipn = RestClient.get url
-     #ipn
-  end
 
   def forward_ipn(ipn)
-    if(ipn == "VERIFIED")
-       send_verified
-    else
-      send_ipn(ipn)
+      if(ipn == "VERIFIED")
+         send_verified
+      else
+        send_ipn(ipn)
+      end
     end
-  end
 
   def send_verified#same functionality as send_verification
     @target.verified
   end
 
   def send_ipn(ipn)
-   @responce = @target.send_ipn(ipn)
+   @target.send_ipn(ipn)
+  end
+
+  def load_server_url
+    url = YAML::load_file(File.expand_path("../../config/router.yml", __FILE__))
   end
 
   def test_mode_on
-    url = 'http://superbox.hedgeye.com:8810/ipn-response'
-    computer_id = ip_address
-    message = computer_id
-    #RestClient.post url,
-    poll_for_ipn
+    RestClient.post load_server_url, my_ip_address
   end
 
   def test_mode_off
-    url = 'http://superbox.hedgeye.com:8810/ipn-response'
-    computer_id = ip_address
-    message = computer_id
-    #RestClient.post url, message
-    kill_poll
+    url = 'http://superbox.hedgeye.com:8810/test/'
+    message = ip_address
+    @server_client.post @url, message
   end
 
-  def ip_address #from: http://claudiofloreani.blogspot.com/2011/10/ruby-how-to-get-my-private-and-public.html
+  def my_ip_address #from: http://claudiofloreani.blogspot.com/2011/10/ruby-how-to-get-my-private-and-public.html
     Socket.ip_address_list.detect{|intf| intf.ipv4_private?}.ip_address
   end
 
