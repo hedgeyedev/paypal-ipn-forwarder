@@ -13,7 +13,7 @@ describe Router do
 
     it 'tells the server that test mode has started' do
       server_url = YAML::load_file(File.expand_path('../../config/config.yml', __FILE__))
-      router = Router.new(@target)
+      router     = Router.new(@target)
       RestClient.should_receive(:post).with(server_url, router.my_ip_address)
       router.test_mode_on
     end
@@ -24,7 +24,7 @@ describe Router do
 
     before(:each) do
       @router = Router.new(@target)
-      @poll = Poller.new(@router, 'http://superbox.hedgeye.com:8810/test')
+      @poll   = Poller.new(@router, 'http://superbox.hedgeye.com:8810/test')
     end
 
     context 'when destroying' do
