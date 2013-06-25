@@ -8,15 +8,18 @@ describe Poller do
     @router = Router.new
     @url = 'dummy_url'
     @poller = Poller.new(@router, @url)
-    @rest_client = Object.new.extend RestClient
+    #@rest_client = Object.new.extend RestClient
+    @rest_client = mock('rest_client')
   end
   it 'should send a GET request' do
-    @router.stub!(:ip_address).and_return('target_ip')
-    @rest_client.class.should_receive(:get).with(@url, 'target_ip')
+    #@router.stub!(:ip_address).and_return('target_ip')
+    #@rest_client.class.should_receive(:get).with(@url, 'target_ip')
 
   end
 
   it 'polls at specified intervals'
+
+  it 'retrieves an ipn when the server has one to return'
 
 
 end

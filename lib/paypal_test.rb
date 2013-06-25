@@ -1,8 +1,8 @@
 PROCESS_FILE_NAME = '.process_id'
 
 def initialize
-  @router = router.new
-  @poll = @poll(@router)
+  @router = Router.new
+  @poll = Poller.new(@router)
 end
 
 

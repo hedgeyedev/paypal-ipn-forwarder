@@ -1,16 +1,12 @@
-require 'rest_client'
 require_relative 'poller'
 class Router
 
-  def initialize(target=nil)
+  def initialize(target, server_client)
     @target = target
     @killing = false
-    #router_handler.test_mode_on
+    @server_client = server_client
   end
 
-  def server_mock(server=nil)
-    @server = server
-  end
 
   def forward_ipn(ipn)
       if(ipn == "VERIFIED")
@@ -25,23 +21,24 @@ class Router
   end
 
   def send_ipn(ipn)
-   @responce = @target.send_ipn(ipn)
+   @target.send_ipn(ipn)
+  end
+
+  def load_server_url
+    url = YAML::load_file(File.expand_path("../../config/router.yml", __FILE__))
   end
 
   def test_mode_on
-    url = 'http://superbox.hedgeye.com:8810/test/'
-    message = ip_address
-    RestClient.post url, message
-    @server.computer_online(ip_address)
+    RestClient.post load_server_url, my_ip_address
   end
 
   def test_mode_off
     url = 'http://superbox.hedgeye.com:8810/test/'
     message = ip_address
-    RestClient.post url, message
+    @server_client.post @url, message
   end
 
-  def ip_address #from: http://claudiofloreani.blogspot.com/2011/10/ruby-how-to-get-my-private-and-public.html
+  def my_ip_address #from: http://claudiofloreani.blogspot.com/2011/10/ruby-how-to-get-my-private-and-public.html
     Socket.ip_address_list.detect{|intf| intf.ipv4_private?}.ip_address
   end
 

@@ -8,10 +8,10 @@ describe Router do
   context 'when created' do
 
     it 'tells the server that test mode has started' do
-      server = mock('Server')
-      server.should_receive(:computer_testing).with('10.10.0.88')
-      router = Router.new
-      router.server_mock(server)
+      server_url = YAML::load_file(File.expand_path("../../config/router.yml", __FILE__))
+      target = mock('target')
+      router = Router.new(target, @server_client)
+      RestClient.should_receive(:post).with(server_url, router.my_ip_address)
       router.test_mode_on
     end
 
@@ -42,26 +42,12 @@ describe Router do
         server.computer_online?('developer_one').should == false
       end
 
-      it 'self-destructs'
-
     end
 
     context 'polling retrieves an IPN' do
 
-      it 'retrieves an IPN when the server has one to return'
-
       it 'initiates a protocol to send the IPN to cms'
       #unsure of what url the http protocol will use to interact with cms
-
-      it 'polls the server again 5 seconds after finishing the protocol with cms'
-      #unsure how to test
-
-    end
-
-    context 'polling does not retrieve an IPN' do
-
-      it 'polls again 5 seconds later'
-      #unsure how to test
 
     end
 
@@ -113,9 +99,6 @@ EOF
         @router.forward_ipn(ipn)
 
       end
-
-      it 'polls the server for a verfication message'
-
 
       it 'send a verification message' do
         @target.should_receive(:verified)

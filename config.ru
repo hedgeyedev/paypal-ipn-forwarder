@@ -7,7 +7,7 @@ require File.expand_path('../lib/server', __FILE__)
 class ServerRack < Sinatra::Base
 
   def initialize(server = Server.new)
-    @server = server
+    @server_client = server
   end
 
   def launch_ipn
@@ -21,14 +21,14 @@ class ServerRack < Sinatra::Base
   get '/ipn-response' do
     comp_id = request.body.read
     puts comp_id# make sure request.body.read works
-    @server.send_response_to_computer(comp_id)
+    @server_client.send_response_to_computer(comp_id)
   end
 
   post '/payments/ipn' do
     ipn = request.body.read
     unless ipn == 'VERIFIED' || ipn == 'INVALID'
-      @server.receive_ipn(ipn)
-      response = @server.ipn_response(ipn)
+      @server_client.receive_ipn(ipn)
+      response = @server_client.ipn_response(ipn)
       url = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
       RestClient.post url, response
     end
@@ -36,7 +36,7 @@ class ServerRack < Sinatra::Base
 
   post '/test' do
     comp_id = request.body.read
-    @server.computer_testing(comp_id)
+    @server_client.computer_testing(comp_id)
   end
 
   # Pretend to be the PayPal sandbox you're sending the response back to
