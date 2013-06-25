@@ -1,5 +1,5 @@
 
-class Cms
+class DevelopmentComputer
   SAMPLE_IPN = <<EOF
 mc_gross=19.95&protection_eligibility=Eligible&address_status=confirmed&pay\
 er_id=LPLWNMTBWMFAY&tax=0.00&address_street=1+Main+St&payment_date=20%3A12%\

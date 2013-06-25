@@ -33,7 +33,7 @@ describe Server do
 
   it 'records that it has received an IPN response from a specific CMS' do
     server = Server.new
-    cms = Cms.new
+    cms = DevelopmentComputer.new
     ipn_response = cms.send_ipn_response
     server.receive_ipn_response(ipn_response)
     paypal_id = server.paypal_id(ipn_response)
@@ -43,7 +43,7 @@ describe Server do
 
   it 'confirms a IPN response for a polling request from the router for that IPN response' do
     server = Server.new
-    cms = Cms.new
+    cms = DevelopmentComputer.new
     ipn_response = cms.send_ipn_response
     server.receive_ipn_response(ipn_response)
     paypal_id = server.paypal_id(ipn_response)
