@@ -10,10 +10,10 @@ end
 # When the server sends an ipn to my computer--deleted due to change of server-computer communication
 # When a sandbox unknown to the server sends an IPN to the server
 # When the sandbox sends an IPN for the recurring payment to the server
-When(/^(?:the|a|) sandbox( unknown to the server|) sends an IPN( for the recurring payment|) to the server$/)do |state, paymenttype|
+When(/^(?:the|a|) sandbox( unknown to the server|) sends an IPN( for the recurring payment|) to the server$/)do |state, payment_type|
   unless(state == "")
     configure
-    if(paymenttype == "")
+    if(payment_type == "")
       @ipn = @sandbox.send_fail
     else
       @ipn = @sandbox.send_recurring

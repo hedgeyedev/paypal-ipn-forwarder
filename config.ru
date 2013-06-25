@@ -23,10 +23,13 @@ class ServerRack < Sinatra::Base
   end
 
   post '/payments/ipn' do
-    ipn = params[:splat].first
-    @server.receive_ipn(ipn)
-    response = @server.ip_response(ipn)
-    RestClient.post url, response
+    ipn = request.body.read
+    unless ipn == 'VERIFIED' || ipn == 'INVALID'
+      @server.receive_ipn(ipn)
+      response = @server.ipn_response(ipn)
+      url = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+      RestClient.post url, response
+    end
   end
 
   # Pretend to be the PayPal sandbox you're sending the response back to
@@ -36,16 +39,6 @@ class ServerRack < Sinatra::Base
 
   get '/' do
     # return a 404
-  end
-
-  post '/payments/ipn' do
-    puts "got the post request"
-    ipn = request.body.read
-    unless ipn == 'VERIFIED' || ipn == 'INVALID'
-      url = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
-      ipn = "cmd=_notify-validate&" + ipn
-      RestClient.post url, ipn
-    end
   end
 
   get '/launch' do
