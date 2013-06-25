@@ -32,6 +32,11 @@ class ServerRack < Sinatra::Base
     end
   end
 
+  post '/test' do
+    comp_id = request.body.read
+    @server.computer_testing(comp_id)
+  end
+
   # Pretend to be the PayPal sandbox you're sending the response back to
   post '/fake_payal' do
 

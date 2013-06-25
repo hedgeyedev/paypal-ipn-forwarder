@@ -61,18 +61,18 @@ class Server
     response
   end
 
-  def computer_online(id)
-    computer = COMPUTER_MAP[id]
-    COMPUTERS_TESTING[computer] = true
+  def computer_testing(id)
+    computer_id = COMPUTER_MAP[id]
+    unless(computer_online?(id))
+      COMPUTERS_TESTING[computer_id] = true
+    else
+      COMPUTERS_TESTING[computer_id] = false
+    end
   end
 
   def computer_online?(id)
     computer = COMPUTER_MAP[id]
     COMPUTERS_TESTING[computer]
-  end
-
-  def computer_offline(id)
-    COMPUTERS_TESTING[id] = false
   end
 
   def queue_push(ipn)
@@ -117,7 +117,7 @@ class Server
   def recurring?(ipn)
     params = CGI::parse(ipn)
     recurring = params["recurring"].first
-    unless(recurring = "")
+    unless(recurring == "")
       true
     else
       false
