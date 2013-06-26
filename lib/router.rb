@@ -1,12 +1,15 @@
 require_relative 'poller'
+
 class Router
+
+  PROCESS_FILE_NAME = '.process_id'
 
   TEST_ON = 'on'
   TEST_OFF = 'off'
 
   def initialize(target)
     @target  = target
-    @server_url = load_server_url
+    @server_url = LoadConfig.server_url
   end
 
   def forward_ipn(ipn)
@@ -15,6 +18,10 @@ class Router
     else
       send_ipn(ipn)
     end
+  end
+
+  def polling_interval
+
   end
 
   def send_verified #same functionality as send_verification
@@ -39,10 +46,6 @@ class Router
   end
 
   private
-
-  def load_server_url
-    url = YAML::load_file(File.expand_path('../../config/config.yml', __FILE__))
-  end
 
   def set_test_mode(mode)
     RestClient.post(@server_url, { params: { my_ip: my_ip_address, test_mode: mode

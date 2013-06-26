@@ -16,7 +16,7 @@ class MailCreator
   end
 
   def load_yml(dev_version=nil)
-    @config = YAML::load_file(File.expand_path("../../config/configure#{dev_version}.yml", __FILE__))
+    @config = YAML::load_file(File.expand_path("../../config/config#{dev_version}.yml", __FILE__))
   end
 
   def combine_params(mail)

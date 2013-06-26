@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/router'
+require_relative '../lib/poller'
+
+computer = DevelopmentComputer.new
+router = Router.new(computer)
+poller = Poller.new(router)
+polling_interval = router.
+poller.poll_for_ipn

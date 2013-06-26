@@ -1,5 +1,4 @@
 .idea/
-config/config.yml
-configure.yml
+config.yml
 ip.yml
 router.yml
