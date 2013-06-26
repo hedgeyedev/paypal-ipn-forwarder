@@ -23,13 +23,11 @@ class Router
   end
 
   def test_mode_on
-    RestClient.post(@server_url, { params: { my_ip: my_ip_address, test_mode: 'on'
-    } })
+    set_test_mode('on')
   end
 
   def test_mode_off
-    RestClient.post(@server_url, { params: { my_ip: my_ip_address, test_mode: 'off'
-    } })
+    set_test_mode('off')
   end
 
   #from: http://claudiofloreani.blogspot.com/2011/10/ruby-how-to-get-my-private-and-public.html
@@ -41,6 +39,11 @@ class Router
 
   def load_server_url
     url = YAML::load_file(File.expand_path('../../config/config.yml', __FILE__))
+  end
+
+  def set_test_mode(mode)
+    RestClient.post(@server_url, { params: { my_ip: my_ip_address, test_mode: mode
+    } })
   end
 
 end
