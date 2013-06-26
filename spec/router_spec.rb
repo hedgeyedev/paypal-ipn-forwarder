@@ -22,10 +22,10 @@ describe Router do
     end
 
     # FIXME or get rid of me
-    it 'stops polling the server' do
-      @router.test_mode_on
-      @router.test_mode_off
-    end
+    #it 'stops polling the server' do
+    #  @router.test_mode_on
+    #  @router.test_mode_off
+    #end
 
     it 'tells the server that test mode has finished' do
       RestClient.should_receive(:post).with(@server_url, { params: { my_ip:     @router.my_ip_address,
@@ -36,8 +36,9 @@ describe Router do
 
     context 'polling retrieves an IPN' do
 
-      it 'initiates a protocol to send the IPN to the development computer'
-      RestClient.should_receive(:post).with(@server_url, @router.my_ip_address)
+      it 'initiates a protocol to send the IPN to the development computer' do
+        RestClient.should_receive(:post).with(@server_url, @router.my_ip_address)
+      end
 
     end
 

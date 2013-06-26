@@ -23,11 +23,13 @@ class Router
   end
 
   def test_mode_on
-    RestClient.post(@server_url, my_ip_address)
+    RestClient.post(@server_url, { params: { my_ip: my_ip_address, test_mode: 'on'
+    } })
   end
 
   def test_mode_off
-    RestClient.post(@server_url, my_ip_address)
+    RestClient.post(@server_url, { params: { my_ip: my_ip_address, test_mode: 'off'
+    } })
   end
 
   #from: http://claudiofloreani.blogspot.com/2011/10/ruby-how-to-get-my-private-and-public.html
