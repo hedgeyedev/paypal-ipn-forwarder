@@ -3,15 +3,15 @@ Feature: forward an IPN from PayPal to a development machine
   I would like for my development setup to respond to IPN messages from my PayPal sandbox
   So I can more fully simulate the PayPal production environment in my development space.
 
-  Scenario: PayPal sandbox sends IPN to common server
+  Scenario: Server receives IPN from PayPal sandbox
     When the sandbox sends an IPN for the recurring payment to the server
-    Then it returns a successful response back to the sandbox
+    Then the server returns a successful response back to the sandbox
 
   Scenario: Developer computer retrieves IPN from server
     Given the server has an IPN available for my computer
     When the computer polls the server to retrieve an IPN
     Then the server returns the IPN back to the computer as part of the computer's request
-    And the server purges the IPN from the server
+    And the server purges the IPN
 
   Scenario: Developer computer is offline
     Given the server has an IPN available for my computer

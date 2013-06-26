@@ -1,6 +1,6 @@
-class Sandbox
-   def ipn
-   @sample_ipn = <<EOF
+
+class DevelopmentComputer
+  SAMPLE_IPN = <<EOF
 mc_gross=19.95&protection_eligibility=Eligible&address_status=confirmed&pay\
 er_id=LPLWNMTBWMFAY&tax=0.00&address_street=1+Main+St&payment_date=20%3A12%\
 3A59+Jan+13%2C+2009+PST&payment_status=Completed&charset=windows-\
@@ -15,20 +15,16 @@ OfCXbDm2hu0ZELryHFjY-Vb7PAUvS6nMXgysbElEn9v-\
 e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
 ross=19.95&shipping=0.00
 EOF
-  end
-  def send
-    ipn
+
+  def send_ipn_response
+     ipn_response = "_notify-validate&" + SAMPLE_IPN
+     ipn_response
   end
 
-  def send_fail
-    string_ipn = ipn
-    string_ipn["gpmac_1231902686_biz%40paypal.com"] = "false_email_biz%40paypal.com"
-    string_ipn
+  def receive_ipn
   end
 
-  def send_recurring
-    string_ipn = ipn + "&recurring=1"
-    string_ipn
+  def receive_verificaiton
   end
 
 end
