@@ -8,7 +8,11 @@ describe LoadConfig do
   end
 
   it 'retrieves the server URL' do
-    true.should == true
+    @config.server_url.should == 'http://your_server.example.com'
+  end
+
+  it 'retrieves the developer computer URL for the router to send IPNs to' do
+    @config.development_computer_url.should == 'http://localhost:3000/payments/ipn'
   end
 
 end
