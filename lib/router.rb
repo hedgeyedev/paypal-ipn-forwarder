@@ -1,6 +1,9 @@
 require_relative 'poller'
 class Router
 
+  TEST_ON = 'on'
+  TEST_OFF = 'off'
+
   def initialize(target)
     @target  = target
     @server_url = load_server_url
@@ -23,11 +26,11 @@ class Router
   end
 
   def test_mode_on
-    set_test_mode('on')
+    set_test_mode(TEST_ON)
   end
 
   def test_mode_off
-    set_test_mode('off')
+    set_test_mode(TEST_OFF)
   end
 
   #from: http://claudiofloreani.blogspot.com/2011/10/ruby-how-to-get-my-private-and-public.html

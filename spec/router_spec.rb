@@ -23,7 +23,7 @@ describe Router do
       end
 
       it 'has started' do
-        expected_rest_client_message('on')
+        expected_rest_client_message(Router::TEST_ON)
         @router.test_mode_on
       end
 
@@ -34,7 +34,7 @@ describe Router do
       #end
 
       it 'has stopped' do
-        expected_rest_client_message('off')
+        expected_rest_client_message(Router::TEST_OFF)
         @router.test_mode_off
       end
 
