@@ -1,5 +1,2 @@
-first : 'the_worst'
-second : 'the_best'
-third : 'the_hairy_chest'
 server_url : 'http://your_server.example.com'
 development_computer_url : 'http://localhost:3000/payments/ipn'

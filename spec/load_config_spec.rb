@@ -4,7 +4,8 @@ require_relative '../lib/load_config'
 describe LoadConfig do
 
   before(:each) do
-    @config = LoadConfig.new('_test')
+    LoadConfig.set_test_mode
+    @config = LoadConfig.new
   end
 
   it 'retrieves the server URL' do

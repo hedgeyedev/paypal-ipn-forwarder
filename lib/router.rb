@@ -1,4 +1,5 @@
 require_relative 'poller'
+require_relative 'load_config'
 
 class Router
 
@@ -7,9 +8,11 @@ class Router
   TEST_ON = 'on'
   TEST_OFF = 'off'
 
-  def initialize(target)
+  def initialize(target, paypal_id)
     @target  = target
-    @server_url = LoadConfig.server_url
+    content = LoadConfig.new
+    @server_url = content.server_url
+    @paypal_id = paypal_id
   end
 
   def forward_ipn(ipn)
@@ -48,7 +51,7 @@ class Router
   private
 
   def set_test_mode(mode)
-    RestClient.post(@server_url, { params: { my_ip: my_ip_address, test_mode: mode
+    RestClient.post(@server_url, { params: { my_id: @paypalid, test_mode: mode
     } })
   end
 

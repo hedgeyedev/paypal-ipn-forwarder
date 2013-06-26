@@ -7,8 +7,9 @@ describe Router do
 
   before(:each) do
     @target     = mock('target')
-    @router     = Router.new(@target)
-    @server_url = YAML::load_file(File.expand_path('../../config/config.yml', __FILE__))
+    LoadConfig.set_test_mode
+    @router     = Router.new(@target, 'dummy_paypal_id')
+    @server_url = YAML::load_file(File.expand_path('../../config.yml', __FILE__))
     @poll       = Poller.new(@router, @server_url)
   end
 

@@ -2,9 +2,12 @@
 
 require_relative '../lib/router'
 require_relative '../lib/poller'
+require_relative '../lib/load_config'
+require_relative '../lib/development_computer'
 
 computer = DevelopmentComputer.new
-router = Router.new(computer)
+router = Router.new(computer, ARGV[1])
 poller = Poller.new(router)
-polling_interval = router.
-poller.poll_for_ipn
+config = LoadConfig.new
+polling_interval = config.polling_interval
+poller.poll_for_ipn(polling_interval)
