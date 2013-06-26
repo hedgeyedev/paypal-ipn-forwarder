@@ -25,7 +25,7 @@ class Router
   end
 
   def load_server_url
-    url = YAML::load_file(File.expand_path("../../config/router.yml", __FILE__))
+    url = YAML::load_file(File.expand_path("../../config/config.yml", __FILE__))
   end
 
   def test_mode_on

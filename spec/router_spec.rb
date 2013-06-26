@@ -8,7 +8,7 @@ describe Router do
   context 'when created' do
 
     it 'tells the server that test mode has started' do
-      server_url = YAML::load_file(File.expand_path("../../config/router.yml", __FILE__))
+      server_url = YAML::load_file(File.expand_path("../../config/config.yml", __FILE__))
       target = mock('target')
       router = Router.new(target, @server_client)
       RestClient.should_receive(:post).with(server_url, router.my_ip_address)
