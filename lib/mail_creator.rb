@@ -1,22 +1,22 @@
-require 'yaml'
-
 class MailCreator
 
+  def initialize
+    LoadConfig.set_test_mode
+    content = LoadConfig.new
+    @config = content.mail_creator
+  end
+  end
   def create(mail)
-    load_yml("_test")# needs to feed in no params in the prod version
-    create_email
+    load_yml
+    create_email_hash
     @email = @config.clone
     combine_params(mail)
     @config.clone
     @email
   end
 
-  def create_email
+  def create_email_hash
     @email = Hash.new
-  end
-
-  def load_yml(dev_version=nil)
-    @config = YAML::load_file(File.expand_path("../../config/config#{dev_version}.yml", __FILE__))
   end
 
   def combine_params(mail)

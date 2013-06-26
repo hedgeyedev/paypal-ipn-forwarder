@@ -8,11 +8,10 @@ class Router
   TEST_ON = 'on'
   TEST_OFF = 'off'
 
-  def initialize(target, paypal_id)
+  def initialize(target)
     @target  = target
-    content = LoadConfig.new
-    @server_url = content.server_url
-    @paypal_id = paypal_id
+    config = LoadConfig.new
+    @server_url = config.server_url
   end
 
   def forward_ipn(ipn)
@@ -37,6 +36,7 @@ class Router
 
   def test_mode_on
     set_test_mode(TEST_ON)
+
   end
 
   def test_mode_off
@@ -51,7 +51,7 @@ class Router
   private
 
   def set_test_mode(mode)
-    RestClient.post(@server_url, { params: { my_id: @paypalid, test_mode: mode
+    RestClient.post(@server_url, { params: { my_ip: my_ip_address, test_mode: mode
     } })
   end
 

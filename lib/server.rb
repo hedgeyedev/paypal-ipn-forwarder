@@ -21,6 +21,11 @@ class Server
     COMPUTER_MAP = {
     }
 
+  def initialize
+    content = LoadConfig.new
+
+  end
+
   def ipn
     @ipn
   end

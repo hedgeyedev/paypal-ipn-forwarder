@@ -1,2 +1,11 @@
 server_url : 'http://your_server.example.com'
 development_computer_url : 'http://localhost:3000/payments/ipn'
+
+:via : :smtp
+:via_options:
+  :address : 0.0.0.1
+  :openssl_verify_mode : none
+
+polling_interval_seconds : '5.0'
+
+sandbox_id : [1.1.1.1.1, 0.10.0.0]
