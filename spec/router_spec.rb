@@ -14,24 +14,30 @@ describe Router do
 
   context 'interactions with server' do
 
-    it 'tells the server that test mode has started' do
-      RestClient.should_receive(:post).with(@server_url, { params: { my_ip:     @router.my_ip_address,
-                                                                     test_mode: 'on'
-      } })
-      @router.test_mode_on
-    end
+    context 'test mode' do
 
-    # FIXME or get rid of me
-    #it 'stops polling the server' do
-    #  @router.test_mode_on
-    #  @router.test_mode_off
-    #end
+      def expected_rest_client_message(mode)
+        RestClient.should_receive(:post).with(@server_url, { params: { my_ip:     @router.my_ip_address,
+                                                                       test_mode: mode
+        } })
+      end
 
-    it 'tells the server that test mode has finished' do
-      RestClient.should_receive(:post).with(@server_url, { params: { my_ip:     @router.my_ip_address,
-                                                                     test_mode: 'off'
-      } })
-      @router.test_mode_off
+      it 'has started' do
+        expected_rest_client_message('on')
+        @router.test_mode_on
+      end
+
+      # FIXME or get rid of me
+      #it 'stops polling the server' do
+      #  @router.test_mode_on
+      #  @router.test_mode_off
+      #end
+
+      it 'has stopped' do
+        expected_rest_client_message('off')
+        @router.test_mode_off
+      end
+
     end
 
     context 'polling retrieves an IPN' do
