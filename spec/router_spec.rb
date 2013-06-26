@@ -1,5 +1,4 @@
-require 'rest-client'
-require_relative 'spec_helper'
+require 'rspec'
 require_relative '../lib/router'
 require_relative '../lib/poller'
 require_relative '../lib/server'
