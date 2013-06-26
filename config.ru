@@ -20,7 +20,7 @@ class ServerRack < Sinatra::Base
 
   get '/ipn-response' do
     comp_id = request.body.read
-    puts comp_id# make sure request.body.read works
+    puts comp_id # make sure request.body.read works
     @server_client.send_response_to_computer(comp_id)
   end
 
@@ -29,7 +29,7 @@ class ServerRack < Sinatra::Base
     unless ipn == 'VERIFIED' || ipn == 'INVALID'
       @server_client.receive_ipn(ipn)
       response = @server_client.ipn_response(ipn)
-      url = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+      url      = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
       RestClient.post url, response
     end
   end
@@ -49,7 +49,7 @@ class ServerRack < Sinatra::Base
   end
 
   get '/launch' do
-    url = 'http://localhost:7810/server/recieve'
+    url        = 'http://localhost:7810/server/receive'
     sample_ipn = <<EOF
 mc_gross=19.95&protection_eligibility=Eligible&address_status=confirmed&pay\
 er_id=LPLWNMTBWMFAY&tax=0.00&address_street=1+Main+St&payment_date=20%3A12%\
@@ -68,7 +68,7 @@ EOF
     RestClient.post url, sample_ipn
   end
 
-  post '/server/recieve' do
+  post '/server/receive' do
     url = 'http://localhost:6810/back/to/paypal'
     ipn = request.body.read
     ipn = "_notify-validate&" + ipn
@@ -76,8 +76,8 @@ EOF
   end
 
   post '/back/to/paypal' do
-    ipn = request.body.read
-    url = 'http://superbox.hedgeye.com:8810/payments/ipn'
+    ipn        = request.body.read
+    url        = 'http://superbox.hedgeye.com:8810/payments/ipn'
     #url = 'http://localhost:5810/message'
     sample_ipn = <<EOF
 mc_gross=19.95&protection_eligibility=Eligible&address_status=confirmed&pay\
