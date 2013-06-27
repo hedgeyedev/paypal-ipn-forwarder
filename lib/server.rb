@@ -2,7 +2,7 @@ require 'cgi'
 require 'sinatra/base'
 require 'yaml'
 
-require_relative 'computer'
+require_relative 'development_computer'
 
 class Server
   MAP = {

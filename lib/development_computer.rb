@@ -21,10 +21,15 @@ EOF
      ipn_response
   end
 
-  def receive_ipn
+  def receive_verificaiton
   end
 
-  def receive_verificaiton
+  def receive_ipn(ipn)
+    @ipn = ipn
+  end
+
+  def ipn
+    @ipn
   end
 
 end

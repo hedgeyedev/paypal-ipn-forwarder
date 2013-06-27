@@ -2,7 +2,6 @@ require_relative 'spec_helper'
 require_relative '../lib/server'
 require_relative '../lib/sandbox'
 require_relative '../lib/development_computer'
-require_relative '../lib/computer'
 
 
 describe Server do
@@ -12,7 +11,7 @@ describe Server do
     ipn = sb.send
     server = Server.new
     sandbox_id = server.receive_ipn(ipn)
-    computer = Computer.new
+    computer = DevelopmentComputer.new
     computer.receive_ipn(ipn)
     computer.ipn.should == ipn
 
@@ -26,7 +25,7 @@ describe Server do
       sandbox_id = server.receive_ipn(ipn)
       comp_id = server.computer_id(sandbox_id)
       comp_id.should == nil
-      computer = Computer.new
+      computer = DevelopmentComputer.new
       computer.receive_ipn(ipn) unless comp_id == nil
       computer.ipn.should == nil
   end

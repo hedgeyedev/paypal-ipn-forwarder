@@ -1,5 +1,5 @@
 require_relative '../../../lib/server'
-require_relative '../../../lib/computer'
+require_relative '../../../lib/development_computer'
 require_relative '../../../lib/sandbox'
 require_relative '../../../lib/mail_sender'
 
@@ -13,7 +13,7 @@ class Organizer
   def initialize
     @server_client = Server.new
     @sandbox = Sandbox.new
-    @computer = Computer.new
+    @computer = DevelopmentComputer.new
     @mail_sender = MailSender.new
   end
 end
