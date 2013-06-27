@@ -25,7 +25,7 @@ describe MailCreator do
 
   it 'should put together the fed in paramaters into the hash' do
     sgrid = MailCreator.new(true)
-    sgrid.create_email_hash
+    sgrid.create_email
     hash = sgrid.combine_params(YAML_HASH)
     YAML_HASH.each_key do |key|
       YAML_HASH[key].should == hash[key]

@@ -3,6 +3,7 @@ require 'sinatra/base'
 require 'yaml'
 
 require_relative 'load_config'
+require_relative 'mail_sender'
 
 class Server
 
@@ -20,9 +21,9 @@ class Server
     @ipn
   end
 
-  def send_ipn
-    if (ipn_present?)
-      ipn = queue_pop
+  def send_ipn(computer_id)
+    if (ipn_present?(computer_id))
+      ipn = queue_pop(computer_id)
       ipn
     end
   end
@@ -43,6 +44,7 @@ class Server
   def receive_ipn(ipn=nil)
     unless (recurring?(ipn))
       @ipn = ipn unless ipn.nil?
+      queue_push(ipn)
     end
   end
 
@@ -68,20 +70,53 @@ class Server
     @computers_testing[id]
   end
 
+  def queue_identify(computer_id, method_called_by)
+    queue = @queue_map[computer_id]
+    if(queue == nil)
+      no_computer_queue(method_called_by)
+    end
+  end
+
+  def no_computer_queue(method_called_by)
+    @email = {
+        :to => developer_email,
+        :from => 'email-proxy-problems@superbox.com',
+        :subject => 'There is no queue on the Superbox IPN forwared',
+        :body => 'on the Superbox IPN forwarder, there is no queue set up for this function: "' + method_called_by +'" for your developer_id'
+    }
+      mailsender = MailSender.new
+      mailsender.send(@email)
+  end
+
+  def developer_email
+    'bob@example.com'
+    #needs to be written. Need to create new hash
+  end
+
+
   def queue_push(ipn)
-    @queue.push(ipn)
+    paypal_id = paypal_id(ipn)
+    computer_id = computer_id(paypal_id)
+    queue = queue_identify(computer_id, 'queue push')
+    unless(queue.nil?)
+      queue.push(ipn)
+    end
   end
 
-  def queue_size
-    @queue.size
+  def queue_size(computer_id)
+    queue = @queue_map[computer_id]
+    queue.size
   end
 
-  def queue_pop
-    @queue.pop
+  def queue_pop(computer_id)
+    queue_identify(ipn, 'queue pop')
+    unless(queue.nil?)
+      queue.pop
+    end
   end
 
-  def ipn_present?
-    queue_size >= 1
+  def ipn_present?(computer_id)
+    queue_size(computer_id) >= 1
   end
 
   def receive_ipn_response(ipn_response)
@@ -103,7 +138,7 @@ class Server
     if ipn_response_present?(computer_id)
       send_verification
     else
-      send_ipn
+      send_ipn(computer_id)
     end
   end
 
