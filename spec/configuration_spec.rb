@@ -25,19 +25,26 @@ e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
 ross=19.95&shipping=0.00
 EOF
 
+    before(:each) do
+      @server = Server.new
+      @server.receive_ipn(SAMPLE_IPN)
+    end
+
     it 'identifies the target computer from the IPN' do
-      server = Server.new(SAMPLE_IPN)
-      ipn = server.ipn
-      computer_id = server.computer_id(server.paypal_id(ipn))
+      @server = Server.new
+      @server.receive_ipn(SAMPLE_IPN)
+      ipn = @server.ipn
+      computer_id = @server.computer_id(@server.paypal_id(ipn))
       computer_id.should == 'developer_one'
 
 
     end
 
     it 'retrieves the Paypal sandbox id from the IPN' do
-      server = Server.new(SAMPLE_IPN)
-      ipn = server.ipn
-      actual_paypal_email_id = server.paypal_id(ipn)
+      @server = Server.new
+      @server.receive_ipn(SAMPLE_IPN)
+      ipn = @server.ipn
+      actual_paypal_email_id = @server.paypal_id(ipn)
       actual_paypal_email_id.should == 'gpmac_1231902686_biz@paypal.com'
     end
 

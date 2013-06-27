@@ -2,13 +2,18 @@ require 'rspec'
 require_relative '../lib/router'
 require_relative '../lib/poller'
 require_relative '../lib/server'
+require_relative '../lib/load_config'
 
 describe Router do
 
+  TEST_MODE_ON = true
+
   before(:each) do
     @target     = mock('target')
-    @router     = Router.new(@target)
-    @server_url = YAML::load_file(File.expand_path('../../config/config.yml', __FILE__))
+    LoadConfig.(true)
+    content = LoadConfig.new
+    @server_url = content.server_url
+    @router     = Router.new(@target, TEST_MODE_ON)
     @poll       = Poller.new(@router, @server_url)
   end
 
