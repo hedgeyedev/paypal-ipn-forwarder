@@ -8,6 +8,8 @@ class Router
   TEST_ON = 'on'
   TEST_OFF = 'off'
 
+  attr_accessor :sandbox_id
+
   def initialize(target, test=nil)
     @target  = target
     LoadConfig.set_test_mode(!test.nil?)
@@ -15,9 +17,6 @@ class Router
     @dev_id = config.server_url
   end
 
-  def sandbox_id(id)
-    @sandbox_id = id
-  end
 
   def forward_ipn(ipn)
     if (ipn == 'VERIFIED')

@@ -8,7 +8,8 @@ require_relative '../lib/development_computer'
 computer = DevelopmentComputer.new
 router = Router.new(computer)
 router.sandbox_id(ARGV[1])
-poller = Poller.new(router)
 config = LoadConfig.new
 polling_interval = config.polling_interval
+server_url = config.server_url
+poller = Poller.new(router, server_url)
 poller.poll_for_ipn(polling_interval)
