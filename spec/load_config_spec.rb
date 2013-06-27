@@ -1,7 +1,7 @@
 require 'rspec'
 require_relative '../lib/load_config'
 
-describe 'LoadConfig' do
+describe LoadConfig do
 
   before(:each) do
     LoadConfig.set_test_mode

@@ -2,18 +2,21 @@ require 'cgi'
 require 'sinatra/base'
 require 'yaml'
 
+require_relative 'load_config'
+
 class Server
-  MAP = {}
-  COMPUTERS_TESTING = {}
-  IPN_RESPONSE = {}
 
 
-  def initialize
-    content = LoadConfig.new
-    MAP = content.sandbox_map.clone
-    COMPUTERS_TESTING = content.computer_testing.clone
-    IPN_RESPONSE = content.ipn_response.clone
+  def initialize(test=nil)
+    if test
+      LoadConfig.set_test_mode
+    else
+      LoadConfig.set_dev_mode
     end
+    content = LoadConfig.new
+    @MAP = content.sandbox_map.clone
+    @COMPUTERS_TESTING = content.computer_testing.clone
+    @IPN_RESPONSE = content.ipn_response.clone
   end
 
   def ipn
@@ -41,10 +44,9 @@ class Server
   end
 
   def computer_id(paypal_id)
-      MAP[paypal_id]
+      @MAP[paypal_id]
   end
 
-  # FIXME: This didn't merge cleanly; bet it doesn't work.
   def receive_ipn(ipn=nil)
     unless(recurring?(ipn))
       @ipn = ipn unless ipn.nil?
@@ -58,14 +60,14 @@ class Server
 
   def computer_testing(id)
     unless(computer_online?(id))
-      COMPUTERS_TESTING[id] = true
+      @COMPUTERS_TESTING[id] = true
     else
-      COMPUTERS_TESTING[id] = false
+      @COMPUTERS_TESTING[id] = false
     end
   end
 
   def computer_online?(id)
-    COMPUTERS_TESTING[id]
+    @COMPUTERS_TESTING[id]
   end
 
   def queue_push(ipn)
@@ -91,11 +93,11 @@ class Server
   end
 
   def store_ipn_response(computer_id)
-    IPN_RESPONSE[computer_id] = "VERIFIED"
+    @IPN_RESPONSE[computer_id] = "VERIFIED"
   end
 
   def ipn_response_present?(computer_id)
-    ipn_response = IPN_RESPONSE[computer_id]
+    ipn_response = @IPN_RESPONSE[computer_id]
     !ipn_response.nil?
   end
 
@@ -116,13 +118,4 @@ class Server
       false
     end
   end
-
-  def load_computer_map
-    content = YAML::load_file(File.expand_path("../../config/ip.yml", __FILE__))
-    content.each_key do |key, value|
-      value = content[key]
-      COMPUTER_MAP[value] = key
-    end
-  end
-
 end

@@ -8,8 +8,13 @@ class Router
   TEST_ON = 'on'
   TEST_OFF = 'off'
 
-  def initialize(target)
+  def initialize(target, test=nil)
     @target  = target
+    if(test)
+      LoadConfig.set_test_mode
+    else
+      LoadConfig.set_dev_mode
+    end
     config = LoadConfig.new
     @server_url = config.server_url
   end

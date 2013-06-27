@@ -1,13 +1,17 @@
+require_relative 'load_config'
+
 class MailCreator
 
-  def initialize
-    LoadConfig.set_test_mode
+  def initialize(test=nil)
+    if(test)
+      LoadConfig.set_test_mode
+    else
+      LoadConfig.set_dev_mode
+    end
     content = LoadConfig.new
     @config = content.mail_creator
   end
-  end
   def create(mail)
-    load_yml
     create_email_hash
     @email = @config.clone
     combine_params(mail)

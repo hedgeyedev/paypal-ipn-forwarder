@@ -11,7 +11,7 @@ describe Router do
     LoadConfig.set_test_mode
     content = LoadConfig.new
     @server_url = content.server_url
-    @router     = Router.new(@target)
+    @router     = Router.new(@target, true)
     @poll       = Poller.new(@router, @server_url)
   end
 

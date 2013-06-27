@@ -3,13 +3,16 @@ require 'yaml'
 class LoadConfig
 
   def initialize
-    @@test_mode = false unless(@@test_mode)
     dev_version = @@test_mode ? '_test' : ''
     @config = YAML::load_file(File.expand_path("../../config#{dev_version}.yml", __FILE__))
   end
 
   def self.set_test_mode
     @@test_mode = true
+  end
+
+  def self.set_dev_mode
+    @@test_mode = false
   end
 
   def server_url
