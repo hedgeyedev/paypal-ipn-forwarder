@@ -17,14 +17,11 @@ class Server
     @MAP = content.sandbox_map.clone
     @COMPUTERS_TESTING = content.computer_testing.clone
     @IPN_RESPONSE = content.ipn_response.clone
+    @queue_map = content.queue_map.clone
   end
 
   def ipn
     @ipn
-  end
-
-  def create_queue
-    @queue = Queue.new
   end
 
   def send_ipn
@@ -61,8 +58,11 @@ class Server
   def computer_testing(id)
     unless(computer_online?(id))
       @COMPUTERS_TESTING[id] = true
+      @queue_map[id] = Queue.new
+
     else
       @COMPUTERS_TESTING[id] = false
+      @queue_map[id] = nil
     end
   end
 

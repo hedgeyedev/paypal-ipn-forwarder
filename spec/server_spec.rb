@@ -69,5 +69,7 @@ describe Server do
       ipn.should == server.queue_pop
       #what happens if there are 2 developers testing. Intresting scenario which needs discussion
     end
+
+    it 'does not store IPNs which are generated from recurring payments'
   end
 end
