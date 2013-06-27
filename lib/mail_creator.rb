@@ -8,14 +8,14 @@ class MailCreator
     @config = content.mail_creator
   end
   def create(mail)
-    create_email_hash
+    create_email
     @email = @config.clone
     combine_params(mail)
     @config.clone
     @email
   end
 
-  def create_email_hash
+  def create_email
     @email = Hash.new
   end
 

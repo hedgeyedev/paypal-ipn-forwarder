@@ -7,19 +7,18 @@ def configure
   @email = organizer.mail_sender
 end
 
-# When the server sends an ipn to my computer--deleted due to change of server-computer communication
 # When a sandbox unknown to the server sends an IPN to the server
 # When the sandbox sends an IPN for the recurring payment to the server
 When(/^(?:the|a|) sandbox( unknown to the server|) sends an IPN( for the recurring payment|) to the server$/)do |state, payment_type|
-  unless(state == "")
     configure
-    if(payment_type == "")
-      @ipn = @sandbox.send_fail
-    else
+    dev_id = 'my_sandbox_id'
+    @server.computer_testing({'my_id' => dev_id, 'test_mode' => 'on'})
+    if(payment_type != "")
       @ipn = @sandbox.send_recurring
+    elsif (state != '')
+      @ipn = @sandbox.send_fail
     end
-    @server.receive_ipn(@ipn)
-  end
+    #@server.receive_ipn(@ipn)
 end
 
 Then(/^the server notifies (?:.*?)(developer|developers|me) (.*?)$/) do |destinaton, problem|
@@ -34,14 +33,8 @@ Then(/^the server notifies (?:.*?)(developer|developers|me) (.*?)$/) do |destina
   cleaner = ProblemCleaner.new
   problem = cleaner.clean(problem)
 
-  EMAIL = {
-    :to => to,
-    :from => "email-proxy-problems@superbox.com",
-    :subject => problem,
-    :body => "on the Superbox IPN forwarder, this error occured:\n" + problem + "\nplease address it.\nThank You"
-  }
-
-  @email.send(EMAIL)
+  #this method works for when a queue should be popping or pushing into a queue
+  @server.no_computer_queue(problem)
 end
 
 Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN .*?(?:in|into|from|to|for|available for) (my computer|another computer|the server)$/) do |action, existance ,assignment_blob|
@@ -60,8 +53,9 @@ end
 
 When(/^the server receives an IPN from my assigned sandbox$/) do
   configure
-  my_id = '1.1.1.1.1.1'
+  my_id = 'my_sandbox_id'
   @ipn = @sandbox.send
+  @server.computer_testing({'my_id' => my_id, 'test_mode' => 'on'})
   @server.receive_ipn(@ipn)
   paypal_id  = @server.paypal_id(@ipn)
   my_id.should ==  @server.computer_id(paypal_id)
@@ -69,10 +63,12 @@ When(/^the server receives an IPN from my assigned sandbox$/) do
 end
 
 Then(/^the server hangs onto it until my assigned computer retrieves it$/) do
-  @server.create_queue
-  size_before = @server.queue_size
+  my_id = 'my_sandbox_id'
+  @server.receive_ipn(@ipn)
+  @server.computer_testing({'my_id' => my_id, 'test_mode' => 'on'})
+  size_before = @server.queue_size(my_id)
   @server.queue_push(@ipn)
-  @server.queue_size.should == size_before+1
+  @server.queue_size(my_id).should == size_before+1
 end
 
 When(/^(:?.*?)computer( does not|) poll(:?.*?)the server (:?.*?)an IPN$/) do |action|

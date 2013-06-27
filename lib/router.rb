@@ -12,7 +12,7 @@ class Router
     @target  = target
     LoadConfig.set_test_mode(!test.nil?)
     config = LoadConfig.new
-    @server_url = config.server_url
+    @dev_id = config.server_url
   end
 
   def sandbox_id(id)
@@ -51,7 +51,7 @@ class Router
   private
 
   def set_test_mode(mode)
-    RestClient.post(@server_url, { params: { my_id: @sandbox_id, test_mode: mode
+    RestClient.post(@dev_id, { params: { my_id: @sandbox_id, test_mode: mode
     } })
   end
 

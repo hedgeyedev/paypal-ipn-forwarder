@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 # Start the process to perform Paypal testing
 # including IPN notifications to your development
 # computer.
