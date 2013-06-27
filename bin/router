@@ -6,7 +6,8 @@ require_relative '../lib/load_config'
 require_relative '../lib/development_computer'
 
 computer = DevelopmentComputer.new
-router = Router.new(computer, ARGV[1])
+router = Router.new(computer)
+router.sandbox_id(ARGV[1])
 poller = Poller.new(router)
 config = LoadConfig.new
 polling_interval = config.polling_interval

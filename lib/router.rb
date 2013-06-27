@@ -19,6 +19,10 @@ class Router
     @server_url = config.server_url
   end
 
+  def sandbox_id(id)
+    @sandbox_id = id
+  end
+
   def forward_ipn(ipn)
     if (ipn == 'VERIFIED')
       send_verified
@@ -48,15 +52,10 @@ class Router
     set_test_mode(TEST_OFF)
   end
 
-  #from: http://claudiofloreani.blogspot.com/2011/10/ruby-how-to-get-my-private-and-public.html
-  def my_ip_address
-    Socket.ip_address_list.detect { |intf| intf.ipv4_private? }.ip_address
-  end
-
   private
 
   def set_test_mode(mode)
-    RestClient.post(@server_url, { params: { my_ip: my_ip_address, test_mode: mode
+    RestClient.post(@server_url, { params: { my_id: @sandbox_id, test_mode: mode
     } })
   end
 
