@@ -35,4 +35,16 @@ class LoadConfig
     @config['sandbox_id']
   end
 
+  def sandbox_map
+    @config['map']
+  end
+
+  def computer_testing
+    @config['computer_testing']
+  end
+
+  def ipn_response
+    @config['ipn_response']
+  end
+
 end

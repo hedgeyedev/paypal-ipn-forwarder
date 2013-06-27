@@ -9,3 +9,15 @@ development_computer_url : 'http://localhost:3000/payments/ipn'
 polling_interval_seconds : '5.0'
 
 sandbox_id : [1.1.1.1.1, 0.10.0.0]
+
+map:
+  'gpmac_1231902686_biz.api@paypal.com': '1.1.1.1.1.1'
+  'paypal@gmail.com': '0.1.0.1.0.1'
+
+computer_testing:
+  '1.1.1.1.1.1': false
+  '0.1.0.1.0.1': false
+
+ipn_response:
+  '1.1.1.1.1.1': ~
+  '0.1.0.1.0.1': ~

@@ -2,28 +2,18 @@ require 'cgi'
 require 'sinatra/base'
 require 'yaml'
 
-require_relative 'development_computer'
-
 class Server
-  MAP = {
-        'gpmac_1231902686_biz.api@paypal.com' => 'developer_one',
-        'paypal@gmail.com' => 'developmentmachine:9999/'
-        }
-  COMPUTERS_TESTING = {
-      'developer_one' => false,
-      'developmentmachine:9999/' => false
-  }
-  IPN_RESPONSE = {
-    'developer_one' => nil,
-    'developmentmachine:9999/' => nil
-  }
+  MAP = {}
+  COMPUTERS_TESTING = {}
+  IPN_RESPONSE = {}
 
-    COMPUTER_MAP = {
-    }
 
   def initialize
     content = LoadConfig.new
-
+    MAP = content.sandbox_map.clone
+    COMPUTERS_TESTING = content.computer_testing.clone
+    IPN_RESPONSE = content.ipn_response.clone
+    end
   end
 
   def ipn
@@ -32,10 +22,6 @@ class Server
 
   def create_queue
     @queue = Queue.new
-  end
-
-  def initialize(ipn=nil)
-    @ipn = ipn unless ipn.nil?
   end
 
   def send_ipn
@@ -71,17 +57,15 @@ class Server
   end
 
   def computer_testing(id)
-    computer_id = COMPUTER_MAP[id]
     unless(computer_online?(id))
-      COMPUTERS_TESTING[computer_id] = true
+      COMPUTERS_TESTING[id] = true
     else
-      COMPUTERS_TESTING[computer_id] = false
+      COMPUTERS_TESTING[id] = false
     end
   end
 
   def computer_online?(id)
-    computer = COMPUTER_MAP[id]
-    COMPUTERS_TESTING[computer]
+    COMPUTERS_TESTING[id]
   end
 
   def queue_push(ipn)

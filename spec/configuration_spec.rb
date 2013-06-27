@@ -26,7 +26,8 @@ ross=19.95&shipping=0.00
 EOF
 
     it 'identifies the target computer from the IPN' do
-      server = Server.new(SAMPLE_IPN)
+      server = Server.new
+      server.receive_ipn(SAMPLE_IPN)
       ipn = server.ipn
       computer_id = server.computer_id(server.paypal_id(ipn))
       computer_id.should == 'developer_one'
@@ -35,7 +36,8 @@ EOF
     end
 
     it 'retrieves the Paypal sandbox id from the IPN' do
-      server = Server.new(SAMPLE_IPN)
+      server = Server.new
+      server.receive_ipn(SAMPLE_IPN)
       ipn = server.ipn
       actual_paypal_email_id = server.paypal_id(ipn)
       actual_paypal_email_id.should == 'gpmac_1231902686_biz@paypal.com'
