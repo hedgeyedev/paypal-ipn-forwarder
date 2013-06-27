@@ -11,7 +11,7 @@ polling_interval_seconds : '5.0'
 sandbox_id : [1.1.1.1.1, 0.10.0.0]
 
 map:
-  'gpmac_1231902686_biz.api@paypal.com': '1.1.1.1.1.1'
+  'gpmac_1231902686_biz@paypal.com': '1.1.1.1.1.1'
   'paypal@gmail.com': '0.1.0.1.0.1'
 
 computer_testing:

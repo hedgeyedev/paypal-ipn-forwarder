@@ -112,10 +112,12 @@ class Server
   def recurring?(ipn)
     params = CGI::parse(ipn)
     recurring = params["recurring"].first
-    unless(recurring == "")
+
+    unless(recurring == nil)
       true
     else
       false
     end
+    recurring
   end
 end
