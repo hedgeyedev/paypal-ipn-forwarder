@@ -9,13 +9,14 @@ describe Router do
   TEST_MODE_ON = true
 
   before(:each) do
-    @target     = mock('target')
+    @target = mock('target')
     LoadConfig.set_test_mode(true)
     content = LoadConfig.new
     @server_url = content.server_url
     @server = Server.new(TEST_MODE_ON)
-    @router     = Router.new(@target, TEST_MODE_ON)
-    @poll       = Poller.new(@router, @dev_id)
+    @router = Router.new(@target, TEST_MODE_ON)
+    @router.sandbox_id=('my_sandbox_id')
+    @poll = Poller.new(@router, @server_url)
   end
 
   context 'interactions with server' do
@@ -24,9 +25,9 @@ describe Router do
 
       def expected_rest_client_message(mode)
         my_id = 'my_sandbox_id'
-        RestClient.should_receive(:post).with(@server_url, { params: { my_id: my_id,
-                                                                   test_mode: mode
-        } })
+        RestClient.should_receive(:post).with(@server_url, {params: {my_id: my_id,
+                                                                     test_mode: mode
+        }})
       end
 
       it 'has started' do
@@ -52,8 +53,8 @@ describe Router do
     context 'polling retrieves an IPN' do
 
       it 'initiates a protocol to send the IPN to the development computer' do
-        #RestClient.should_receive(:post).with(@dev_id, @router.my_ip_address)
-        #test not writtenn but @router.my_ip_address no longer exists
+        RestClient.should_receive(:get).with(@server_url, 'my_sandbox_id')
+        @poll.retrieve_ipn
       end
 
     end
@@ -99,13 +100,13 @@ EOF
     end
 
     it 'automatically identifies the developer computer' do
-      #@router.my_ip_address.should =~ /\d+\.\d+\.\d+\.\d+/
-      #needs to be re-written
+      @router.sandbox_id.should == 'my_sandbox_id'
+
     end
 
     # TODO: development computer and @router are going to have to be tied together
     it 'processes an IPN' do
-      ipn          = create_an_ipn_somehow
+      ipn = create_an_ipn_somehow
       ipn_response = create_ipn_response_somehow
       @target.stub!(:send_ipn).with(ipn).and_return(ipn_response)
       @router.forward_ipn(ipn)
