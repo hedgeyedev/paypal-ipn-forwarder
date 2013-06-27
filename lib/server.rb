@@ -2,39 +2,26 @@ require 'cgi'
 require 'sinatra/base'
 require 'yaml'
 
-require_relative 'computer'
+require_relative 'load_config'
 
 class Server
-  MAP = {
-        'gpmac_1231902686_biz.api@paypal.com' => 'developer_one',
-        'paypal@gmail.com' => 'developmentmachine:9999/'
-        }
-  COMPUTERS_TESTING = {
-      'developer_one' => false,
-      'developmentmachine:9999/' => false
-  }
-  IPN_RESPONSE = {
-    'developer_one' => nil,
-    'developmentmachine:9999/' => nil
-  }
 
-    COMPUTER_MAP = {
-    }
+
+  def initialize(test=nil)
+    LoadConfig.set_test_mode(!test.nil?)
+    content = LoadConfig.new
+    @map = content.sandbox_map.clone
+    @computers_testing = content.computer_testing.clone
+    @ipn_response = content.ipn_response.clone
+    @queue_map = content.queue_map.clone
+  end
 
   def ipn
     @ipn
   end
 
-  def create_queue
-    @queue = Queue.new
-  end
-
-  def initialize(ipn=nil)
-    @ipn = ipn unless ipn.nil?
-  end
-
   def send_ipn
-    if(ipn_present?)
+    if (ipn_present?)
       ipn = queue_pop
       ipn
     end
@@ -50,12 +37,11 @@ class Server
   end
 
   def computer_id(paypal_id)
-      MAP[paypal_id]
+    @map[paypal_id]
   end
 
-  # FIXME: This didn't merge cleanly; bet it doesn't work.
   def receive_ipn(ipn=nil)
-    unless(recurring?(ipn))
+    unless (recurring?(ipn))
       @ipn = ipn unless ipn.nil?
     end
   end
@@ -65,18 +51,21 @@ class Server
     response
   end
 
-  def computer_testing(id)
-    computer_id = COMPUTER_MAP[id]
-    unless(computer_online?(id))
-      COMPUTERS_TESTING[computer_id] = true
-    else
-      COMPUTERS_TESTING[computer_id] = false
+  def computer_testing(params)
+    id = params['my_id']
+    if (params['test_mode']== 'on')
+      unless (computer_online?(id))
+        @computers_testing[id] = true
+        @queue_map[id] = Queue.new
+      end
+    elsif (params['test_mode']== 'off')
+      @computers_testing[id] = false
+      @queue_map[id] = nil
     end
   end
 
   def computer_online?(id)
-    computer = COMPUTER_MAP[id]
-    COMPUTERS_TESTING[computer]
+    @computers_testing[id]
   end
 
   def queue_push(ipn)
@@ -102,11 +91,11 @@ class Server
   end
 
   def store_ipn_response(computer_id)
-    IPN_RESPONSE[computer_id] = "VERIFIED"
+    @ipn_response[computer_id] = "VERIFIED"
   end
 
   def ipn_response_present?(computer_id)
-    ipn_response = IPN_RESPONSE[computer_id]
+    ipn_response = @ipn_response[computer_id]
     !ipn_response.nil?
   end
 
@@ -121,19 +110,6 @@ class Server
   def recurring?(ipn)
     params = CGI::parse(ipn)
     recurring = params["recurring"].first
-    unless(recurring == "")
-      true
-    else
-      false
-    end
+    !recurring.nil?
   end
-
-  def load_computer_map
-    content = YAML::load_file(File.expand_path("../../config/ip.yml", __FILE__))
-    content.each_key do |key, value|
-      value = content[key]
-      COMPUTER_MAP[value] = key
-    end
-  end
-
 end

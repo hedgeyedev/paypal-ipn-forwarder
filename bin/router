@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/router'
+require_relative '../lib/poller'
+require_relative '../lib/load_config'
+require_relative '../lib/development_computer'
+
+computer = DevelopmentComputer.new
+router = Router.new(computer)
+router.sandbox_id(ARGV[1])
+poller = Poller.new(router)
+config = LoadConfig.new
+polling_interval = config.polling_interval
+poller.poll_for_ipn(polling_interval)

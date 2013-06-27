@@ -1,5 +1,5 @@
 require_relative '../../../lib/server'
-require_relative '../../../lib/computer'
+require_relative '../../../lib/development_computer'
 require_relative '../../../lib/sandbox'
 require_relative '../../../lib/mail_sender'
 
@@ -11,9 +11,9 @@ class Organizer
   # @param [String] source_id the unique name for the source object
   # @param [String] destination_id the unique name for the destination object
   def initialize
-    @server_client = Server.new
+    @server = Server.new
     @sandbox = Sandbox.new
-    @computer = Computer.new
+    @computer = DevelopmentComputer.new
     @mail_sender = MailSender.new
   end
 end

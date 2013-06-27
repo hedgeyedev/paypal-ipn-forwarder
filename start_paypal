@@ -1,0 +1,16 @@
+# Start the process to perform Paypal testing
+# including IPN notifications to your development
+# computer.
+#
+# This requires an argument: the id of your Paypal
+# sandbox.
+#
+# Hence, usage:
+#
+#    start_paypal '<your paypal sandbox ID>'
+#
+require_relative 'lib/router'
+
+process_id = fork{ "exec 'bin/router #{ARGV[1]}'" }
+File.write(Router::PROCESS_FILE_NAME, process_id, nil, nil)
+puts 'Paypal testing has started'
