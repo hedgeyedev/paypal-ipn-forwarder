@@ -21,3 +21,7 @@ computer_testing:
 ipn_response:
   'my_sandbox_id': ~
   'my_sandbox_id_1': ~
+
+queue_map:
+  'my_sandbox_id': ~
+  'my_sandbox_id_1': ~

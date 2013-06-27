@@ -4,7 +4,7 @@ require_relative '../lib/load_config'
 describe LoadConfig do
 
   before(:each) do
-    LoadConfig.set_test_mode
+    LoadConfig.set_test_mode(true)
     @config = LoadConfig.new
   end
 
@@ -40,6 +40,10 @@ describe LoadConfig do
 
   it 'retrieves ipn_responses for the server hash' do
     @config.ipn_response.should == {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
+  end
+
+  it 'retrieves the queue map for the server' do
+    @config.queue_map.should ==  {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
   end
 
 

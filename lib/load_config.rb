@@ -7,12 +7,12 @@ class LoadConfig
     @config = YAML::load_file(File.expand_path("../../config#{dev_version}.yml", __FILE__))
   end
 
-  def self.set_test_mode
-    @@test_mode = true
-  end
-
-  def self.set_dev_mode
-    @@test_mode = false
+  def self.set_test_mode(mode_boolean)
+    if(mode_boolean)
+      @@test_mode = true
+    else
+      @@test_mode = false
+    end
   end
 
   def server_url
@@ -48,6 +48,10 @@ class LoadConfig
 
   def ipn_response
     @config['ipn_response']
+  end
+
+  def queue_map
+    @config['queue_map']
   end
 
 end

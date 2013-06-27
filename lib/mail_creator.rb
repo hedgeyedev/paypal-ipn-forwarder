@@ -3,11 +3,7 @@ require_relative 'load_config'
 class MailCreator
 
   def initialize(test=nil)
-    if(test)
-      LoadConfig.set_test_mode
-    else
-      LoadConfig.set_dev_mode
-    end
+    LoadConfig.set_test_mode(!test.nil?)
     content = LoadConfig.new
     @config = content.mail_creator
   end

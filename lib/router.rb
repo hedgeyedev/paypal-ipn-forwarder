@@ -10,11 +10,7 @@ class Router
 
   def initialize(target, test=nil)
     @target  = target
-    if(test)
-      LoadConfig.set_test_mode
-    else
-      LoadConfig.set_dev_mode
-    end
+    LoadConfig.set_test_mode(!test.nil?)
     config = LoadConfig.new
     @server_url = config.server_url
   end

@@ -6,12 +6,14 @@ require_relative '../lib/load_config'
 
 describe Router do
 
+  TEST_MODE_ON = true
+
   before(:each) do
     @target     = mock('target')
-    LoadConfig.set_test_mode
+    LoadConfig.(true)
     content = LoadConfig.new
     @server_url = content.server_url
-    @router     = Router.new(@target, true)
+    @router     = Router.new(@target, TEST_MODE_ON)
     @poll       = Poller.new(@router, @server_url)
   end
 

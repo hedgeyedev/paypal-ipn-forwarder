@@ -4,8 +4,10 @@ require_relative '../lib/router'
 
 describe Poller do
 
+  TEST_MODE_ON
+
   before(:each) do
-    @router = Router.new
+    @router = Router.new(nil, TEST_MODE_ON)
     @url = 'dummy_url'
     @poller = Poller.new(@router, @url)
     #@rest_client = Object.new.extend RestClient
