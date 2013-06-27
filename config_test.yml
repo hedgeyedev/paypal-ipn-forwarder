@@ -15,9 +15,9 @@ map:
   'paypal@gmail.com': '0.1.0.1.0.1'
 
 computer_testing:
-  '1.1.1.1.1.1': false
-  '0.1.0.1.0.1': false
+  'my_sandbox_id': false
+  'my_sandbox_id_1': false
 
 ipn_response:
-  '1.1.1.1.1.1': ~
-  '0.1.0.1.0.1': ~
+  'my_sandbox_id': ~
+  'my_sandbox_id_1': ~
