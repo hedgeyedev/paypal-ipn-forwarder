@@ -89,7 +89,7 @@ class Server
   end
 
   def developer_email
-    'bob@example.com'
+    'dmitri.ostapenko@gmail.com'
     #needs to be written. Need to create new hash
   end
 

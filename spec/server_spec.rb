@@ -3,11 +3,10 @@ require_relative '../lib/server'
 require_relative '../lib/sandbox'
 require_relative '../lib/development_computer'
 
-
 describe Server do
 
+  TEST_MODE_ON = true
   before(:each) do
-    TEST_MODE_ON = true
     @server = Server.new(TEST_MODE_ON)
   end
 
