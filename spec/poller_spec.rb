@@ -33,7 +33,6 @@ describe Poller do
     @polling_count > 0
   end
 
-
   def create_an_ipn_somehow
     sample_ipn = <<EOF
 mc_gross=19.95&protection_eligibility=Eligible&address_status=confirmed&pay\
