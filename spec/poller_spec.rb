@@ -4,7 +4,7 @@ require_relative '../lib/router'
 
 describe Poller do
 
-  TEST_MODE_ON
+  TEST_MODE_ON = true
 
   before(:each) do
     @router = Router.new(nil, TEST_MODE_ON)

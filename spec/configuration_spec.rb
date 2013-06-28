@@ -24,25 +24,23 @@ pmac_1231902686_biz%40paypal.com&payment_fee=0.88&receiver_id=S8XGHLYDW9T3S\
 e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
 ross=19.95&shipping=0.00
 EOF
+    TEST_MODE_ON = true
 
     before(:each) do
-      @server = Server.new
+      @server = Server.new(TEST_MODE_ON)
+      @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on'})
       @server.receive_ipn(SAMPLE_IPN)
     end
 
     it 'identifies the target computer from the IPN' do
-      @server = Server.new
-      @server.receive_ipn(SAMPLE_IPN)
       ipn = @server.ipn
       computer_id = @server.computer_id(@server.paypal_id(ipn))
-      computer_id.should == 'developer_one'
+      computer_id.should == 'my_sandbox_id'
 
 
     end
 
     it 'retrieves the Paypal sandbox id from the IPN' do
-      @server = Server.new
-      @server.receive_ipn(SAMPLE_IPN)
       ipn = @server.ipn
       actual_paypal_email_id = @server.paypal_id(ipn)
       actual_paypal_email_id.should == 'gpmac_1231902686_biz@paypal.com'

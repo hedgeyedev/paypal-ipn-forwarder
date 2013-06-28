@@ -3,8 +3,10 @@ require_relative '../lib/load_config'
 
 describe LoadConfig do
 
+  TEST_MODE_ON = true
+
   before(:each) do
-    LoadConfig.set_test_mode(true)
+    LoadConfig.set_test_mode(TEST_MODE_ON)
     @config = LoadConfig.new
   end
 
@@ -31,7 +33,7 @@ describe LoadConfig do
   end
 
   it 'retrieves the sandbox_map' do
-    @config.sandbox_map.should == {'gpmac_1231902686_biz.api@paypal.com'=>'my_sandbox_id', 'paypal@gmail.com'=>'my_sandbox_id_1'}
+    @config.sandbox_map.should == {'gpmac_1231902686_biz@paypal.com'=>'my_sandbox_id', 'paypal@gmail.com'=>'my_sandbox_id_1'}
   end
 
   it 'retrieves the computer_testing booleans for a server hash' do
