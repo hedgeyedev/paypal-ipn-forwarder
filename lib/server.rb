@@ -94,6 +94,10 @@ class Server
     #needs to be written. Need to create new hash
   end
 
+  def queue(ipn)
+    paypal_id = paypal_id(ipn)
+    computer_id = computer_id(paypal_id)
+  end
 
   def queue_push(ipn)
     paypal_id = paypal_id(ipn)
@@ -104,6 +108,11 @@ class Server
     end
     queue
   end
+
+  def queue(computer_id)
+    @queue_map[computer_id]
+  end
+
 
   def queue_size(computer_id)
     queue = @queue_map[computer_id]
