@@ -72,7 +72,7 @@ class Server
 
   def queue_identify(computer_id, method_called_by)
     queue = @queue_map[computer_id]
-    if(queue == nil)
+    if(queue.nil?)
       no_computer_queue(method_called_by)
     end
     queue
@@ -107,7 +107,11 @@ class Server
 
   def queue_size(computer_id)
     queue = @queue_map[computer_id]
-    queue.size
+    if(queue == nil)
+      0
+    else
+      queue.size
+    end
   end
 
   def queue_pop(computer_id)

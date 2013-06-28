@@ -6,6 +6,7 @@ require_relative '../lib/development_computer'
 describe Server do
 
   TEST_MODE_ON = true
+
   before(:each) do
     @server = Server.new(TEST_MODE_ON)
   end
@@ -13,16 +14,17 @@ describe Server do
   it 'forwards an ipn from a paypal sandbox to its corresponding computer' do
     sb = Sandbox.new
     ipn = sb.send
-    @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on'})
-    sandbox_id = @server.receive_ipn(ipn)
+    dev_id = 'my_sandbox_id'
+    @server.computer_testing({'my_id' => dev_id, 'test_mode' => 'on'})
+    @server.receive_ipn(ipn)
+    ipn_retrieved = @server.send_ipn(dev_id)
     computer = DevelopmentComputer.new
-    computer.receive_ipn(ipn)
+    computer.receive_ipn(ipn_retrieved)
     computer.ipn.should == ipn
 
   end
 
-
-  it 'does not forward an ipn to a computer from a paypal sandbox that doesn\'t belong to it' do
+  it 'notifies the developers that a new sanbox is sending emails and that that sandbox is unregistered' do
     Pony.should_receive(:mail).with({:via => :smtp,
                                      :to => "dmitri.ostapenko@gmail.com",
                                      :from => "email-proxy-problems@superbox.com",
@@ -36,11 +38,21 @@ describe Server do
     ipn = sb.send_fail
     @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on'})
     sandbox_id = @server.receive_ipn(ipn)
+  end
+
+
+  it 'does not forward an ipn to a computer from a paypal sandbox that doesn\'t belong to it' do
+    sb = Sandbox.new
+    ipn = sb.send
+    id_1 =        'my_sandbox_id_1'
+    id_2 = 'my_sandbox_id'
+    @server.computer_testing({'my_id' => id_1, 'test_mode' => 'on'})
+    @server.computer_testing({'my_id' => id_2, 'test_mode' => 'on'})
+    @server.receive_ipn(ipn)
+    sandbox_id = @server.paypal_id(ipn)
     comp_id = @server.computer_id(sandbox_id)
-    comp_id.should == nil
-    computer = DevelopmentComputer.new
-    computer.receive_ipn(ipn) unless comp_id == nil
-    computer.ipn.should == nil
+    @server.ipn_present?(id_1).should == false
+    @server.send_ipn(id_1).should == nil
   end
 
   it 'records that it has received an IPN response from a specific development computer' do
@@ -63,21 +75,31 @@ describe Server do
 
   end
 
-  it 'denies an IPN response for a polling request from a router because none exists' do
-    @server.ipn_response_present?('developer_one').should == false
+  it 'denies an IPN response for a polling request from a router because no IPN exists for that router' do
+    dev_id = 'my_sandbox_id'
+    @server.ipn_response_present?(dev_id).should == false
+    @server.send_response_to_computer(dev_id).should == nil
   end
 
   context 'queue' do
+
+    before(:each) do
+      @sb = Sandbox.new
+      @my_id = 'my_sandbox_id'
+      @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on'})
+    end
+
     it 'stores IPNs sent from a sandbox when a computer is testing' do
-      sb = Sandbox.new
-      my_id = 'my_sandbox_id'
-      @server.computer_testing({'my_id' => my_id, 'test_mode' => 'on'})
-      ipn = sb.send
+      ipn = @sb.send
       @server.receive_ipn(ipn)
-      ipn.should == @server.queue_pop(my_id)
+      ipn.should == @server.queue_pop(@my_id)
       #what happens if there are 2 developers testing. Intresting scenario which needs discussion
     end
 
-    it 'does not store IPNs which are generated from recurring payments'
+    it 'does not store IPNs which are generated from recurring payments' do
+      ipn = @sb.send_recurring
+      @server.receive_ipn(ipn)
+      @server.queue_size(@my_id).should == 0
+    end
   end
 end
