@@ -48,15 +48,6 @@ describe Router do
 
     end
 
-    context 'polling retrieves an IPN' do
-
-      it 'initiates a protocol to send the IPN to the development computer' do
-        RestClient.should_receive(:get).with(@server_url, 'my_sandbox_id')
-        @poll.retrieve_ipn
-      end
-
-    end
-
   end
 
   context 'handshake between router and development computer' do

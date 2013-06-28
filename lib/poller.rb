@@ -12,13 +12,19 @@ class Poller
     RestClient.get(@server_url, @sandbox_id)
   end
 
-  def poll_for_ipn(time=5.0)
+  #caller is for testing-only
+  def poll_for_ipn(caller=nil)
     loop do
       ipn = retrieve_ipn
       @router.forward_ipn ipn unless (ipn.nil?)
-      sleep time
+      sleep @time_in_sec
+      break unless (caller.nil? || caller.keep_polling?)
     end
   end
+
+  attr_writer :time_in_sec
+
+
 
 
 end

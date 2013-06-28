@@ -12,4 +12,5 @@ config = LoadConfig.new
 polling_interval = config.polling_interval
 server_url = config.server_url
 poller = Poller.new(router, server_url)
-poller.poll_for_ipn(polling_interval)
+poller.time_in_sec=polling_interval
+poller.poll_for_ipn
