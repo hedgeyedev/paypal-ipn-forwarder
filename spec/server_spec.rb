@@ -13,6 +13,7 @@ describe Server do
   it 'forwards an ipn from a paypal sandbox to its corresponding computer' do
     sb = Sandbox.new
     ipn = sb.send
+    @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on'})
     sandbox_id = @server.receive_ipn(ipn)
     computer = DevelopmentComputer.new
     computer.receive_ipn(ipn)
@@ -22,8 +23,18 @@ describe Server do
 
 
   it 'does not forward an ipn to a computer from a paypal sandbox that doesn\'t belong to it' do
+    Pony.should_receive(:mail).with({:via => :smtp,
+                                     :to => "dmitri.ostapenko@gmail.com",
+                                     :from => "email-proxy-problems@superbox.com",
+                                     :subject => "There is no queue on the Superbox IPN forwared",
+                                     :body => "on the Superbox IPN forwarder, there is no queue set up for this function: \"queue push\" for your developer_id",
+                                     :via_options =>
+                                         {:address => "localhost",
+                                          :openssl_verify_mode => "none"}
+                                    })
     sb = Sandbox.new
     ipn = sb.send_fail
+    @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on'})
     sandbox_id = @server.receive_ipn(ipn)
     comp_id = @server.computer_id(sandbox_id)
     comp_id.should == nil
@@ -34,6 +45,7 @@ describe Server do
 
   it 'records that it has received an IPN response from a specific development computer' do
     computer = DevelopmentComputer.new
+    @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on'})
     ipn_response = computer.send_ipn_response
     @server.receive_ipn_response(ipn_response)
     paypal_id = @server.paypal_id(ipn_response)
@@ -59,7 +71,6 @@ describe Server do
     it 'stores IPNs sent from a sandbox when a computer is testing' do
       sb = Sandbox.new
       my_id = 'my_sandbox_id'
-      dev_id = 'developer_one'
       @server.computer_testing({'my_id' => my_id, 'test_mode' => 'on'})
       ipn = sb.send
       @server.receive_ipn(ipn)
