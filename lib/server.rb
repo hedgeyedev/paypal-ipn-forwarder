@@ -75,6 +75,7 @@ class Server
     if(queue == nil)
       no_computer_queue(method_called_by)
     end
+    queue
   end
 
   def no_computer_queue(method_called_by)
@@ -101,6 +102,7 @@ class Server
     unless(queue.nil?)
       queue.push(ipn)
     end
+    queue
   end
 
   def queue_size(computer_id)
@@ -109,7 +111,7 @@ class Server
   end
 
   def queue_pop(computer_id)
-    queue_identify(ipn, 'queue pop')
+    queue = queue_identify(computer_id, 'queue pop')
     unless(queue.nil?)
       queue.pop
     end

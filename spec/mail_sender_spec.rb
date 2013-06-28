@@ -6,7 +6,7 @@ describe MailSender do
 
   YAML_HASH = {
       :via => :smtp,
-      :via_options => {:address=>"0.0.0.1", :openssl_verify_mode=>"none"}
+      :via_options => {:address => '0.0.0.1', :openssl_verify_mode => 'none'}
   }
   FED_IN_PARAMS = {
       'to' => 'bob@example.com',
@@ -16,17 +16,17 @@ describe MailSender do
   }
   COMBINED = {
       :via => :smtp,
-      :via_options => {:address=>"0.0.0.1", :openssl_verify_mode=>"none"},
+      :via_options => {:address => '0.0.0.1', :openssl_verify_mode => 'none'},
       'to' => 'bob@example.com',
       'from' => 'james@example.com',
       'title' => 'this works! awesome',
       'subject' => 'hey, look this went through'
   }
-    TO = {
+  TO = {
       :to => 'dmitri.ostapenko@gmail.com',
       :body => 'this is a test email body message. HEY scott or Dmitri or James',
       :subject => 'test email from hedgeye. is this working? '
-    }
+  }
   it 'should create the email content from mail_sender' do
     sender = MailSender.new
     hash = sender.create(FED_IN_PARAMS, true)
@@ -36,10 +36,16 @@ describe MailSender do
   end
 
   it 'should send an email' do
+    Pony.should_receive(:mail).with({:to => 'dmitri.ostapenko@gmail.com',
+                                     :body => 'this is a test email body message. HEY scott or Dmitri or James',
+                                     :subject => 'test email from hedgeye. is this working? ',
+                                     :via => :smtp,
+                                     :via_options => {
+                                         :address => 'localhost',
+                                         :openssl_verify_mode => 'none'}, :subject => 'test email from hedgeye. is this working? '})
     sender = MailSender.new
     hash = sender.create(TO, nil)
-    hash.should == 'bob'
     sender.send_email
-  end
 
+  end
 end
