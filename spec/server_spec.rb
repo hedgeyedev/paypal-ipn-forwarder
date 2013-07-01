@@ -44,13 +44,11 @@ describe Server do
   it 'does not forward an ipn to a computer from a paypal sandbox that doesn\'t belong to it' do
     sb = Sandbox.new
     ipn = sb.send
-    id_1 =        'my_sandbox_id_1'
+    id_1 = 'my_sandbox_id_1'
     id_2 = 'my_sandbox_id'
     @server.computer_testing({'my_id' => id_1, 'test_mode' => 'on'})
     @server.computer_testing({'my_id' => id_2, 'test_mode' => 'on'})
     @server.receive_ipn(ipn)
-    sandbox_id = @server.paypal_id(ipn)
-    comp_id = @server.computer_id(sandbox_id)
     @server.ipn_present?(id_1).should == false
     @server.send_ipn(id_1).should == nil
   end
@@ -61,8 +59,7 @@ describe Server do
     ipn_response = computer.send_ipn_response
     @server.receive_ipn_response(ipn_response)
     paypal_id = @server.paypal_id(ipn_response)
-    computer_id = @server.computer_id(paypal_id)
-    @server.ipn_response_present?(computer_id).should == true
+    @server.ipn_response_present?(paypal_id).should == true
   end
 
   it 'confirms a IPN response for a polling request from the router for that IPN response' do
@@ -70,8 +67,7 @@ describe Server do
     ipn_response = computer.send_ipn_response
     @server.receive_ipn_response(ipn_response)
     paypal_id = @server.paypal_id(ipn_response)
-    computer_id = @server.computer_id(paypal_id)
-    @server.ipn_response_present?(computer_id).should == true
+    @server.ipn_response_present?(paypal_id).should == true
 
   end
 
@@ -104,6 +100,8 @@ describe Server do
   end
 
   it 'stores the time that a computer polls'
+
+  it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing'
 
 
 end

@@ -58,7 +58,7 @@ When(/^the server receives an IPN from my assigned sandbox$/) do
   @server.computer_testing({'my_id' => my_id, 'test_mode' => 'on'})
   @server.receive_ipn(@ipn)
   paypal_id  = @server.paypal_id(@ipn)
-  my_id.should ==  @server.computer_id(paypal_id)
+  my_id.should ==  paypal_id
   @server.ipn.should == @sandbox.send
 end
 

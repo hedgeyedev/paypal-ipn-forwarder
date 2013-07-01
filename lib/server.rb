@@ -24,12 +24,12 @@ class Server
     @ipn
   end
 
-  def receive_poll_from_computer(computer_id)
+  def receive_poll_from_computer(paypal_id)
   end
 
-  def send_ipn(computer_id)
-    if (ipn_present?(computer_id))
-      ipn = queue_pop(computer_id)
+  def send_ipn(paypal_id)
+    if (ipn_present?(paypal_id))
+      ipn = queue_pop(paypal_id)
       ipn
     end
   end
@@ -40,10 +40,10 @@ class Server
 
   def paypal_id(ipn)
     params = CGI::parse(ipn)
-    params["receiver_email"].first
+    params["receiver_id"].first
   end
 
-  def computer_id(paypal_id)
+  def paypal_id(paypal_id)
     @map[paypal_id]
   end
 
@@ -78,17 +78,17 @@ class Server
     @computers_testing[id]
   end
 
-  def queue_identify(computer_id, method_called_by)
-    queue = @queue_map[computer_id]
+  def queue_identify(paypal_id, method_called_by)
+    queue = @queue_map[paypal_id]
     if(queue.nil?)
       no_computer_queue(method_called_by)
     end
     queue
   end
 
-  def no_computer_queue(method_called_by, computer_id)
+  def no_computer_queue(method_called_by, paypal_id)
     @email = {
-        :to => @email_map[computer_id],
+        :to => @email_map[paypal_id],
         :from => 'email-proxy-problems@superbox.com',
         :subject => 'There is no queue on the Superbox IPN forwared',
         :body => 'on the Superbox IPN forwarder, there is no queue set up for this function: "' + method_called_by +'" for your developer_id'
@@ -102,28 +102,17 @@ class Server
     #needs to be written. Need to create new hash
   end
 
-  def queue(ipn)
-    paypal_id = paypal_id(ipn)
-    computer_id = computer_id(paypal_id)
-  end
-
   def queue_push(ipn)
     paypal_id = paypal_id(ipn)
-    computer_id = computer_id(paypal_id)
-    queue = queue_identify(computer_id, 'queue push')
+    queue = queue_identify(paypal_id, 'queue push')
     unless(queue.nil?)
       queue.push(ipn)
     end
     queue
   end
-
-  def queue(computer_id)
-    @queue_map[computer_id]
-  end
-
-
-  def queue_size(computer_id)
-    queue = @queue_map[computer_id]
+  
+  def queue_size(paypal_id)
+    queue = @queue_map[paypal_id]
     if(queue == nil)
       0
     else
@@ -131,47 +120,46 @@ class Server
     end
   end
 
-  def queue_pop(computer_id)
-    queue = queue_identify(computer_id, 'queue pop')
+  def queue_pop(paypal_id)
+    queue = queue_identify(paypal_id, 'queue pop')
     unless(queue.nil?)
       queue.pop
     end
   end
 
-  def ipn_present?(computer_id)
-    queue_size(computer_id) >= 1
+  def ipn_present?(paypal_id)
+    queue_size(paypal_id) >= 1
   end
 
   def receive_ipn_response(ipn_response)
     paypal_id = paypal_id(ipn_response)
-    computer_id = computer_id(paypal_id)
-    store_ipn_response(computer_id)
+    store_ipn_response(paypal_id)
   end
 
-  def store_ipn_response(computer_id)
-    @ipn_response[computer_id] = "VERIFIED"
+  def store_ipn_response(paypal_id)
+    @ipn_response[paypal_id] = "VERIFIED"
   end
 
-  def ipn_response_present?(computer_id)
-    ipn_response = @ipn_response[computer_id]
+  def ipn_response_present?(paypal_id)
+    ipn_response = @ipn_response[paypal_id]
     !ipn_response.nil?
   end
 
-  def respond_to_computer_poll(computer_id)
+  def respond_to_computer_poll(paypal_id)
     @last_poll_time = Time.now
-    if(computer_online?(computer_id))
-       unexpected_poll(computer_id)
-    elsif ipn_response_present?(computer_id)
+    if(computer_online?(paypal_id))
+       unexpected_poll(paypal_id)
+    elsif ipn_response_present?(paypal_id)
       send_verification
     else
-      send_ipn(computer_id)
+      send_ipn(paypal_id)
     end
   end
 
-  def unexpected_poll(computer_id)
-    @unexpected_poll_time[computer_id] = Time.now
+  def unexpected_poll(paypal_id)
+    @unexpected_poll_time[paypal_id] = Time.now
     @email = {
-        :to => @email_map[computer_id],
+        :to => @email_map[paypal_id],
         :from => 'email-proxy-problems@superbox.com',
         :subject => 'Unexpected poll from your developer machine',
         :body => 'Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on'
