@@ -13,6 +13,6 @@
 #
 require_relative 'lib/router'
 
-process_id = fork{ "exec 'bin/router #{ARGV[1]}'" }
+process_id = fork{ "exec 'bin/router #{ARGV[1]} #{ARGV[2]}'" }
 File.write(Router::PROCESS_FILE_NAME, process_id, nil, nil)
 puts 'Paypal testing has started'

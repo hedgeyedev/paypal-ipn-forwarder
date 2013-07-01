@@ -103,5 +103,14 @@ describe Server do
 
   it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing'
 
+  context 'receives polling request without test mode activated' do
+
+    it 'send an email to the developer, if one is on file'
+
+    it 'sends another notification if issue not handled 24 hours after previous email'
+
+    it 'sends email to all developers if no email on file'
+
+  end
 
 end

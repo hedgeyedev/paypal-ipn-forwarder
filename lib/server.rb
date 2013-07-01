@@ -67,12 +67,17 @@ class Server
         @computers_testing[id] = true
         @queue_map[id] = Queue.new
         @last_poll_time = Time.now
+        email_mapper(id, params['email'])
       end
     elsif (params['test_mode']== 'off')
       @computers_testing[id] = false
       @queue_map[id] = nil
       @last_poll_time = nil
     end
+  end
+
+  def email_mapper(id, email)
+     @email[id] = email
   end
 
   def computer_online?(id)
@@ -174,6 +179,5 @@ class Server
     recurring = params["recurring"].first
     !recurring.nil?
   end
-
 
 end

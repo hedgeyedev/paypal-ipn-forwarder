@@ -38,8 +38,8 @@ class Router
     @target.send_ipn(ipn)
   end
 
-  def test_mode_on
-    set_test_mode(TEST_ON)
+  def test_mode_on(email)
+    set_test_mode(TEST_ON, email)
 
   end
 
@@ -49,8 +49,8 @@ class Router
 
   private
 
-  def set_test_mode(mode)
-    RestClient.post(@dev_id, { params: { my_id: @sandbox_id, test_mode: mode
+  def set_test_mode(mode, email=nil)
+    RestClient.post(@dev_id, { params: { my_id: @sandbox_id, test_mode: mode, email: email
     } })
   end
 
