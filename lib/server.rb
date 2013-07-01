@@ -48,7 +48,8 @@ class Server
   end
 
   def receive_ipn(ipn=nil)
-    unless (recurring?(ipn))
+    paypal_id = paypal_id(ipn)
+    unless (recurring?(ipn) || !computer_online?(paypal_id))
       @ipn = ipn unless ipn.nil?
       queue_push(ipn)
     end
@@ -173,4 +174,6 @@ class Server
     recurring = params["recurring"].first
     !recurring.nil?
   end
+
+
 end
