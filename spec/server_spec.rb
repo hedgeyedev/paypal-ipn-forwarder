@@ -78,7 +78,7 @@ describe Server do
   it 'denies an IPN response for a polling request from a router because no IPN exists for that router' do
     dev_id = 'my_sandbox_id'
     @server.ipn_response_present?(dev_id).should == false
-    @server.send_response_to_computer(dev_id).should == nil
+    @server.respond_to_computer_poll(dev_id).should == nil
   end
 
   context 'queue' do
@@ -102,4 +102,8 @@ describe Server do
       @server.queue_size(@my_id).should == 0
     end
   end
+
+  it 'stores the time that a computer polls'
+
+
 end

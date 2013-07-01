@@ -48,5 +48,17 @@ describe LoadConfig do
     @config.queue_map.should ==  {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
   end
 
+  it 'retrieves a hash of the time that the last poll of an online computer occured' do
+    @config.last_poll_time.should == {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
+  end
+
+  it 'retreives the map of ids to developer emails for sending email notificaitons' do
+    @config.email_map.should == {'my_sandbox_id'=>'dmitri.ostapenko@gmail.com', 'my_sandbox_id_1'=>'bob@example.com'}
+  end
+
+  it 'retreives a hash of when the last unexpected poll occured' do
+    @config.unexpected_poll_time.should == {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
+  end
+
 
 end

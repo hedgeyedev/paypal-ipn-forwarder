@@ -105,8 +105,8 @@ EOF
     it 'send a verification message' do
       @target.should_receive(:verified)
       @server.store_ipn_response('my_sandbox_id')
-      @server.send_response_to_computer('my_sandbox_id').should == 'VERIFIED'
-      @router.forward_ipn(@server.send_response_to_computer('my_sandbox_id'))
+      @server.respond_to_computer_poll('my_sandbox_id').should == 'VERIFIED'
+      @router.forward_ipn(@server.respond_to_computer_poll('my_sandbox_id'))
     end
 
   end

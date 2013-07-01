@@ -59,7 +59,7 @@ EOF
     #server.queue(create_an_ipn_somehow).should == 'b'
     server.receive_ipn(create_an_ipn_somehow)
     @poller.retrieve_ipn
-    server.send_response_to_computer(@dev_id).should == create_an_ipn_somehow
+    server.respond_to_computer_poll(@dev_id).should == create_an_ipn_somehow
 
   end
 

@@ -15,10 +15,16 @@ class Server
     @computers_testing = content.computer_testing.clone
     @ipn_response = content.ipn_response.clone
     @queue_map = content.queue_map.clone
+    @last_poll_time = content.last_poll_time.clone
+    @unexpected_poll_time = content.@unexpected_poll_time.clone
+    @email_map = content.email_map.clone
   end
 
   def ipn
     @ipn
+  end
+
+  def receive_poll_from_computer(computer_id)
   end
 
   def send_ipn(computer_id)
@@ -59,10 +65,12 @@ class Server
       unless (computer_online?(id))
         @computers_testing[id] = true
         @queue_map[id] = Queue.new
+        @last_poll_time = Time.now
       end
     elsif (params['test_mode']== 'off')
       @computers_testing[id] = false
       @queue_map[id] = nil
+      @last_poll_time = nil
     end
   end
 
@@ -78,9 +86,9 @@ class Server
     queue
   end
 
-  def no_computer_queue(method_called_by)
+  def no_computer_queue(method_called_by, computer_id)
     @email = {
-        :to => developer_email,
+        :to => @email_map[computer_id],
         :from => 'email-proxy-problems@superbox.com',
         :subject => 'There is no queue on the Superbox IPN forwared',
         :body => 'on the Superbox IPN forwarder, there is no queue set up for this function: "' + method_called_by +'" for your developer_id'
@@ -149,12 +157,27 @@ class Server
     !ipn_response.nil?
   end
 
-  def send_response_to_computer(computer_id)
-    if ipn_response_present?(computer_id)
+  def respond_to_computer_poll(computer_id)
+    @last_poll_time = Time.now
+    if(computer_online?(computer_id))
+       unexpected_poll(computer_id)
+    elsif ipn_response_present?(computer_id)
       send_verification
     else
       send_ipn(computer_id)
     end
+  end
+
+  def unexpected_poll(computer_id)
+    @unexpected_poll_time[computer_id] = Time.now
+    @email = {
+        :to => @email_map[computer_id],
+        :from => 'email-proxy-problems@superbox.com',
+        :subject => 'Unexpected poll from your developer machine',
+        :body => 'Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on'
+    }
+    mailsender = MailSender.new
+    mailsender.send(@email)
   end
 
   def recurring?(ipn)
