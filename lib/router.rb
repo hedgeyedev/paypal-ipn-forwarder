@@ -11,10 +11,10 @@ class Router
   attr_accessor :sandbox_id
 
   def initialize(target, test=nil)
-    @target  = target
+    @development_computer  = target
     LoadConfig.set_test_mode(!test.nil?)
     config = LoadConfig.new
-    @server_url = config.server_url
+    @dev_id = config.server_url
   end
 
 
@@ -31,11 +31,11 @@ class Router
   end
 
   def send_verified #same functionality as send_verification
-    @target.verified
+    @development_computer.verified
   end
 
   def send_ipn(ipn)
-    @target.send_ipn(ipn)
+    @development_computer.send_ipn(ipn)
   end
 
   def test_mode_on(email)
@@ -50,7 +50,7 @@ class Router
   private
 
   def set_test_mode(mode, email)
-    RestClient.post(@server_url, { params: { my_id: @sandbox_id, test_mode: mode, email: email
+    RestClient.post(@dev_id, { params: { my_id: @sandbox_id, test_mode: mode, email: email
     } })
   end
 

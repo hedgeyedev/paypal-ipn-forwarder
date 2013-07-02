@@ -48,7 +48,7 @@ describe LoadConfig do
     @config.queue_map.should ==  {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
   end
 
-  it 'retrieves a hash of the time that the last poll of an online computer occured' do
+  it 'retrieves a hash of the time that the last poll of an online computer occurred' do
     @config.last_poll_time.should == {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
   end
 

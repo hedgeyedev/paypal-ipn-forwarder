@@ -76,21 +76,14 @@ describe Server do
       ipn = @sb.send
       @server.receive_ipn(ipn)
       ipn.should == @server.queue_pop(@my_id)
-      #what happens if there are 2 developers testing. Intresting scenario which needs discussion
     end
 
-    it 'does not store IPNs which are generated from recurring payments' do
-      ipn = @sb.send_recurring
-      @server.queue_size(@my_id).should == 0
-      @server.computer_testing({'my_id'=>@my_id, 'test_mode'=>'on','@email'=>'bob@example.com'})
-      @server.recurring?(ipn).should == true
-      @server.queue_size(@my_id).should == 0
-    end
   end
 
   it 'stores the time that a computer polls'
 
   it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing'
+
 
   context 'receives polling request without test mode activated' do
 
@@ -99,6 +92,7 @@ describe Server do
     it 'sends another notification if issue not handled 24 hours after previous email'
 
     it 'sends email to all developers if no email on file'
+
 
   end
 

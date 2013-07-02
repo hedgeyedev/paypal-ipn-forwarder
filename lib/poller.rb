@@ -3,13 +3,13 @@ class Poller
 
   def initialize(router, server_url)
     @router = router
-    @server_url = server_url
+    @dev_id = server_url
     @sandbox_id = @router.sandbox_id
   end
 
   def retrieve_ipn
     #computer_id = @router.ip_address
-    RestClient.get(@server_url, @sandbox_id)
+    RestClient.get(@dev_id, @sandbox_id)
   end
 
   #caller is for testing-only

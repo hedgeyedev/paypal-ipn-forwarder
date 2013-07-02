@@ -46,7 +46,7 @@ class Server
 
   def receive_ipn(ipn=nil)
     paypal_id = paypal_id(ipn)
-    if (!recurring?(ipn) && computer_online?(paypal_id) && !ipn.nil?)
+    if (computer_online?(paypal_id) && !ipn.nil?)
       queue_push(ipn)
     end
   end
@@ -87,19 +87,17 @@ class Server
   end
 
   def email_content_generator(method_called_by, paypal_id)
-    @email = {
-        :to => @email_map[paypal_id],
-        :from => 'email-proxy-problems@superbox.com',
-        :subject => 'There is no queue on the Superbox IPN forwared',
-        :body => 'on the Superbox IPN forwarder, there is no queue set up for this function: "' + method_called_by +'" for your developer_id'
-    }
+    to = @email_map[paypal_id]
+    subject = 'There is no queue on the Superbox IPN forwared'
+    body = "on the Superbox IPN forwarder, there is no queue set up for this function: #{method_called_by} for your developer_id #{paypal_id}"
+
       mailsender = MailSender.new
-      mailsender.send(@email)
+      mailsender.send(to, subject, body)
   end
 
   def developer_email
     'dmitri.ostapenko@gmail.com'
-    #needs to be written. Need to create new hash
+#TODO: this needs to be written
   end
 
   def queue_push(ipn)
@@ -112,7 +110,7 @@ class Server
   
   def queue_size(paypal_id)
     queue = @queue_map[paypal_id]
-    if(queue == nil)
+    if(queue.nil?)
       0
     else
       queue.size
@@ -157,20 +155,14 @@ class Server
 
   def unexpected_poll(paypal_id)
     @unexpected_poll_time[paypal_id] = Time.now
-    @email = {
-        :to => @email_map[paypal_id],
-        :from => 'email-proxy-problems@superbox.com',
-        :subject => 'Unexpected poll from your developer machine',
-        :body => 'Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on'
-    }
-    mailsender = MailSender.new
-    mailsender.send(@email)
-  end
 
-  def recurring?(ipn)
-    params = CGI::parse(ipn)
-    recurring = params["recurring"].first
-    !recurring.nil?
+    to =  @email_map[paypal_id]
+    subject = 'Unexpected poll from your developer machine'
+    body = 'Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on'
+
+    mailsender = MailSender.new
+    mailsender.send(to, subject, body)
   end
 
 end
+

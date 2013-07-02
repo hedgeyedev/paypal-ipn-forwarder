@@ -9,14 +9,14 @@ describe Router do
   TEST_MODE_ON = true
 
   before(:each) do
-    @target = mock('target')
+    @development_computer = mock('development_computer')
     LoadConfig.set_test_mode(true)
     content = LoadConfig.new
-    @server_url = content.server_url
+    @dev_id = content.server_url
     @server = Server.new(TEST_MODE_ON)
-    @router = Router.new(@target, TEST_MODE_ON)
+    @router = Router.new(@development_computer, TEST_MODE_ON)
     @router.sandbox_id=('my_sandbox_id')
-    @poll = Poller.new(@router, @server_url)
+    @poller = Poller.new(@router, @dev_id)
     @email = 'bob@example.com'
     @my_id = 'my_sandbox_id'
   end
@@ -27,7 +27,7 @@ describe Router do
 
       def expected_rest_client_message(mode)
         @email = 'bob@example.com'
-        RestClient.should_receive(:post).with(@server_url, {params: {my_id: @my_id,
+        RestClient.should_receive(:post).with(@dev_id, {params: {my_id: @my_id,
                                                                      test_mode: mode,
                                                                      :email => @email
         }})
@@ -100,13 +100,13 @@ EOF
     it 'processes an IPN' do
       ipn = create_an_ipn_somehow
       ipn_response = create_ipn_response_somehow
-      @target.stub!(:send_ipn).with(ipn).and_return(ipn_response)
+      @development_computer.stub!(:send_ipn).with(ipn).and_return(ipn_response)
       @router.forward_ipn(ipn)
 
     end
 
     it 'send a verification message' do
-      @target.should_receive(:verified)
+      @development_computer.should_receive(:verified)
       @server.computer_testing({'my_id'=>@my_id, 'test_mode'=>'on','@email'=>'bob@example.com'})
       @server.store_ipn_response(@my_id)
       @server.respond_to_computer_poll(@my_id).should == 'VERIFIED'
