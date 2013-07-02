@@ -167,7 +167,6 @@ class Server
   end
 
   def respond_to_computer_poll(paypal_id, now=Time.now)
-    ap @last_poll_time; 1
     @last_poll_time[paypal_id] = now
     if(!computer_online?(paypal_id))
        unexpected_poll(paypal_id)
@@ -178,7 +177,7 @@ class Server
     end
   end
 
-  def unexpected_poll(paypal_id)
+  def unexpected_poll(paypal_id, content=nil)
     @unexpected_poll_time[paypal_id] = Time.now
 
     unless(@email_map[paypal_id] == nil)

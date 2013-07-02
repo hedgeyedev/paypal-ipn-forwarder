@@ -100,15 +100,17 @@ describe Server do
 
   context 'receives polling request without test mode activated' do
 
-    it 'should send an request to mail_sender to send email to the developer, if one is on file' do
+    it 'should  send email to the developer, if one is on file' do
       Pony.should_receive(:mail).with(any_args)
       @server.unexpected_poll(@my_id)
     end
 
     it 'sends email to all developers if no email on file' do
-      Pony.should_receive(:mail).with(any_args)
-      @server.unexpected_poll(@my_id)
+      Pony.should_receive(:mail).with(any_args).twice
+      @server.unexpected_poll('my_sandbox_unknown')
     end
+
+    it 'sends another notification if issue not handled 24 hours after previous email'
 
 
   end
