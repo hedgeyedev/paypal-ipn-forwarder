@@ -9,4 +9,5 @@ group :test do
   gem 'rest'
   gem 'rest-client'
   gem 'pony'
+  gem 'bogus'
 end

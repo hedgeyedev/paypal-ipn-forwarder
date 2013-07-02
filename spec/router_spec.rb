@@ -1,7 +1,7 @@
 require 'rspec'
 require_relative '../lib/router'
 require_relative '../lib/poller'
-require_relative '../lib/server'
+require_relative '../lib/server_client'
 require_relative '../lib/load_config'
 
 describe Router do
@@ -13,7 +13,7 @@ describe Router do
     LoadConfig.set_test_mode(true)
     content = LoadConfig.new
     @dev_id = content.server_url
-    @server = Server.new(TEST_MODE_ON)
+    @server_client = ServerClient.new(TEST_MODE_ON)
     @router = Router.new(@development_computer, TEST_MODE_ON)
     @router.sandbox_id=('my_sandbox_id')
     @poller = Poller.new(@router, @dev_id)
@@ -106,11 +106,9 @@ EOF
     end
 
     it 'send a verification message' do
-      @development_computer.should_receive(:verified)
-      @server.computer_testing({'my_id'=>@my_id, 'test_mode'=>'on','@email'=>'bob@example.com'})
-      @server.store_ipn_response(@my_id)
-      @server.respond_to_computer_poll(@my_id).should == 'VERIFIED'
-      @router.forward_ipn(@server.respond_to_computer_poll('my_sandbox_id'))
+      @development_computer.should_receive(:send_verified)
+      @server_client.stub!(:respond_to_computer_poll).with('my_sandbox_id').and_return('VERIFIED')
+      @router.forward_ipn(@server_client.respond_to_computer_poll('my_sandbox_id'))
     end
 
   end

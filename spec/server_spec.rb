@@ -8,16 +8,16 @@ describe Server do
   TEST_MODE_ON = true
 
   before(:each) do
-    @server = Server.new(TEST_MODE_ON)
+    @server_client = Server.new(TEST_MODE_ON)
   end
 
   it 'forwards an ipn from a paypal sandbox to its corresponding computer' do
     sb = Sandbox.new
     ipn = sb.send
     dev_id = 'my_sandbox_id'
-    @server.computer_testing({'my_id' => dev_id, 'test_mode' => 'on'})
-    @server.receive_ipn(ipn)
-    ipn_retrieved = @server.send_ipn(dev_id)
+    @server_client.computer_testing({'my_id' => dev_id, 'test_mode' => 'on'})
+    @server_client.receive_ipn(ipn)
+    ipn_retrieved = @server_client.send_ipn(dev_id)
     computer = DevelopmentComputer.new
     computer.receive_ipn(ipn_retrieved)
     computer.ipn.should == ipn
@@ -33,35 +33,35 @@ describe Server do
     ipn = sb.send
     id_1 = 'my_sandbox_id_1'
     id_2 = 'my_sandbox_id'
-    @server.computer_testing({'my_id' => id_1, 'test_mode' => 'on'})
-    @server.computer_testing({'my_id' => id_2, 'test_mode' => 'on'})
-    @server.receive_ipn(ipn)
-    @server.ipn_present?(id_1).should == false
-    @server.send_ipn(id_1).should == nil
+    @server_client.computer_testing({'my_id' => id_1, 'test_mode' => 'on'})
+    @server_client.computer_testing({'my_id' => id_2, 'test_mode' => 'on'})
+    @server_client.receive_ipn(ipn)
+    @server_client.ipn_present?(id_1).should == false
+    @server_client.send_ipn(id_1).should == nil
   end
 
   it 'records that it has received an IPN response from a specific development computer' do
     computer = DevelopmentComputer.new
-    @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on'})
+    @server_client.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on'})
     ipn_response = computer.send_ipn_response
-    @server.receive_ipn_response(ipn_response)
-    paypal_id = @server.paypal_id(ipn_response)
-    @server.ipn_response_present?(paypal_id).should == true
+    @server_client.receive_ipn_response(ipn_response)
+    paypal_id = @server_client.paypal_id(ipn_response)
+    @server_client.ipn_response_present?(paypal_id).should == true
   end
 
   it 'confirms a IPN response for a polling request from the router for that IPN response' do
     computer = DevelopmentComputer.new
     ipn_response = computer.send_ipn_response
-    @server.receive_ipn_response(ipn_response)
-    paypal_id = @server.paypal_id(ipn_response)
-    @server.ipn_response_present?(paypal_id).should == true
+    @server_client.receive_ipn_response(ipn_response)
+    paypal_id = @server_client.paypal_id(ipn_response)
+    @server_client.ipn_response_present?(paypal_id).should == true
 
   end
 
   it 'denies an IPN response for a polling request from a router because no IPN exists for that router' do
-    @server.ipn_response_present?(@my_id).should == false
-    @server.computer_testing({'my_id'=>@my_id, 'test_mode'=>'on','@email'=>'bob@example.com'})
-    @server.respond_to_computer_poll(@my_id).should == nil
+    @server_client.ipn_response_present?(@my_id).should == false
+    @server_client.computer_testing({'my_id'=>@my_id, 'test_mode'=>'on','@email'=>'bob@example.com'})
+    @server_client.respond_to_computer_poll(@my_id).should == nil
   end
 
   context 'queue' do
@@ -69,13 +69,13 @@ describe Server do
     before(:each) do
       @sb = Sandbox.new
       @my_id = 'my_sandbox_id'
-      @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on'})
+      @server_client.computer_testing({'my_id' => @my_id, 'test_mode' => 'on'})
     end
 
     it 'stores IPNs sent from a sandbox when a computer is testing' do
       ipn = @sb.send
-      @server.receive_ipn(ipn)
-      ipn.should == @server.queue_pop(@my_id)
+      @server_client.receive_ipn(ipn)
+      ipn.should == @server_client.queue_pop(@my_id)
     end
 
   end

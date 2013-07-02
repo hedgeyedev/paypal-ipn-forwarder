@@ -13,7 +13,7 @@ class Organizer
 
   TEST_MODE_ON = true
   def initialize
-    @server = Server.new(TEST_MODE_ON)
+    @server_client = Server.new(TEST_MODE_ON)
     @sandbox = Sandbox.new
     @computer = DevelopmentComputer.new
     @mail_sender = MailSender.new

@@ -32,4 +32,9 @@ EOF
     @ipn
   end
 
+  def send_verified
+    url = 'localhost:3000'
+    RestClient.post url 'VERIFIED'
+  end
+
 end

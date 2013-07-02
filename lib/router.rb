@@ -31,7 +31,7 @@ class Router
   end
 
   def send_verified #same functionality as send_verification
-    @development_computer.verified
+    @development_computer.send_verified
   end
 
   def send_ipn(ipn)
