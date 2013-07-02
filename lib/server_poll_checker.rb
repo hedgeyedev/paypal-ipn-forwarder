@@ -5,17 +5,17 @@ class ServerPollChecker
     @content = LoadConfig.new
   end
 
-  def checkpoll(time)
+  def checkpoll(time, paypal_id)
     @time = time
-    poll_times = @content.last_poll_time.clone
-    poll_times.each_pair {|key, value|
-    if(value >= Time.now - time)
-      send_email(key)
-      value = TIme.now
-    end
-    }
-
-    sleep 60.0
+    loop do
+      poll_times = @content.last_poll_time.clone
+      most_recent_poll_time = poll_times[paypal_id]
+      if(most_recent_poll_time >= Time.now - time && !value.nil?)
+        send_email(key)
+        value = Time.now
+      end
+      }
+      sleep 24.hours
   end
 
   def send_email(paypal_id)

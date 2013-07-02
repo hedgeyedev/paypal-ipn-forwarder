@@ -1,6 +1,7 @@
 require 'cgi'
 require 'sinatra/base'
 require 'yaml'
+require 'awesome_print'
 
 require_relative 'load_config'
 require_relative 'mail_sender'
@@ -24,7 +25,8 @@ class Server
   def receive_poll_from_computer(paypal_id)
   end
 
-  def send_ipn(paypal_id)
+  def send_ipn_if_present(paypal_id)
+    #TODO:remove ipn_present and make sure no tests break
     if (ipn_present?(paypal_id))
       ipn = queue_pop(paypal_id)
     end
@@ -58,19 +60,41 @@ class Server
 
   def computer_testing(params)
     id = params['my_id']
-    if (params['test_mode'] == 'on')
-      #unless (computer_online?(id))
+    if params['test_mode'] == 'on'
+      if (!computer_online?(id))
         @computers_testing[id] = true
         @queue_map[id] = Queue.new
-        @last_poll_time = Time.now
+        @last_poll_time[id] = Time.now
         email_mapper(id, params['email'])
-      #end
+      elsif params['email'] == @email_map[id]
+      else
+         send_conflict_email(id, params['email'])
+         @computers_testing[id] = false
+         @queue_map[id] = nil
+         @last_poll_time[id] = nil
+      end
     elsif (params['test_mode']== 'off')
       @computers_testing[id] = false
       @queue_map[id] = nil
-      @last_poll_time = nil
+      @last_poll_time[id] = nil
     end
   end
+
+  def send_conflict_email(paypal_id, email)
+    to = @email_map[paypal_id]
+    subject = 'You have turned on an already_testing sandbox. IT HAS BEEN TAKEN OFF OF TESTING MODE'
+    body = "on the Superbox IPN forwarder, you have turned on an already testing sandbox. The sandbox has the id #{paypal_id}. The sandbox has been taken down from testing mode.
+    The other user of the sandbox was #{email}"
+
+    mailsender = MailSender.new
+    mailsender.send(to, subject, body)
+
+    to1 = email
+    body = "on the Superbox IPN forwarder, you have turned on an already testing sandbox. The sandbox has the id #{paypal_id}. The sandbox has been taken down from testing mode.
+    The other user of the sandbox was #{to}"
+    mailsender.send(to1, subject, body)
+  end
+
 
   def email_mapper(id, email)
      @email_map[id] = email
@@ -142,26 +166,41 @@ class Server
     !ipn_response.nil?
   end
 
-  def respond_to_computer_poll(paypal_id)
-    @last_poll_time = Time.now
+  def respond_to_computer_poll(paypal_id, now=Time.now)
+    @last_poll_time[paypal_id] = now
     if(!computer_online?(paypal_id))
        unexpected_poll(paypal_id)
     elsif ipn_response_present?(paypal_id)
       send_verification
     else
-      send_ipn(paypal_id)
+      send_ipn_if_present(paypal_id)
     end
   end
 
-  def unexpected_poll(paypal_id)
+  def unexpected_poll(paypal_id, content=nil)
     @unexpected_poll_time[paypal_id] = Time.now
 
-    to =  @email_map[paypal_id]
-    subject = 'Unexpected poll from your developer machine'
-    body = 'Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on'
+    unless(@email_map[paypal_id] == nil)
+      to =  @email_map[paypal_id]
+      subject = 'Unexpected poll from your developer machine'
+      body = "Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on. The sandox id is #{paypal_id}"
+      mailsender = MailSender.new
+      mailsender.send(to, subject, body)
+    else
+      @email_map.each_value {|value|
+        to = value
+        subject = "Unexpected poll from a developer machine"
+        body = "A computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on. The sandox id is #{paypal_id}"
+        mailsender = MailSender.new
+        mailsender.send(to, subject, body)
+      }
 
-    mailsender = MailSender.new
-    mailsender.send(to, subject, body)
+    end
+  end
+
+  def last_computer_poll_time(paypal_id)
+    puts "id: #{paypal_id}"
+    @last_poll_time[paypal_id]
   end
 
 end
