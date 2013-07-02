@@ -5,38 +5,50 @@ require_relative '../lib/mail_creator'
 describe MailSender do
 
   YAML_HASH = {
-    'first' => 'the_worst',
-    'second' => 'the_best',
-    'third' => 'the_hairy_chest'
-     }
-    EX = {
-      'bob' => 'thebuilder',
-      'luke' => 'skywalker'
-    }
-    COMBINED = {
-      'bob' => 'thebuilder',
-      'luke' => 'skywalker',
-      'first' => 'the_worst',
-      'second' => 'the_best',
-      'third' => 'the_hairy_chest'
-    }
-    TO = {
+      :via => :smtp,
+      :via_options => {:address => '0.0.0.1', :openssl_verify_mode => 'none'}
+  }
+  FED_IN_PARAMS = {
+      'to' => 'bob@example.com',
+      'from' => 'james@example.com',
+      'title' => 'this works! awesome',
+      'subject' => 'hey, look this went through'
+  }
+  COMBINED = {
+      :via => :smtp,
+      :via_options => {:address => '0.0.0.1', :openssl_verify_mode => 'none'},
+      'to' => 'bob@example.com',
+      'from' => 'james@example.com',
+      'title' => 'this works! awesome',
+      'subject' => 'hey, look this went through'
+  }
+  TO = {
       :to => 'dmitri.ostapenko@gmail.com',
       :body => 'this is a test email body message. HEY scott or Dmitri or James',
       :subject => 'test email from hedgeye. is this working? '
-    }
+  }
+
+  TEST_MODE_ON = true
+
   it 'should create the email content from mail_sender' do
     sender = MailSender.new
-    hash = sender.create(EX)
+    hash = sender.create(FED_IN_PARAMS, MailCreator.new(TEST_MODE_ON))
     YAML_HASH.each_key do |key|
       YAML_HASH[key].should == hash[key]
     end
   end
 
   it 'should send an email' do
+    Pony.should_receive(:mail).with({:to => 'dmitri.ostapenko@gmail.com',
+                                     :body => 'this is a test email body message. HEY scott or Dmitri or James',
+                                     :subject => 'test email from hedgeye. is this working? ',
+                                     :via => :smtp,
+                                     :via_options => {
+                                         :address => '0.0.0.1',
+                                         :openssl_verify_mode => 'none'}, :subject => 'test email from hedgeye. is this working? '})
     sender = MailSender.new
-    hash = sender.create(TO)
+    hash = sender.create(TO, MailCreator.new(TEST_MODE_ON))
     sender.send_email
-  end
 
+  end
 end

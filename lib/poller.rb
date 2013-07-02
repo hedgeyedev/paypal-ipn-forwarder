@@ -3,21 +3,28 @@ class Poller
 
   def initialize(router, server_url)
     @router = router
-    @server_url = server_url
+    @dev_id = server_url
+    @sandbox_id = @router.sandbox_id
   end
 
   def retrieve_ipn
-    computer_id = @router.ip_address
-    RestClient.get(@server_url, computer_id)
+    #computer_id = @router.ip_address
+    RestClient.get(@dev_id, @sandbox_id)
   end
 
-  def poll_for_ipn(time=5.0)
+  #caller is for testing-only
+  def poll_for_ipn(caller=nil)
     loop do
       ipn = retrieve_ipn
       @router.forward_ipn ipn unless (ipn.nil?)
-      sleep time
+      sleep @time_in_sec
+      break unless (caller.nil? || caller.keep_polling?)
     end
   end
+
+  attr_writer :time_in_sec
+
+
 
 
 end

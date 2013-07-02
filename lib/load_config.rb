@@ -54,4 +54,16 @@ class LoadConfig
     @config['queue_map']
   end
 
+  def last_poll_time
+    @config['last_poll_time']
+  end
+
+  def email_map
+    @config['email_map']
+  end
+
+  def unexpected_poll_time
+    @config['unexpected_poll_time']
+  end
+
 end

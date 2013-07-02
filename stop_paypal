@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 
 require_relative 'lib/router'
 
@@ -6,24 +7,4 @@ Process.kill("HUP", process_id)
 Process.wait
 puts 'Paypal testing has been terminated'
 
-=begin #i am resisting completely deleting these methods until we are sure that we dont need them
-#I also don't know if ruby's multiline comments will work in this file
-def initialize
-  @router = Router.new
-  @poll = Poller.new(@router)
-end
-
-
-def stop
-  @poll.test_mode_off
-  process_id = read_process_id
-  Process.kill("HUP", process_id)
-  Process.wait
-  puts 'Paypal testing has been terminated'
-end
-
-def read_process_id
-  File.read(PROCESS_FILE_NAME)
-end
-=end
 

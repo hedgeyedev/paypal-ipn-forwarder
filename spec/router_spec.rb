@@ -9,12 +9,16 @@ describe Router do
   TEST_MODE_ON = true
 
   before(:each) do
-    @target     = mock('target')
-    LoadConfig.(true)
+    @development_computer = mock('development_computer')
+    LoadConfig.set_test_mode(true)
     content = LoadConfig.new
-    @server_url = content.server_url
-    @router     = Router.new(@target, TEST_MODE_ON)
-    @poll       = Poller.new(@router, @server_url)
+    @dev_id = content.server_url
+    @server = Server.new(TEST_MODE_ON)
+    @router = Router.new(@development_computer, TEST_MODE_ON)
+    @router.sandbox_id=('my_sandbox_id')
+    @poller = Poller.new(@router, @dev_id)
+    @email = 'bob@example.com'
+    @my_id = 'my_sandbox_id'
   end
 
   context 'interactions with server' do
@@ -22,14 +26,16 @@ describe Router do
     context 'test mode' do
 
       def expected_rest_client_message(mode)
-        RestClient.should_receive(:post).with(@server_url, { params: { my_ip:     @router.my_ip_address,
-                                                                       test_mode: mode
-        } })
+        @email = 'bob@example.com'
+        RestClient.should_receive(:post).with(@dev_id, {params: {my_id: @my_id,
+                                                                     test_mode: mode,
+                                                                     :email => @email
+        }})
       end
 
       it 'has started' do
         expected_rest_client_message(Router::TEST_ON)
-        @router.test_mode_on
+        @router.test_mode_on(@email)
       end
 
       # FIXME or get rid of me
@@ -40,15 +46,7 @@ describe Router do
 
       it 'has stopped' do
         expected_rest_client_message(Router::TEST_OFF)
-        @router.test_mode_off
-      end
-
-    end
-
-    context 'polling retrieves an IPN' do
-
-      it 'initiates a protocol to send the IPN to the development computer' do
-        RestClient.should_receive(:post).with(@server_url, @router.my_ip_address)
+        @router.test_mode_off(@email)
       end
 
     end
@@ -67,8 +65,8 @@ address_name=Test+User&notify_version=2.6&custom=&payer_status=verified&add\
 ress_country=United+States&address_city=San+Jose&quantity=1&verify_sign=Atk\
 OfCXbDm2hu0ZELryHFjY-Vb7PAUvS6nMXgysbElEn9v-\
 1XcmSoGtf&payer_email=gpmac_1231902590_per%40paypal.com&txn_id=61E67681CH32\
-38416&payment_type=instant&last_name=User&address_state=CA&receiver_email=email\
-&payment_fee=0.88&receiver_id=S8XGHLYDW9T3S\
+38416&payment_type=instant&last_name=User&address_state=CA&receiver_email=@email\
+&payment_fee=0.88&receiver_id=my_sandbox_id\
 &txn_type=express_checkout&item_name=&mc_currency=USD&item_number=&residenc\
 e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
 ross=19.95&shipping=0.00
@@ -85,8 +83,8 @@ address_name=Test+User&notify_version=2.6&custom=&payer_status=verified&add\
 ress_country=United+States&address_city=San+Jose&quantity=1&verify_sign=Atk\
 OfCXbDm2hu0ZELryHFjY-Vb7PAUvS6nMXgysbElEn9v-\
 1XcmSoGtf&payer_email=gpmac_1231902590_per%40paypal.com&txn_id=61E67681CH32\
-38416&payment_type=instant&last_name=User&address_state=CA&receiver_email=email\
-&payment_fee=0.88&receiver_id=S8XGHLYDW9T3S\
+38416&payment_type=instant&last_name=User&address_state=CA&receiver_email=@email\
+&payment_fee=0.88&receiver_id=my_sandbox_id\
 &txn_type=express_checkout&item_name=&mc_currency=USD&item_number=&residenc\
 e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
 ross=19.95&shipping=0.00
@@ -94,24 +92,25 @@ EOF
     end
 
     it 'automatically identifies the developer computer' do
-      @router.my_ip_address.should =~ /\d+\.\d+\.\d+\.\d+/
+      @router.sandbox_id.should == @my_id
+
     end
 
     # TODO: development computer and @router are going to have to be tied together
     it 'processes an IPN' do
-      ipn          = create_an_ipn_somehow
+      ipn = create_an_ipn_somehow
       ipn_response = create_ipn_response_somehow
-      @target.stub!(:send_ipn).with(ipn).and_return(ipn_response)
+      @development_computer.stub!(:send_ipn).with(ipn).and_return(ipn_response)
       @router.forward_ipn(ipn)
 
     end
 
     it 'send a verification message' do
-      @target.should_receive(:verified)
-      server = Server.new
-      server.store_ipn_response('developer_one')
-      server.send_response_to_computer('developer_one').should == 'VERIFIED'
-      @router.forward_ipn(server.send_response_to_computer('developer_one'))
+      @development_computer.should_receive(:verified)
+      @server.computer_testing({'my_id'=>@my_id, 'test_mode'=>'on','@email'=>'bob@example.com'})
+      @server.store_ipn_response(@my_id)
+      @server.respond_to_computer_poll(@my_id).should == 'VERIFIED'
+      @router.forward_ipn(@server.respond_to_computer_poll('my_sandbox_id'))
     end
 
   end

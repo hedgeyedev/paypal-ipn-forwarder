@@ -3,8 +3,10 @@ require_relative '../lib/load_config'
 
 describe LoadConfig do
 
+  TEST_MODE_ON = true
+
   before(:each) do
-    LoadConfig.set_test_mode(true)
+    LoadConfig.set_test_mode(TEST_MODE_ON)
     @config = LoadConfig.new
   end
 
@@ -31,7 +33,7 @@ describe LoadConfig do
   end
 
   it 'retrieves the sandbox_map' do
-    @config.sandbox_map.should == {'gpmac_1231902686_biz.api@paypal.com'=>'my_sandbox_id', 'paypal@gmail.com'=>'my_sandbox_id_1'}
+    @config.sandbox_map.should == {'gpmac_1231902686_biz@paypal.com'=>'my_sandbox_id', 'paypal@gmail.com'=>'my_sandbox_id_1'}
   end
 
   it 'retrieves the computer_testing booleans for a server hash' do
@@ -44,6 +46,18 @@ describe LoadConfig do
 
   it 'retrieves the queue map for the server' do
     @config.queue_map.should ==  {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
+  end
+
+  it 'retrieves a hash of the time that the last poll of an online computer occurred' do
+    @config.last_poll_time.should == {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
+  end
+
+  it 'retreives the map of ids to developer emails for sending email notificaitons' do
+    @config.email_map.should == {'my_sandbox_id'=>'dmitri.ostapenko@gmail.com', 'my_sandbox_id_1'=>'bob@example.com'}
+  end
+
+  it 'retreives a hash of when the last unexpected poll occured' do
+    @config.unexpected_poll_time.should == {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
   end
 
 
