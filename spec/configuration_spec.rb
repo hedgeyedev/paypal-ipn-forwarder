@@ -33,13 +33,13 @@ EOF
     #end
 
     it 'retrieves the Paypal sandbox id from the IPN' do
-      @server_client = Server.new(TEST_MODE_ON)
-      @server_client.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
-      @server_client.computer_online?('my_sandbox_id').should == true
-      @server_client.receive_ipn(SAMPLE_IPN)
-      ipn = @server_client.respond_to_computer_poll('my_sandbox_id')
+      @server = Server.new(TEST_MODE_ON)
+      @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
+      @server.computer_online?('my_sandbox_id').should == true
+      @server.receive_ipn(SAMPLE_IPN)
+      ipn = @server.respond_to_computer_poll('my_sandbox_id')
       #@server.queue_size('my_sandbox_id').should == "2"
-      paypal_id = @server_client.paypal_id(ipn)
+      paypal_id = @server.paypal_id(ipn)
       paypal_id.should == 'my_sandbox_id'
     end
 

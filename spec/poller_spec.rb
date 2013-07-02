@@ -38,7 +38,5 @@ describe Poller do
     @poller.retrieve_ipn
   end
 
-  it
-
 
 end

@@ -10,4 +10,5 @@ group :test do
   gem 'rest-client'
   gem 'pony'
   gem 'bogus'
+  gem 'awesome_print'
 end

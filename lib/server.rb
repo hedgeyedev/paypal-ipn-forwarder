@@ -1,6 +1,7 @@
 require 'cgi'
 require 'sinatra/base'
 require 'yaml'
+require 'awesome_print'
 
 require_relative 'load_config'
 require_relative 'mail_sender'
@@ -24,7 +25,8 @@ class Server
   def receive_poll_from_computer(paypal_id)
   end
 
-  def send_ipn(paypal_id)
+  def send_ipn_if_present(paypal_id)
+    #TODO:remove ipn_present and make sure no tests break
     if (ipn_present?(paypal_id))
       ipn = queue_pop(paypal_id)
     end
@@ -62,13 +64,13 @@ class Server
       #unless (computer_online?(id))
         @computers_testing[id] = true
         @queue_map[id] = Queue.new
-        @last_poll_time = Time.now
+        @last_poll_time[id] = Time.now
         email_mapper(id, params['email'])
       #end
     elsif (params['test_mode']== 'off')
       @computers_testing[id] = false
       @queue_map[id] = nil
-      @last_poll_time = nil
+      @last_poll_time[id] = nil
     end
   end
 
@@ -77,7 +79,7 @@ class Server
   end
 
   def computer_online?(id)
-    @computers_testing[id]
+    @computers_testing.include?(id)
   end
 
   def queue_identify(paypal_id, method_called_by)
@@ -142,14 +144,15 @@ class Server
     !ipn_response.nil?
   end
 
-  def respond_to_computer_poll(paypal_id)
-    @last_poll_time = Time.now
+  def respond_to_computer_poll(paypal_id, now=Time.now)
+    ap @last_poll_time; 1
+    @last_poll_time[paypal_id] = now
     if(!computer_online?(paypal_id))
        unexpected_poll(paypal_id)
     elsif ipn_response_present?(paypal_id)
       send_verification
     else
-      send_ipn(paypal_id)
+      send_ipn_if_present(paypal_id)
     end
   end
 
@@ -162,6 +165,11 @@ class Server
 
     mailsender = MailSender.new
     mailsender.send(to, subject, body)
+  end
+
+  def last_computer_poll_time(paypal_id)
+    puts "id: #{paypal_id}"
+    @last_poll_time[paypal_id]
   end
 
 end
