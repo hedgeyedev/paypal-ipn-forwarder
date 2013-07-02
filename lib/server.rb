@@ -60,13 +60,19 @@ class Server
 
   def computer_testing(params)
     id = params['my_id']
-    if (params['test_mode'] == 'on')
-      #unless (computer_online?(id))
+    if params['test_mode'] == 'on'
+      if (!computer_online?(id))
         @computers_testing[id] = true
         @queue_map[id] = Queue.new
         @last_poll_time[id] = Time.now
         email_mapper(id, params['email'])
-      #end
+      elsif params['email'] == @email_map[id]
+      else
+         send_conflict_email(id, params['email'])
+         @computers_testing[id] = false
+         @queue_map[id] = nil
+         @last_poll_time[id] = nil
+      end
     elsif (params['test_mode']== 'off')
       @computers_testing[id] = false
       @queue_map[id] = nil
@@ -74,12 +80,28 @@ class Server
     end
   end
 
+  def send_conflict_email(paypal_id, email)
+    to = @email_map[paypal_id]
+    subject = 'You have turned on an already_testing sandbox. IT HAS BEEN TAKEN OFF OF TESTING MODE'
+    body = "on the Superbox IPN forwarder, you have turned on an already testing sandbox. The sandbox has the id #{paypal_id}. The sandbox has been taken down from testing mode.
+    The other user of the sandbox was #{email}"
+
+    mailsender = MailSender.new
+    mailsender.send(to, subject, body)
+
+    to1 = email
+    body = "on the Superbox IPN forwarder, you have turned on an already testing sandbox. The sandbox has the id #{paypal_id}. The sandbox has been taken down from testing mode.
+    The other user of the sandbox was #{to}"
+    mailsender.send(to1, subject, body)
+  end
+
+
   def email_mapper(id, email)
      @email_map[id] = email
   end
 
   def computer_online?(id)
-    @computers_testing.include?(id)
+    @computers_testing[id]
   end
 
   def queue_identify(paypal_id, method_called_by)

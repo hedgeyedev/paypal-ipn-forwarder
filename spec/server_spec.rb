@@ -61,7 +61,7 @@ describe Server do
 
   it 'denies an IPN response for a polling request from a router because no IPN exists for that router' do
     @server.ipn_response_present?(@my_id).should == false
-    @server.computer_testing({'my_id'=>@my_id, 'test_mode'=>'on','@email'=>'bob@example.com'})
+    @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', '@email' => 'bob@example.com'})
     @server.respond_to_computer_poll(@my_id).should == nil
   end
 
@@ -90,16 +90,23 @@ describe Server do
 
   end
 
-  it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing'
+  it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing' do
+    Pony.should_receive(:mail).with(any_args).twice
+    @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
+    @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob_1@example.com'})
+
+  end
 
 
   context 'receives polling request without test mode activated' do
 
-    it 'send an email to the developer, if one is on file'
-
-    it 'sends another notification if issue not handled 24 hours after previous email'
+    it 'should send an request to mail_sender to send email to the developer, if one is on file' do
+      Pony.should_receive(:mail).with(any_args)
+      @server.unexpected_poll(@my_id)
+    end
 
     it 'sends email to all developers if no email on file'
+
 
 
   end
