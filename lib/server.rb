@@ -181,12 +181,22 @@ class Server
   def unexpected_poll(paypal_id)
     @unexpected_poll_time[paypal_id] = Time.now
 
-    to =  @email_map[paypal_id]
-    subject = 'Unexpected poll from your developer machine'
-    body = 'Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on'
+    unless(@email_map[paypal_id] == nil)
+      to =  @email_map[paypal_id]
+      subject = 'Unexpected poll from your developer machine'
+      body = "Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on. The sandox id is #{paypal_id}"
+      mailsender = MailSender.new
+      mailsender.send(to, subject, body)
+    else
+      @email_map.each_value {|value|
+        to = value
+        subject = "Unexpected poll from a developer machine"
+        body = "A computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on. The sandox id is #{paypal_id}"
+        mailsender = MailSender.new
+        mailsender.send(to, subject, body)
+      }
 
-    mailsender = MailSender.new
-    mailsender.send(to, subject, body)
+    end
   end
 
   def last_computer_poll_time(paypal_id)

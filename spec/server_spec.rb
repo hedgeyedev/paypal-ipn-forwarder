@@ -105,8 +105,10 @@ describe Server do
       @server.unexpected_poll(@my_id)
     end
 
-    it 'sends email to all developers if no email on file'
-
+    it 'sends email to all developers if no email on file' do
+      Pony.should_receive(:mail).with(any_args)
+      @server.unexpected_poll(@my_id)
+    end
 
 
   end
