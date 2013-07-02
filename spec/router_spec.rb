@@ -12,11 +12,11 @@ describe Router do
     @development_computer = mock('development_computer')
     LoadConfig.set_test_mode(true)
     content = LoadConfig.new
-    @dev_id = content.server_url
-    @server_client = ServerClient.new(TEST_MODE_ON)
+    @server_url = content.server_url
+    @server_client = ServerClient.new
     @router = Router.new(@development_computer, TEST_MODE_ON)
     @router.sandbox_id=('my_sandbox_id')
-    @poller = Poller.new(@router, @dev_id)
+    @poller = Poller.new(@router, @server_url)
     @email = 'bob@example.com'
     @my_id = 'my_sandbox_id'
   end
@@ -27,7 +27,7 @@ describe Router do
 
       def expected_rest_client_message(mode)
         @email = 'bob@example.com'
-        RestClient.should_receive(:post).with(@dev_id, {params: {my_id: @my_id,
+        RestClient.should_receive(:post).with(@server_url, {params: {my_id: @my_id,
                                                                      test_mode: mode,
                                                                      :email => @email
         }})
@@ -107,8 +107,7 @@ EOF
 
     it 'send a verification message' do
       @development_computer.should_receive(:send_verified)
-      @server_client.stub!(:respond_to_computer_poll).with('my_sandbox_id').and_return('VERIFIED')
-      @router.forward_ipn(@server_client.respond_to_computer_poll('my_sandbox_id'))
+      @router.forward_ipn('VERIFIED')
     end
 
   end

@@ -1,5 +1,11 @@
-
+require_relative 'load_config'
 class DevelopmentComputer
+
+  def initialize(test=nil)
+    LoadConfig.set_test_mode(test)
+    @config = LoadConfig.new
+  end
+
   SAMPLE_IPN = <<EOF
 mc_gross=19.95&protection_eligibility=Eligible&address_status=confirmed&pay\
 er_id=LPLWNMTBWMFAY&tax=0.00&address_street=1+Main+St&payment_date=20%3A12%\
@@ -33,8 +39,11 @@ EOF
   end
 
   def send_verified
-    url = 'localhost:3000'
-    RestClient.post url 'VERIFIED'
+    RestClient.post @config.development_computer_url, 'VERIFIED'
+  end
+
+  def send_ipn(ipn)
+    RestClient.post @config.development_computer_url, ipn
   end
 
 end
