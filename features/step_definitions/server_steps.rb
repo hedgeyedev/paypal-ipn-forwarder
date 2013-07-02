@@ -34,7 +34,7 @@ Then(/^the server notifies (?:.*?)(developer|developers|me) (.*?)$/) do |destina
   problem = cleaner.clean(problem)
 
   #this method works for when a queue should be popping or pushing into a queue
-  @server.no_computer_queue(problem)
+  @server.no_computer_queue(problem, 'my_sandbox_id')
 end
 
 Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN .*?(?:in|into|from|to|for|available for) (my computer|another computer|the server)$/) do |action, existance ,assignment_blob|
