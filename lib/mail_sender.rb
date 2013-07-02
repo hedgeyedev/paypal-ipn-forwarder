@@ -3,12 +3,12 @@ require_relative 'mail_creator'
 class MailSender
 
   def send(mail)
-    create(mail, nil)
+    create(mail)
     send_email
   end
 
-  def create(mail, mode, mail_generator=nil)
-    @email_creator = mail_generator || MailCreator.new(mode)
+  def create(mail, mail_generator=MailCreator.new)
+    @email_creator = mail_generator
     @email_content = @email_creator.create(mail)
     @email_content
   end

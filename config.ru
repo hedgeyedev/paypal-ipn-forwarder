@@ -19,9 +19,10 @@ class ServerRack < Sinatra::Base
   end
 
   get '/ipn-response' do
-    comp_id = request.body.read
-    puts comp_id # make sure request.body.read works
-    @server.respond_to_computer_poll(comp_id)
+    params = request.body.read
+    # make sure request.body.read works
+    puts params
+    @server.respond_to_computer_poll(params)
   end
 
   post '/payments/ipn' do

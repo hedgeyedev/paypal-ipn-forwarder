@@ -20,9 +20,6 @@ class Server
     @email_map = content.email_map.clone
   end
 
-  def ipn
-
-  end
 
   def receive_poll_from_computer(paypal_id)
   end
@@ -30,7 +27,6 @@ class Server
   def send_ipn(paypal_id)
     if (ipn_present?(paypal_id))
       ipn = queue_pop(paypal_id)
-      ipn
     end
   end
 
@@ -50,7 +46,7 @@ class Server
 
   def receive_ipn(ipn=nil)
     paypal_id = paypal_id(ipn)
-    if (!recurring?(ipn) && computer_online?(paypal_id))
+    if (!recurring?(ipn) && computer_online?(paypal_id) && !ipn.nil?)
       queue_push(ipn)
     end
   end
@@ -86,13 +82,11 @@ class Server
 
   def queue_identify(paypal_id, method_called_by)
     queue = @queue_map[paypal_id]
-    if(queue.nil?)
-      no_computer_queue(method_called_by, paypal_id)
-    end
+    no_computer_queue(method_called_by) if queue.nil?
     queue
   end
 
-  def no_computer_queue(method_called_by, paypal_id)
+  def email_content_generator(method_called_by, paypal_id)
     @email = {
         :to => @email_map[paypal_id],
         :from => 'email-proxy-problems@superbox.com',
@@ -114,7 +108,6 @@ class Server
     unless(queue.nil?)
       queue.push(ipn)
     end
-    queue
   end
   
   def queue_size(paypal_id)

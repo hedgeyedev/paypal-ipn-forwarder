@@ -18,7 +18,7 @@ When(/^(?:the|a|) sandbox( unknown to the server|) sends an IPN( for the recurri
     elsif (state != '')
       @ipn = @sandbox.send_fail
     end
-    #@server.receive_ipn(@ipn)
+    @server.receive_ipn(@ipn)
 end
 
 Then(/^the server notifies (?:.*?)(developer|developers|me) (.*?)$/) do |destinaton, problem|
@@ -31,10 +31,10 @@ Then(/^the server notifies (?:.*?)(developer|developers|me) (.*?)$/) do |destina
   end
 
   cleaner = ProblemCleaner.new
-  problem = cleaner.clean(problem)
+  problem = cleaner.remove(problem)
 
   #this method works for when a queue should be popping or pushing into a queue
-  @server.no_computer_queue(problem, 'my_sandbox_id')
+  @server.email_content_generator(problem, 'my_sandbox_id')
 end
 
 Given(/^the server (has|puts|purges|contains|only contains) (no|the|an) IPN .*?(?:in|into|from|to|for|available for) (my computer|another computer|the server)$/) do |action, existance ,assignment_blob|
