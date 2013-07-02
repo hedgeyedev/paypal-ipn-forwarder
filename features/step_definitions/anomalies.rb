@@ -3,7 +3,7 @@ TEST_MODE_ON = true
 Given(/^(?:the|my) (computer|server) (is|is not) in (?:PayPal IPN |)test.*?mode.*?$/) do |subject, mode|
   server = Server.new(TEST_MODE_ON)
   dev_id = 'my_sandbox_id'
-  server.computer_testing({'my_id' => dev_id, 'test_mode' => 'on'})
+  server.computer_testing({'my_id' => dev_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
   server.computer_online?(dev_id).should == true
 end
 
@@ -56,7 +56,7 @@ end
 When(/^my computer.*?the server that I'm in test mode$/) do
   server = Server.new(TEST_MODE_ON)
   dev_id = 'my_sandbox_id'
-  server.computer_testing({'my_id' => dev_id, 'test_mode' => 'on'})
+  server.computer_testing({'my_id' => dev_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
   server.computer_online?('my_sandbox_id').should == true
 end
 
@@ -64,7 +64,7 @@ end
 Then(/^(the server|my computer) turns off (?:my computer's |)test mode$/) do |subject|
   server = Server.new(TEST_MODE_ON)
   dev_id = 'my_sandbox_id'
-  server.computer_testing({'my_id' => dev_id, 'test_mode' => 'off'})
+  server.computer_testing({'my_id' => dev_id, 'test_mode' => 'off', 'email' => 'bob@example.com'})
   server.computer_online?('my_sandbox_id').should == false
 end
 

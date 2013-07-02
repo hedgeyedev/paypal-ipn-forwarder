@@ -16,7 +16,7 @@ class Server
     @ipn_response = content.ipn_response.clone
     @queue_map = content.queue_map.clone
     @last_poll_time = content.last_poll_time.clone
-    @unexpected_poll_time = content.@unexpected_poll_time.clone
+    @unexpected_poll_time = content.unexpected_poll_time.clone
     @email_map = content.email_map.clone
   end
 
@@ -40,16 +40,17 @@ class Server
 
   def paypal_id(ipn)
     params = CGI::parse(ipn)
-    params["receiver_id"].first
+    params['receiver_id'].first
   end
 
-  def paypal_id(paypal_id)
-    @map[paypal_id]
+  def paypal_email_id_map(paypal_email)
+      @map[paypal_email]
   end
+
 
   def receive_ipn(ipn=nil)
     paypal_id = paypal_id(ipn)
-    unless (recurring?(ipn) || !computer_online?(paypal_id))
+    if (!recurring?(ipn) && computer_online?(paypal_id))
       @ipn = ipn unless ipn.nil?
       queue_push(ipn)
     end
@@ -62,13 +63,13 @@ class Server
 
   def computer_testing(params)
     id = params['my_id']
-    if (params['test_mode']== 'on')
-      unless (computer_online?(id))
+    if (params['test_mode'] == 'on')
+      #unless (computer_online?(id))
         @computers_testing[id] = true
         @queue_map[id] = Queue.new
         @last_poll_time = Time.now
         email_mapper(id, params['email'])
-      end
+      #end
     elsif (params['test_mode']== 'off')
       @computers_testing[id] = false
       @queue_map[id] = nil
@@ -77,7 +78,7 @@ class Server
   end
 
   def email_mapper(id, email)
-     @email[id] = email
+     @email_map[id] = email
   end
 
   def computer_online?(id)
@@ -87,7 +88,7 @@ class Server
   def queue_identify(paypal_id, method_called_by)
     queue = @queue_map[paypal_id]
     if(queue.nil?)
-      no_computer_queue(method_called_by)
+      no_computer_queue(method_called_by, paypal_id)
     end
     queue
   end
@@ -153,7 +154,7 @@ class Server
 
   def respond_to_computer_poll(paypal_id)
     @last_poll_time = Time.now
-    if(computer_online?(paypal_id))
+    if(!computer_online?(paypal_id))
        unexpected_poll(paypal_id)
     elsif ipn_response_present?(paypal_id)
       send_verification

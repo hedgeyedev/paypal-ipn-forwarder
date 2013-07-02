@@ -19,31 +19,28 @@ ress_country=United+States&address_city=San+Jose&quantity=1&verify_sign=Atk\
 OfCXbDm2hu0ZELryHFjY-Vb7PAUvS6nMXgysbElEn9v-\
 1XcmSoGtf&payer_email=gpmac_1231902590_per%40paypal.com&txn_id=61E67681CH32\
 38416&payment_type=instant&last_name=User&address_state=CA&receiver_email=g\
-pmac_1231902686_biz%40paypal.com&payment_fee=0.88&receiver_id=S8XGHLYDW9T3S\
+pmac_1231902686_biz%40paypal.com&payment_fee=0.88&receiver_id=my_sandbox_id\
 &txn_type=express_checkout&item_name=&mc_currency=USD&item_number=&residenc\
 e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
 ross=19.95&shipping=0.00
 EOF
     TEST_MODE_ON = true
 
-    before(:each) do
-      @server = Server.new(TEST_MODE_ON)
-      @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on'})
-      @server.receive_ipn(SAMPLE_IPN)
-    end
-
-    it 'identifies the target computer from the IPN' do
-      ipn = @server.ipn
-      computer_id = @server.computer_id(@server.paypal_id(ipn))
-      computer_id.should == 'my_sandbox_id'
-
-
-    end
+  #  before(:each) do
+   #   @server = Server.new(TEST_MODE_ON)
+    #  @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
+     # @server.receive_ipn(SAMPLE_IPN)
+    #end
 
     it 'retrieves the Paypal sandbox id from the IPN' do
-      ipn = @server.ipn
-      actual_paypal_email_id = @server.paypal_id(ipn)
-      actual_paypal_email_id.should == 'gpmac_1231902686_biz@paypal.com'
+      @server = Server.new(TEST_MODE_ON)
+      @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
+      @server.computer_online?('my_sandbox_id').should == true
+      @server.receive_ipn(SAMPLE_IPN)
+      ipn = @server.respond_to_computer_poll('my_sandbox_id')
+      #@server.queue_size('my_sandbox_id').should == "2"
+      paypal_id = @server.paypal_id(ipn)
+      paypal_id.should == 'my_sandbox_id'
     end
 
 

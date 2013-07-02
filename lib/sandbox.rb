@@ -10,7 +10,7 @@ ress_country=United+States&address_city=San+Jose&quantity=1&verify_sign=Atk\
 OfCXbDm2hu0ZELryHFjY-Vb7PAUvS6nMXgysbElEn9v-\
 1XcmSoGtf&payer_email=gpmac_1231902590_per%40paypal.com&txn_id=61E67681CH32\
 38416&payment_type=instant&last_name=User&address_state=CA&receiver_email=gpmac_1231902686_biz%40paypal.com\
-&payment_fee=0.88&receiver_id=S8XGHLYDW9T3S\
+&payment_fee=0.88&receiver_id=my_sandbox_id\
 &txn_type=express_checkout&item_name=&mc_currency=USD&item_number=&residenc\
 e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
 ross=19.95&shipping=0.00

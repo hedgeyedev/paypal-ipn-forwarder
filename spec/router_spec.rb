@@ -17,6 +17,8 @@ describe Router do
     @router = Router.new(@target, TEST_MODE_ON)
     @router.sandbox_id=('my_sandbox_id')
     @poll = Poller.new(@router, @server_url)
+    @email = 'bob@example.com'
+    @my_id = 'my_sandbox_id'
   end
 
   context 'interactions with server' do
@@ -24,15 +26,16 @@ describe Router do
     context 'test mode' do
 
       def expected_rest_client_message(mode)
-        my_id = 'my_sandbox_id'
-        RestClient.should_receive(:post).with(@server_url, {params: {my_id: my_id,
-                                                                     test_mode: mode
+        @email = 'bob@example.com'
+        RestClient.should_receive(:post).with(@server_url, {params: {my_id: @my_id,
+                                                                     test_mode: mode,
+                                                                     :email => @email
         }})
       end
 
       it 'has started' do
         expected_rest_client_message(Router::TEST_ON)
-        @router.test_mode_on
+        @router.test_mode_on(@email)
       end
 
       # FIXME or get rid of me
@@ -43,7 +46,7 @@ describe Router do
 
       it 'has stopped' do
         expected_rest_client_message(Router::TEST_OFF)
-        @router.test_mode_off
+        @router.test_mode_off(@email)
       end
 
     end
@@ -62,8 +65,8 @@ address_name=Test+User&notify_version=2.6&custom=&payer_status=verified&add\
 ress_country=United+States&address_city=San+Jose&quantity=1&verify_sign=Atk\
 OfCXbDm2hu0ZELryHFjY-Vb7PAUvS6nMXgysbElEn9v-\
 1XcmSoGtf&payer_email=gpmac_1231902590_per%40paypal.com&txn_id=61E67681CH32\
-38416&payment_type=instant&last_name=User&address_state=CA&receiver_email=email\
-&payment_fee=0.88&receiver_id=S8XGHLYDW9T3S\
+38416&payment_type=instant&last_name=User&address_state=CA&receiver_email=@email\
+&payment_fee=0.88&receiver_id=my_sandbox_id\
 &txn_type=express_checkout&item_name=&mc_currency=USD&item_number=&residenc\
 e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
 ross=19.95&shipping=0.00
@@ -80,8 +83,8 @@ address_name=Test+User&notify_version=2.6&custom=&payer_status=verified&add\
 ress_country=United+States&address_city=San+Jose&quantity=1&verify_sign=Atk\
 OfCXbDm2hu0ZELryHFjY-Vb7PAUvS6nMXgysbElEn9v-\
 1XcmSoGtf&payer_email=gpmac_1231902590_per%40paypal.com&txn_id=61E67681CH32\
-38416&payment_type=instant&last_name=User&address_state=CA&receiver_email=email\
-&payment_fee=0.88&receiver_id=S8XGHLYDW9T3S\
+38416&payment_type=instant&last_name=User&address_state=CA&receiver_email=@email\
+&payment_fee=0.88&receiver_id=my_sandbox_id\
 &txn_type=express_checkout&item_name=&mc_currency=USD&item_number=&residenc\
 e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
 ross=19.95&shipping=0.00
@@ -89,7 +92,7 @@ EOF
     end
 
     it 'automatically identifies the developer computer' do
-      @router.sandbox_id.should == 'my_sandbox_id'
+      @router.sandbox_id.should == @my_id
 
     end
 
@@ -104,8 +107,9 @@ EOF
 
     it 'send a verification message' do
       @target.should_receive(:verified)
-      @server.store_ipn_response('my_sandbox_id')
-      @server.respond_to_computer_poll('my_sandbox_id').should == 'VERIFIED'
+      @server.computer_testing({'my_id'=>@my_id, 'test_mode'=>'on','@email'=>'bob@example.com'})
+      @server.store_ipn_response(@my_id)
+      @server.respond_to_computer_poll(@my_id).should == 'VERIFIED'
       @router.forward_ipn(@server.respond_to_computer_poll('my_sandbox_id'))
     end
 

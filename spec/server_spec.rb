@@ -24,21 +24,8 @@ describe Server do
 
   end
 
-  it 'notifies the developers that a new sanbox is sending emails and that that sandbox is unregistered' do
-    Pony.should_receive(:mail).with({:via => :smtp,
-                                     :to => "dmitri.ostapenko@gmail.com",
-                                     :from => "email-proxy-problems@superbox.com",
-                                     :subject => "There is no queue on the Superbox IPN forwared",
-                                     :body => "on the Superbox IPN forwarder, there is no queue set up for this function: \"queue push\" for your developer_id",
-                                     :via_options =>
-                                         {:address => "localhost",
-                                          :openssl_verify_mode => "none"}
-                                    })
-    sb = Sandbox.new
-    ipn = sb.send_fail
-    @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on'})
-    sandbox_id = @server.receive_ipn(ipn)
-  end
+  #this test was erased because it is wrong. It is testing what happens when an (unknown or known) sandbox sends an IPN to the server
+  #when it is non-testing. It should just be bounced and no email should be sent
 
 
   it 'does not forward an ipn to a computer from a paypal sandbox that doesn\'t belong to it' do
@@ -72,9 +59,9 @@ describe Server do
   end
 
   it 'denies an IPN response for a polling request from a router because no IPN exists for that router' do
-    dev_id = 'my_sandbox_id'
-    @server.ipn_response_present?(dev_id).should == false
-    @server.respond_to_computer_poll(dev_id).should == nil
+    @server.ipn_response_present?(@my_id).should == false
+    @server.computer_testing({'my_id'=>@my_id, 'test_mode'=>'on','@email'=>'bob@example.com'})
+    @server.respond_to_computer_poll(@my_id).should == nil
   end
 
   context 'queue' do
@@ -94,7 +81,9 @@ describe Server do
 
     it 'does not store IPNs which are generated from recurring payments' do
       ipn = @sb.send_recurring
-      @server.receive_ipn(ipn)
+      @server.queue_size(@my_id).should == 0
+      @server.computer_testing({'my_id'=>@my_id, 'test_mode'=>'on','@email'=>'bob@example.com'})
+      @server.recurring?(ipn).should == true
       @server.queue_size(@my_id).should == 0
     end
   end

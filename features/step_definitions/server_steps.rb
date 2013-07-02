@@ -12,7 +12,7 @@ end
 When(/^(?:the|a|) sandbox( unknown to the server|) sends an IPN( for the recurring payment|) to the server$/)do |state, payment_type|
     configure
     dev_id = 'my_sandbox_id'
-    @server.computer_testing({'my_id' => dev_id, 'test_mode' => 'on'})
+    @server.computer_testing({'my_id' => dev_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
     if(payment_type != "")
       @ipn = @sandbox.send_recurring
     elsif (state != '')
@@ -55,7 +55,7 @@ When(/^the server receives an IPN from my assigned sandbox$/) do
   configure
   my_id = 'my_sandbox_id'
   @ipn = @sandbox.send
-  @server.computer_testing({'my_id' => my_id, 'test_mode' => 'on'})
+  @server.computer_testing({'my_id' => my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
   @server.receive_ipn(@ipn)
   paypal_id  = @server.paypal_id(@ipn)
   my_id.should ==  paypal_id
@@ -65,7 +65,7 @@ end
 Then(/^the server hangs onto it until my assigned computer retrieves it$/) do
   my_id = 'my_sandbox_id'
   @server.receive_ipn(@ipn)
-  @server.computer_testing({'my_id' => my_id, 'test_mode' => 'on'})
+  @server.computer_testing({'my_id' => my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
   size_before = @server.queue_size(my_id)
   @server.queue_push(@ipn)
   @server.queue_size(my_id).should == size_before+1

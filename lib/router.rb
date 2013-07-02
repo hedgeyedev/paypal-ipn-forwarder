@@ -43,13 +43,13 @@ class Router
 
   end
 
-  def test_mode_off
-    set_test_mode(TEST_OFF)
+  def test_mode_off(email)
+    set_test_mode(TEST_OFF, email)
   end
 
   private
 
-  def set_test_mode(mode, email=nil)
+  def set_test_mode(mode, email)
     RestClient.post(@dev_id, { params: { my_id: @sandbox_id, test_mode: mode, email: email
     } })
   end
