@@ -40,7 +40,5 @@ describe MailCreator do
     end
   end
 
-  it 'should overwrite paramaters that are handfed and match the YAML file paramaters'
-  #or backwards? discuss which implmentation would be better with James or Scott
 
 end
