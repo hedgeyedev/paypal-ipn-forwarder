@@ -21,7 +21,7 @@ class Server
   end
 
   def ipn
-    @ipn
+
   end
 
   def receive_poll_from_computer(paypal_id)
@@ -51,7 +51,6 @@ class Server
   def receive_ipn(ipn=nil)
     paypal_id = paypal_id(ipn)
     if (!recurring?(ipn) && computer_online?(paypal_id))
-      @ipn = ipn unless ipn.nil?
       queue_push(ipn)
     end
   end

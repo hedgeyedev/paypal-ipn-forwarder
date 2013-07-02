@@ -59,7 +59,7 @@ When(/^the server receives an IPN from my assigned sandbox$/) do
   @server.receive_ipn(@ipn)
   paypal_id  = @server.paypal_id(@ipn)
   my_id.should ==  paypal_id
-  @server.ipn.should == @sandbox.send
+  @server.queue_pop(my_id).should == @sandbox.send
 end
 
 Then(/^the server hangs onto it until my assigned computer retrieves it$/) do
