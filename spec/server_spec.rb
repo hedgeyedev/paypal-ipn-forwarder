@@ -102,17 +102,21 @@ describe Server do
 
     it 'should  send email to the developer, if one is on file' do
       Pony.should_receive(:mail).with(any_args)
-      @server.unexpected_poll(@my_id)
+      @server.respond_to_computer_poll(@my_id)
     end
 
     it 'sends email to all developers if no email on file' do
       Pony.should_receive(:mail).with(any_args).twice
-      @server.unexpected_poll('my_sandbox_unknown')
+      @server.respond_to_computer_poll('my_sandbox_unknown')
     end
 
-    it 'sends another notification if issue not handled 24 hours after previous email'
-
-
+    it 'sends another notification if issue not handled 24 hours after previous email' do
+      Pony.should_receive(:mail).with(any_args).twice
+      time = Time.now - 12*60*60
+      @server.respond_to_computer_poll('my_sandbox_unknown', time)
+      time_new = Time.now + 12*60*60
+      @server.respond_to_computer_poll('my_sandbox_unknown', time_new)
+    end
   end
 
 end

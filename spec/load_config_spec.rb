@@ -57,7 +57,7 @@ describe LoadConfig do
   end
 
   it 'retreives a hash of when the last unexpected poll occured' do
-    @config.unexpected_poll_time.should == {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
+    @config.unexpected_poll_checker_instance.should == {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
   end
 
 

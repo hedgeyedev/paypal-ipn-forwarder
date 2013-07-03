@@ -62,8 +62,8 @@ class LoadConfig
     @config['email_map']
   end
 
-  def unexpected_poll_time
-    @config['unexpected_poll_time']
+  def unexpected_poll_checker_instance
+    @config['unexpected_poll_checker_instance']
   end
 
 end

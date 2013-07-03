@@ -5,6 +5,7 @@ require 'awesome_print'
 
 require_relative 'load_config'
 require_relative 'mail_sender'
+require_relative 'server_poll_checker'
 
 class Server
 
@@ -17,7 +18,7 @@ class Server
     @ipn_response = content.ipn_response.clone
     @queue_map = content.queue_map.clone
     @last_poll_time = content.last_poll_time.clone
-    @unexpected_poll_time = content.unexpected_poll_time.clone
+    @unexpected_poll_checker_instance = content.unexpected_poll_checker_instance.clone
     @email_map = content.email_map.clone
   end
 
@@ -169,7 +170,8 @@ class Server
   def respond_to_computer_poll(paypal_id, now=Time.now)
     @last_poll_time[paypal_id] = now
     if(!computer_online?(paypal_id))
-       unexpected_poll(paypal_id)
+      @unexpected_poll_checker_instance[paypal_id] = ServerPollChecker.new if @unexpected_poll_checker_instance[paypal_id].nil?
+      @unexpected_poll_checker_instance[paypal_id].poll_time(paypal_id)
     elsif ipn_response_present?(paypal_id)
       send_verification
     else
@@ -177,29 +179,7 @@ class Server
     end
   end
 
-  def unexpected_poll(paypal_id, content=nil)
-    @unexpected_poll_time[paypal_id] = Time.now
-
-    unless(@email_map[paypal_id] == nil)
-      to =  @email_map[paypal_id]
-      subject = 'Unexpected poll from your developer machine'
-      body = "Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on. The sandox id is #{paypal_id}"
-      mailsender = MailSender.new
-      mailsender.send(to, subject, body)
-    else
-      @email_map.each_value {|value|
-        to = value
-        subject = "Unexpected poll from a developer machine"
-        body = "A computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on. The sandox id is #{paypal_id}"
-        mailsender = MailSender.new
-        mailsender.send(to, subject, body)
-      }
-
-    end
-  end
-
   def last_computer_poll_time(paypal_id)
-    puts "id: #{paypal_id}"
     @last_poll_time[paypal_id]
   end
 
