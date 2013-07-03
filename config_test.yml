@@ -8,6 +8,8 @@ development_computer_url : 'http://localhost:3000/payments/ipn'
 
 polling_interval_seconds : '5.0'
 
+poll_checking_interval_seconds : '3600.0'
+
 sandbox_id : ['my_sandbox_id','my_sandbox_id_1']
 
 map:
@@ -34,6 +36,6 @@ email_map :
   'my_sandbox_id': dmitri.ostapenko@gmail.com
   'my_sandbox_id_1': bob@example.com
 
-unexpected_poll_checker_instance :
+poll_checker_instance :
   'my_sandbox_id': ~
   'my_sandbox_id_1': ~

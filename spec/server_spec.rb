@@ -70,7 +70,7 @@ describe Server do
     before(:each) do
       @sb = Sandbox.new
       @my_id = 'my_sandbox_id'
-      @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on'})
+      @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
     end
 
     it 'stores IPNs sent from a sandbox when a computer is testing' do
@@ -78,15 +78,6 @@ describe Server do
       @server.receive_ipn(ipn)
       ipn.should == @server.queue_pop(@my_id)
     end
-
-  end
-
-  it 'stores the time that a computer polls' do
-    now = Time.now
-    @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
-    @server.respond_to_computer_poll(@my_id, now)
-    @server.last_computer_poll_time(@my_id).should == now
-
 
   end
 
@@ -100,17 +91,17 @@ describe Server do
 
   context 'receives polling request without test mode activated' do
 
-    it 'should  send email to the developer, if one is on file' do
+    it 'should should  send email to the developer, if one is on file' do
       Pony.should_receive(:mail).with(any_args)
       @server.respond_to_computer_poll(@my_id)
     end
 
-    it 'sends email to all developers if no email on file' do
+    it 'should sends email to all developers if no email on file' do
       Pony.should_receive(:mail).with(any_args).twice
       @server.respond_to_computer_poll('my_sandbox_unknown')
     end
 
-    it 'sends another notification if issue not handled 24 hours after previous email' do
+    it 'should send another notification email if last email sent 24 ago as issue still not resolved' do
       Pony.should_receive(:mail).with(any_args).twice
       time = Time.now - 12*60*60
       @server.respond_to_computer_poll('my_sandbox_unknown', time)
@@ -118,5 +109,12 @@ describe Server do
       @server.respond_to_computer_poll('my_sandbox_unknown', time_new)
     end
   end
+
+   context 'starts test mode' do
+
+     it 'records the time that test mode was started'
+
+
+   end
 
 end

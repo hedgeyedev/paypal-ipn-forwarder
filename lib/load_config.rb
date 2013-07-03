@@ -62,8 +62,12 @@ class LoadConfig
     @config['email_map']
   end
 
-  def unexpected_poll_checker_instance
-    @config['unexpected_poll_checker_instance']
+  def poll_checker_instance
+    @config['poll_checker_instance']
+  end
+
+  def poll_checking_interval_seconds
+    @config['poll_checking_interval_seconds']
   end
 
 end
