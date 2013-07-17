@@ -22,12 +22,7 @@ describe Server do
     computer = DevelopmentComputer.new
     computer.receive_ipn(ipn_retrieved)
     computer.ipn.should == ipn
-
   end
-
-  #this test was erased because it is wrong. It is testing what happens when an (unknown or known) sandbox sends an IPN to the server
-  #when it is non-testing. It should just be bounced and no email should be sent
-
 
   it 'does not forward an ipn to a computer from a paypal sandbox that doesn\'t belong to it' do
     sb = Sandbox.new
@@ -79,13 +74,20 @@ describe Server do
       ipn.should == @server.queue_pop(@my_id)
     end
 
+    it 'purges an IPN once it has been sent to the computer' do
+      ipn = @sb.send
+      paypal_id = @server.paypal_id(ipn)
+      @server.queue_push(ipn)
+      @server.send_ipn_if_present(paypal_id)
+      @server.queue_size(paypal_id).should == 0
+    end
+
   end
 
   it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing' do
     Pony.should_receive(:mail).with(any_args).twice
     @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
     @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob_1@example.com'})
-
   end
 
 
@@ -113,8 +115,6 @@ describe Server do
    context 'starts test mode' do
 
      it 'records the time that test mode was started'
-
-
    end
 
 end

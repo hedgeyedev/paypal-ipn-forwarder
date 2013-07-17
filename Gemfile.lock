@@ -62,7 +62,6 @@ DEPENDENCIES
   awesome_print
   bogus
   cucumber
-  daemons
   pony
   rest
   rest-client

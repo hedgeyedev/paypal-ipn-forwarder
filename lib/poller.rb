@@ -23,7 +23,4 @@ class Poller
 
   attr_writer :time_in_sec
 
-
-
-
 end

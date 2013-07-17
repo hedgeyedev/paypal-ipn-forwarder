@@ -19,7 +19,7 @@ class ServerPollChecker
     @last_poll_time[paypal_id] = Time.now
   end
 
-  def poll_time(paypal_id, time=Time.now)
+  def unexpected_poll_time(paypal_id, time=Time.now)
     if (@last_unexpected_poll + 24*60*60 <=> time) == -1
       body = "Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on. The sandox id is #{paypal_id}."
       send_email(paypal_id, body)
