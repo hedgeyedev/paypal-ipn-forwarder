@@ -12,6 +12,7 @@ describe Server do
     @my_id = 'my_sandbox_id'
   end
 
+  #TODO: reword test to still make sense in new configuration
   it 'forwards an ipn from a paypal sandbox to its corresponding computer' do
     sb = Sandbox.new
     ipn = sb.send
@@ -22,6 +23,16 @@ describe Server do
     computer = DevelopmentComputer.new
     computer.receive_ipn(ipn_retrieved)
     computer.ipn.should == ipn
+  end
+
+  it 'responds to a poll request with an IPN when one is present' do
+    sb = Sandbox.new
+    ipn = sb.send
+    @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', '@email' => 'bob@example.com'})
+    @server.receive_ipn(ipn)
+    paypal_id = @server.paypal_id(ipn)
+    @server.ipn_present?(paypal_id).should == true
+    @server.send_ipn_if_present(paypal_id).should == ipn
   end
 
   it 'does not forward an ipn to a computer from a paypal sandbox that doesn\'t belong to it' do
@@ -93,7 +104,7 @@ describe Server do
 
   context 'receives polling request without test mode activated' do
 
-    it 'should should  send email to the developer, if one is on file' do
+    it 'should should send email to the developer, if one is on file' do
       Pony.should_receive(:mail).with(any_args)
       @server.respond_to_computer_poll(@my_id)
     end
