@@ -143,7 +143,10 @@ describe Server do
     end
   end
 
-  context 'starts test mode' do
+  context 'receives start test mode' do
+
+    #not sure if test is too basic but added just in case
+    it 'begins testings'
 
     it 'records the time that test mode was started'
   end
