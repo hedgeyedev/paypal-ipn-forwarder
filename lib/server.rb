@@ -113,7 +113,7 @@ class Server
 
   def queue_identify(paypal_id, method_called_by)
     queue = @queue_map[paypal_id]
-    no_computer_queue(method_called_by) if queue.nil?
+    email_content_generator(method_called_by, paypal_id) if queue.nil?
     queue
   end
 

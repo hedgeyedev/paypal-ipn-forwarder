@@ -8,3 +8,4 @@ Feature: paypal sandbox anomalies
     And an IPN generating test has started
     When the server has not received an IPN from the sandbox for 2 minutes
     Then the server notifies me that it is not receiving any IPNs from my sandbox
+    #TODO: discuss how to implement this

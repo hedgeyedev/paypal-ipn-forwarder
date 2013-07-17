@@ -85,6 +85,13 @@ describe Server do
       ipn.should == @server.queue_pop(@my_id)
     end
 
+    it 'does NOT store IPNs sent from a sandbox when a computer is NOT testing' do
+      @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'off', 'email' => 'bob@example.com'})
+      ipn = @sb.send
+      @server.receive_ipn(ipn)
+      @server.queue_size(@my_id).should == 0
+    end
+
     it 'purges an IPN once it has been sent to the computer' do
       ipn = @sb.send
       paypal_id = @server.paypal_id(ipn)
