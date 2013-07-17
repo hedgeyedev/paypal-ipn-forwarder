@@ -82,6 +82,8 @@ describe Server do
     it 'stores IPNs sent from a sandbox when a computer is testing' do
       ipn = @sb.send
       @server.receive_ipn(ipn)
+      paypal_id = @server.paypal_id(ipn)
+      @server.queue_size(paypal_id).should == 1
       ipn.should == @server.queue_pop(@my_id)
     end
 
@@ -112,7 +114,18 @@ describe Server do
   context 'receives polling request without test mode activated' do
 
     it 'should should send email to the developer, if one is on file' do
-      Pony.should_receive(:mail).with(any_args)
+      Pony.should_receive(:mail).with({:via => :smtp,
+                                       :to => "dmitri.ostapenko@gmail.com",
+                                       :from => "email-proxy-problems@superbox.com",
+                                       :subject => "A problem occured on the IPN proxy with sandbox my_sandbox_id",
+                                       :body => "Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on. The sandox id is my_sandbox_id.This problem is happening on a superbox belonging to you so this email was only sent to you. Please address it",
+                                       :via_options =>
+                                           {
+                                               :address => "localhost",
+                                               :openssl_verify_mode => "none"
+                                           }
+                                      })
+
       @server.respond_to_computer_poll(@my_id)
     end
 
@@ -123,16 +136,16 @@ describe Server do
 
     it 'should send another notification email if last email sent 24 ago as issue still not resolved' do
       Pony.should_receive(:mail).with(any_args).twice
-      time = Time.now - 12*60*60
+      time = Time.now - 12.hours
       @server.respond_to_computer_poll('my_sandbox_unknown', time)
-      time_new = Time.now + 12*60*60
+      time_new = Time.now + 12.hours
       @server.respond_to_computer_poll('my_sandbox_unknown', time_new)
     end
   end
 
-   context 'starts test mode' do
+  context 'starts test mode' do
 
-     it 'records the time that test mode was started'
-   end
+    it 'records the time that test mode was started'
+  end
 
 end

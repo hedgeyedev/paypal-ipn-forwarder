@@ -1,6 +1,5 @@
 require 'rspec'
 require 'pony'
-require 'pony'
 require 'timecop'
 
 require_relative '../lib/server_poll_checker'
