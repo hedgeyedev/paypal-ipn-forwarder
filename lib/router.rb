@@ -27,10 +27,9 @@ class Router
   end
 
   def polling_interval
-
   end
 
-  def send_verified #same functionality as send_verification
+  def send_verified
     @development_computer.send_verified
   end
 

@@ -5,6 +5,7 @@ require 'awesome_print'
 
 require_relative 'load_config'
 require_relative 'mail_sender'
+require_relative 'server_poll_checker'
 
 class Server
 
@@ -16,9 +17,11 @@ class Server
     @computers_testing = content.computer_testing.clone
     @ipn_response = content.ipn_response.clone
     @queue_map = content.queue_map.clone
-    @last_poll_time = content.last_poll_time.clone
-    @unexpected_poll_time = content.unexpected_poll_time.clone
     @email_map = content.email_map.clone
+    @poll_checker_instance = content.poll_checker_instance.clone
+    @poll_checker_instance.each_value {|key, value|
+    value = ServerPollChecker.new(self)
+    }
   end
 
 
@@ -64,19 +67,23 @@ class Server
       if (!computer_online?(id))
         @computers_testing[id] = true
         @queue_map[id] = Queue.new
-        @last_poll_time[id] = Time.now
         email_mapper(id, params['email'])
+        #the following line is needed in case the sandbox is a new one.
+        @poll_checker_instance[id] = ServerPollChecker.new(self) if @poll_checker_instance[id].nil?
+        @poll_checker_instance[id].record_poll_time(id)
+        #Im not sure how to implement this. THe method call below has to fork off and be run in the background separately. It checks that
+        #polling is happening now that test mode is on. if not, it sends an email to the developer. It will do that every hour three times
+        #and then turn off testing mode
+        #@poll_checker_instance[id].check_testing_polls_occurring(id)
       elsif params['email'] == @email_map[id]
       else
          send_conflict_email(id, params['email'])
          @computers_testing[id] = false
          @queue_map[id] = nil
-         @last_poll_time[id] = nil
       end
     elsif (params['test_mode']== 'off')
       @computers_testing[id] = false
       @queue_map[id] = nil
-      @last_poll_time[id] = nil
     end
   end
 
@@ -106,7 +113,7 @@ class Server
 
   def queue_identify(paypal_id, method_called_by)
     queue = @queue_map[paypal_id]
-    no_computer_queue(method_called_by) if queue.nil?
+    email_content_generator(method_called_by, paypal_id) if queue.nil?
     queue
   end
 
@@ -167,40 +174,16 @@ class Server
   end
 
   def respond_to_computer_poll(paypal_id, now=Time.now)
-    @last_poll_time[paypal_id] = now
+    #a new instance of poll checker needs to be created in case poll is before test mode is turned on and the sandbox is not registered beforhand
+    @poll_checker_instance[paypal_id] = ServerPollChecker.new(self) if @poll_checker_instance[paypal_id].nil?
+    @poll_checker_instance[paypal_id].record_poll_time(paypal_id)
     if(!computer_online?(paypal_id))
-       unexpected_poll(paypal_id)
+      @poll_checker_instance[paypal_id].unexpected_poll_time(paypal_id)
     elsif ipn_response_present?(paypal_id)
       send_verification
     else
       send_ipn_if_present(paypal_id)
     end
-  end
-
-  def unexpected_poll(paypal_id, content=nil)
-    @unexpected_poll_time[paypal_id] = Time.now
-
-    unless(@email_map[paypal_id] == nil)
-      to =  @email_map[paypal_id]
-      subject = 'Unexpected poll from your developer machine'
-      body = "Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on. The sandox id is #{paypal_id}"
-      mailsender = MailSender.new
-      mailsender.send(to, subject, body)
-    else
-      @email_map.each_value {|value|
-        to = value
-        subject = "Unexpected poll from a developer machine"
-        body = "A computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on. The sandox id is #{paypal_id}"
-        mailsender = MailSender.new
-        mailsender.send(to, subject, body)
-      }
-
-    end
-  end
-
-  def last_computer_poll_time(paypal_id)
-    puts "id: #{paypal_id}"
-    @last_poll_time[paypal_id]
   end
 
 end

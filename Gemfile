@@ -11,4 +11,5 @@ group :test do
   gem 'pony'
   gem 'bogus'
   gem 'awesome_print'
+  gem 'timecop'
 end
