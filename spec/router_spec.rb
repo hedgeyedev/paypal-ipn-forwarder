@@ -38,12 +38,6 @@ describe Router do
         @router.test_mode_on(@email)
       end
 
-      # FIXME or get rid of me
-      #it 'stops polling the server' do
-      #  @router.test_mode_on
-      #  @router.test_mode_off
-      #end
-
       it 'has stopped' do
         expected_rest_client_message(Router::TEST_OFF)
         @router.test_mode_off(@email)
@@ -96,7 +90,6 @@ EOF
 
     end
 
-    # TODO: development computer and @router are going to have to be tied together
     it 'processes an IPN' do
       ipn = create_an_ipn_somehow
       ipn_response = create_ipn_response_somehow

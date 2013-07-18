@@ -138,11 +138,6 @@ class Server
       mailsender.send(to, subject, body)
   end
 
-  def developer_email
-    'dmitri.ostapenko@gmail.com'
-#TODO: this needs to be written
-  end
-
   def queue_push(ipn)
     paypal_id = paypal_id(ipn)
     queue = queue_identify(paypal_id, 'queue push')

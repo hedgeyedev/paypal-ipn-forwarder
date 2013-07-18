@@ -12,19 +12,6 @@ describe Server do
     @my_id = 'my_sandbox_id'
   end
 
-  #TODO: reword test to still make sense in new configuration
-  it 'forwards an ipn from a paypal sandbox to its corresponding computer' do
-    sb = Sandbox.new
-    ipn = sb.send
-    dev_id = 'my_sandbox_id'
-    @server.computer_testing({'my_id' => dev_id, 'test_mode' => 'on'})
-    @server.receive_ipn(ipn)
-    ipn_retrieved = @server.send_ipn_if_present(dev_id)
-    computer = DevelopmentComputer.new
-    computer.receive_ipn(ipn_retrieved)
-    computer.ipn.should == ipn
-  end
-
   it 'responds to a poll request with an IPN when one is present' do
     sb = Sandbox.new
     ipn = sb.send
