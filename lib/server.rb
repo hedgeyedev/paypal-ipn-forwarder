@@ -13,7 +13,6 @@ class Server
   def initialize(test=nil)
     LoadConfig.set_test_mode(!test.nil?)
     content = LoadConfig.new
-    @map = content.sandbox_map.clone
     @computers_testing = content.computer_testing.clone
     @ipn_response = content.ipn_response.clone
     @queue_map = content.queue_map.clone
@@ -24,30 +23,10 @@ class Server
     }
   end
 
-
-  def receive_poll_from_computer(paypal_id)
-  end
-
-  def send_ipn_if_present(paypal_id)
-    #TODO:remove ipn_present and make sure no tests break
-    if (ipn_present?(paypal_id))
-      ipn = queue_pop(paypal_id)
-    end
-  end
-
-  def send_verification
-    "VERIFIED"
-  end
-
   def paypal_id(ipn)
     params = CGI::parse(ipn)
     params['receiver_id'].first
   end
-
-  def paypal_email_id_map(paypal_email)
-      @map[paypal_email]
-  end
-
 
   def receive_ipn(ipn=nil)
     paypal_id = paypal_id(ipn)
@@ -191,6 +170,17 @@ class Server
     else
       send_ipn_if_present(paypal_id)
     end
+  end
+
+  #repositioned by the method that uses the following two methods
+  def send_ipn_if_present(paypal_id)
+    if (ipn_present?(paypal_id))
+      ipn = queue_pop(paypal_id)
+    end
+  end
+
+  def send_verification
+    "VERIFIED"
   end
 
 end

@@ -32,10 +32,6 @@ describe LoadConfig do
     @config.sandbox_ids.should == ['my_sandbox_id', 'my_sandbox_id_1']
   end
 
-  it 'retrieves the sandbox_map' do
-    @config.sandbox_map.should == {'gpmac_1231902686_biz@paypal.com'=>'my_sandbox_id', 'paypal@gmail.com'=>'my_sandbox_id_1'}
-  end
-
   it 'retrieves the computer_testing booleans for a server hash' do
     @config.computer_testing.should == {'my_sandbox_id'=>false, 'my_sandbox_id_1'=>false}
   end
@@ -63,6 +59,5 @@ describe LoadConfig do
   it 'should retreive the interval for poll checking in seconds' do
     @config.poll_checking_interval_seconds.should == '3600.0'
   end
-
 
 end

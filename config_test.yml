@@ -12,10 +12,6 @@ poll_checking_interval_seconds : '3600.0'
 
 sandbox_id : ['my_sandbox_id','my_sandbox_id_1']
 
-map:
-  'gpmac_1231902686_biz@paypal.com': 'my_sandbox_id'
-  'paypal@gmail.com': 'my_sandbox_id_1'
-
 computer_testing:
   'my_sandbox_id': false
   'my_sandbox_id_1': false
