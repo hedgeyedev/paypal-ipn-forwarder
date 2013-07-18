@@ -1,5 +1,5 @@
 require_relative '../../../lib/server'
-require_relative '../../../lib/development_computer'
+require_relative '../../../lib/router_client'
 require_relative '../../../lib/ipn_generator'
 require_relative '../../../lib/mail_sender'
 
@@ -15,7 +15,7 @@ class Organizer
   def initialize
     @server = Server.new(TEST_MODE_ON)
     @sandbox = IpnGenerator.new
-    @computer = DevelopmentComputer.new
+    @computer = RouterClient.new
     @mail_sender = MailSender.new
   end
 end

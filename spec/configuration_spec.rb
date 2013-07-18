@@ -24,8 +24,5 @@ require_relative '../lib/ipn_generator'
       paypal_id.should == 'my_sandbox_id'
     end
 
-
-
-
   end
 end

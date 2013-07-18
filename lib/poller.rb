@@ -15,7 +15,7 @@ class Poller
   def poll_for_ipn(caller=nil)
     loop do
       ipn = retrieve_ipn
-      @router.forward_ipn ipn unless (ipn.nil?)
+      @router.send_ipn ipn unless (ipn.nil?)
       sleep @time_in_sec
       break unless (caller.nil? || caller.keep_polling?)
     end

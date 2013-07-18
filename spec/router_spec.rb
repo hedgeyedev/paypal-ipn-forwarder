@@ -4,13 +4,14 @@ require_relative '../lib/poller'
 require_relative '../lib/server_client'
 require_relative '../lib/load_config'
 require_relative '../lib/ipn_generator'
+require_relative '../lib/router_client'
 
 describe Router do
 
   TEST_MODE_ON = true
 
   before(:each) do
-    @development_computer = mock('development_computer')
+    @development_computer = RouterClient.new(TEST_MODE_ON)
     LoadConfig.set_test_mode(true)
     content = LoadConfig.new
     @server_url = content.server_url
@@ -30,7 +31,7 @@ describe Router do
         @email = 'bob@example.com'
         RestClient.should_receive(:post).with(@server_url, {params: {my_id: @my_id,
                                                                      test_mode: mode,
-                                                                     :email => @email
+                                                                     :email => @email,
         }})
       end
 
@@ -69,13 +70,8 @@ describe Router do
       ipn = create_an_ipn_somehow
       ipn_response = create_ipn_response_somehow
       @development_computer.stub!(:send_ipn).with(ipn).and_return(ipn_response)
-      @router.forward_ipn(ipn)
+      @router.send_ipn(ipn)
 
-    end
-
-    it 'send a verification message' do
-      @development_computer.should_receive(:send_verified)
-      @router.forward_ipn('VERIFIED')
     end
 
   end

@@ -1,7 +1,7 @@
 require_relative 'spec_helper'
 require_relative '../lib/server'
 require_relative '../lib/ipn_generator'
-require_relative '../lib/development_computer'
+require_relative '../lib/router_client'
 
 describe Server do
 
@@ -34,18 +34,18 @@ describe Server do
     @server.send_ipn_if_present(id_1).should == nil
   end
 
+  #TODO: fix this
   it 'records that it has received an IPN response from a specific development computer' do
-    computer = DevelopmentComputer.new
+    computer = RouterClient.new
     @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on'})
-    ipn_response = computer.send_ipn_response
     @server.receive_ipn_response(ipn_response)
     paypal_id = @server.paypal_id(ipn_response)
     @server.ipn_response_present?(paypal_id).should == true
   end
 
+   #TODO delete once ipn response is linked to testing computer
   it 'confirms a IPN response for a polling request from the router for that IPN response' do
-    computer = DevelopmentComputer.new
-    ipn_response = computer.send_ipn_response
+    computer = RouterClient.new
     @server.receive_ipn_response(ipn_response)
     paypal_id = @server.paypal_id(ipn_response)
     @server.ipn_response_present?(paypal_id).should == true

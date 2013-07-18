@@ -1,17 +1,17 @@
 require 'rspec'
 require 'rest_client'
-require_relative '../lib/development_computer'
+require_relative '../lib/router_client'
 
-describe DevelopmentComputer do
+describe RouterClient do
 
   TEST_MODE = true
 
   before(:each) do
-    @dev_computer = DevelopmentComputer.new(TEST_MODE)
+    @dev_computer = RouterClient.new(TEST_MODE)
   end
 
   it 'should forward an ipn' do
-    RestClient.should_receive(:post).with(anything, 'sample_IPN')
+    RestClient.should_receive(:post).with('b')#.with(anything, 'sample_IPN')
     @dev_computer.send_ipn('sample_IPN')
   end
 

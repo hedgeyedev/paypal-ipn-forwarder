@@ -16,7 +16,7 @@ describe LoadConfig do
 
 
   it 'retrieves the developer computer URL for the router to send IPNs to' do
-    @config.development_computer_url.should == 'http://localhost:3000/payments/ipn'
+    @config.final_destination_url.should == 'http://localhost:3000/payments/ipn'
   end
 
   it 'retrieves the number of seconds between polls' do

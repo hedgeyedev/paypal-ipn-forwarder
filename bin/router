@@ -3,14 +3,14 @@
 require_relative '../lib/router'
 require_relative '../lib/poller'
 require_relative '../lib/load_config'
-require_relative '../lib/development_computer'
+require_relative '../lib/router_client'
 
-computer = DevelopmentComputer.new
+computer = RouterClient.new
 router = Router.new(computer)
 router.sandbox_id(ARGV[1])
 router.test_mode_on(ARGV[2])
 config = LoadConfig.new
-polling_interval = config.polling_interval
+polling_interval = config.polling_interval_seconds
 server_url = config.server_url
 poller = Poller.new(router, server_url)
 poller.time_in_sec=polling_interval

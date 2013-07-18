@@ -19,7 +19,7 @@ class LoadConfig
     @config['server_url']
   end
 
-  def development_computer_url
+  def final_destination_url
     @config['development_computer_url']
   end
 
