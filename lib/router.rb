@@ -17,11 +17,12 @@ class Router
     @development_computer.send_ipn(ipn)
   end
 
-  def test_mode_on(email)
+  def turn_test_mode_on(email)
     @development_computer.set_test_mode(TEST_ON, email, @sandbox_id)
   end
 
-  def test_mode_off(email)
+  #TODO there is nothing calling this method currently. Make sure it is hardwired in or test mode will never be turned off
+  def turn_test_mode_off(email)
     @development_computer.set_test_mode(TEST_OFF, email, @sandbox_id)
   end
 

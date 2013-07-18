@@ -37,12 +37,12 @@ describe Router do
 
       it 'has started' do
         expected_rest_client_message(Router::TEST_ON)
-        @router.test_mode_on(@email)
+        @router.turn_test_mode_on(@email)
       end
 
       it 'has stopped' do
         expected_rest_client_message(Router::TEST_OFF)
-        @router.test_mode_off(@email)
+        @router.turn_test_mode_off(@email)
       end
 
     end
