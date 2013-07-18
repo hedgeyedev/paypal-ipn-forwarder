@@ -54,6 +54,11 @@ class Server
     end
   end
 
+
+  def computer_online?(id)
+    @computers_testing[id]
+  end
+
   def begin_test_mode(id, params)
     @computers_testing[id] = true
     @queue_map[id] = Queue.new
@@ -92,13 +97,8 @@ class Server
     mailsender.send(to1, subject, body)
   end
 
-
   def email_mapper(id, email)
      @email_map[id] = email
-  end
-
-  def computer_online?(id)
-    @computers_testing[id]
   end
 
   def queue_identify(paypal_id, method_called_by)
@@ -125,6 +125,7 @@ class Server
     end
   end
   
+  #if the queue does not exist(due to sandbox not being in test mode), then the size of the queue will be 0
   def queue_size(paypal_id)
     queue = @queue_map[paypal_id]
     if(queue.nil?)
@@ -145,22 +146,10 @@ class Server
     queue_size(paypal_id) >= 1
   end
 
-  def receive_ipn_response(ipn_response)
-    paypal_id = paypal_id(ipn_response)
-    store_ipn_response(paypal_id)
-  end
-
-  def store_ipn_response(paypal_id)
-    @ipn_response[paypal_id] = "VERIFIED"
-  end
-
-  def ipn_response_present?(paypal_id)
-    ipn_response = @ipn_response[paypal_id]
-    !ipn_response.nil?
-  end
 
   def respond_to_computer_poll(paypal_id, now=Time.now)
-    #a new instance of poll checker needs to be created in case poll is before test mode is turned on and the sandbox is not registered beforhand
+    #a new instance of poll checker needs to be created in case poll is before test mode is turned on
+    #and the sandbox is not registered beforehand
     @poll_checker_instance[paypal_id] = ServerPollChecker.new(self) if @poll_checker_instance[paypal_id].nil?
     @poll_checker_instance[paypal_id].record_poll_time(paypal_id)
     if(!computer_online?(paypal_id))
@@ -172,7 +161,6 @@ class Server
     end
   end
 
-  #repositioned by the method that uses the following two methods
   def send_ipn_if_present(paypal_id)
     if (ipn_present?(paypal_id))
       ipn = queue_pop(paypal_id)
@@ -181,6 +169,17 @@ class Server
 
   def send_verification
     "VERIFIED"
+    @ipn_response[paypal_id] = nil
+  end
+
+  def receive_ipn_response(ipn_response)
+    paypal_id = paypal_id(ipn_response)
+    @ipn_response[paypal_id] = "VERIFIED"
+  end
+
+  def ipn_response_present?(paypal_id)
+    ipn_response = @ipn_response[paypal_id]
+    !ipn_response.nil?
   end
 
 end
