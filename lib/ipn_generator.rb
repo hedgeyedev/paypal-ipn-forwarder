@@ -1,4 +1,4 @@
-class Sandbox
+class IpnGenerator
    def ipn
    @sample_ipn = <<EOF
 mc_gross=19.95&protection_eligibility=Eligible&address_status=confirmed&pay\
@@ -15,20 +15,16 @@ OfCXbDm2hu0ZELryHFjY-Vb7PAUvS6nMXgysbElEn9v-\
 e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
 ross=19.95&shipping=0.00
 EOF
-  end
-  def send
-    ipn
-  end
+   end
 
-  def send_fail
+  def fake_email
     string_ipn = ipn
     string_ipn["gpmac_1231902686_biz%40paypal.com"] = "false_email_biz%40paypal.com"
     string_ipn
   end
 
-  def send_recurring
-    string_ipn = ipn + "&recurring=1"
-    string_ipn
+  def verified_ipn
+    verified_ipn = 'cmd=_notify-validate&' + ipn
   end
 
 end

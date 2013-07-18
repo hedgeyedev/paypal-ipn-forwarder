@@ -1,6 +1,6 @@
 require_relative 'spec_helper'
 require_relative '../lib/server'
-require_relative '../lib/sandbox'
+require_relative '../lib/ipn_generator'
 require_relative '../lib/development_computer'
 
 describe Server do
@@ -13,7 +13,7 @@ describe Server do
   end
 
   it 'responds to a poll request with an IPN when one is present' do
-    sb = Sandbox.new
+    sb = IpnGenerator.new
     ipn = sb.send
     @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', '@email' => 'bob@example.com'})
     @server.receive_ipn(ipn)
@@ -23,7 +23,7 @@ describe Server do
   end
 
   it 'does not forward an ipn to a computer from a paypal sandbox that doesn\'t belong to it' do
-    sb = Sandbox.new
+    sb = IpnGenerator.new
     ipn = sb.send
     id_1 = 'my_sandbox_id_1'
     id_2 = 'my_sandbox_id'
@@ -61,13 +61,13 @@ describe Server do
   context 'queue' do
 
     before(:each) do
-      @sb = Sandbox.new
+      @ipn_generator = IpnGenerator.new
       @my_id = 'my_sandbox_id'
       @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
     end
 
     it 'stores IPNs sent from a sandbox when a computer is testing' do
-      ipn = @sb.send
+      ipn = @ipn_generator.ipn
       @server.receive_ipn(ipn)
       paypal_id = @server.paypal_id(ipn)
       @server.queue_size(paypal_id).should == 1
@@ -75,14 +75,13 @@ describe Server do
     end
 
     it 'does NOT store IPNs sent from a sandbox when a computer is NOT testing' do
-      @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'off', 'email' => 'bob@example.com'})
-      ipn = @sb.send
+      ipn = @ipn_generator.fake_email
       @server.receive_ipn(ipn)
       @server.queue_size(@my_id).should == 0
     end
 
     it 'purges an IPN once it has been sent to the computer' do
-      ipn = @sb.send
+      ipn = @ipn_generator.ipn
       paypal_id = @server.paypal_id(ipn)
       @server.queue_push(ipn)
       @server.send_ipn_if_present(paypal_id)
