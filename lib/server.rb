@@ -9,7 +9,6 @@ require_relative 'server_poll_checker'
 
 class Server
 
-
   def initialize(test=nil)
     LoadConfig.set_test_mode(!test.nil?)
     content = LoadConfig.new
@@ -53,7 +52,6 @@ class Server
       cancel_test_mode(id)
     end
   end
-
 
   def computer_online?(id)
     @computers_testing[id]
