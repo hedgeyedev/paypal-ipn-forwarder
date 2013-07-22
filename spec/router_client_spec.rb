@@ -11,14 +11,11 @@ describe RouterClient do
   end
 
   it 'should forward an ipn' do
-    RestClient.should_receive(:post).with('b')#.with(anything, 'sample_IPN')
+    RestClient.should_receive(:post).with('http://localhost:3000/payments/ipn', 'sample_IPN')
     @dev_computer.send_ipn('sample_IPN')
   end
 
+  it 'should send a HTTP request telling server that test mode has turned on'
 
-  it 'should forward a VERIFIED message' do
-    RestClient.should_receive(:post).with(anything, 'VERIFIED')
-    @dev_computer.send_verified
-  end
 
 end

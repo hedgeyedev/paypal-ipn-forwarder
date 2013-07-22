@@ -19,7 +19,7 @@ EOF
 
   def fake_email
     string_ipn = ipn
-    string_ipn["gpmac_1231902686_biz%40paypal.com"] = "false_email_biz%40paypal.com"
+    string_ipn['my_sandbox_id'] = 'fake_id'
     string_ipn
   end
 

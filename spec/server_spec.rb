@@ -14,7 +14,7 @@ describe Server do
 
   it 'responds to a poll request with an IPN when one is present' do
     sb = IpnGenerator.new
-    ipn = sb.send
+    ipn = sb.ipn
     @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', '@email' => 'bob@example.com'})
     @server.receive_ipn(ipn)
     paypal_id = @server.paypal_id(ipn)
@@ -24,7 +24,7 @@ describe Server do
 
   it 'does not forward an ipn to a computer from a paypal sandbox that doesn\'t belong to it' do
     sb = IpnGenerator.new
-    ipn = sb.send
+    ipn = sb.ipn
     id_1 = 'my_sandbox_id_1'
     id_2 = 'my_sandbox_id'
     @server.computer_testing({'my_id' => id_1, 'test_mode' => 'on'})
@@ -36,7 +36,8 @@ describe Server do
 
   #TODO: fix this
   it 'records that it has received an IPN response from a specific development computer' do
-    computer = RouterClient.new
+    ipn_generator = IpnGenerator.new
+    ipn_response = ipn_generator.verified_ipn
     @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on'})
     @server.receive_ipn_response(ipn_response)
     paypal_id = @server.paypal_id(ipn_response)
@@ -45,7 +46,8 @@ describe Server do
 
    #TODO delete once ipn response is linked to testing computer
   it 'confirms a IPN response for a polling request from the router for that IPN response' do
-    computer = RouterClient.new
+    ipn_generator = IpnGenerator.new
+    ipn_response = ipn_generator.verified_ipn
     @server.receive_ipn_response(ipn_response)
     paypal_id = @server.paypal_id(ipn_response)
     @server.ipn_response_present?(paypal_id).should == true
@@ -76,6 +78,7 @@ describe Server do
 
     it 'does NOT store IPNs sent from a sandbox when a computer is NOT testing' do
       ipn = @ipn_generator.fake_email
+      @server.queue_size(@my_id).should == 0
       @server.receive_ipn(ipn)
       @server.queue_size(@my_id).should == 0
     end
