@@ -1,18 +1,55 @@
 require 'rspec'
 require_relative '../lib/server_client'
+require_relative '../lib/server'
+require_relative '../lib/ipn_generator'
 
 describe ServerClient do
 
-  it 'should receive a testing ON HTTP request from the router and turn ON testing for the sandbox'
+  TEST_MODE_ON = true
 
-  it 'should receive a testing OFF HTTP request from the router and turn OFF testing for the sandbox'
+  it 'should receive a testing ON HTTP request from the router and tell the server to turn test mode ON' do
+    server = Server.new(TEST_MODE_ON)
+    server.should_receive(:begin_test_mode).with('my_sandbox_id', {'my_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
 
-  it 'should receive a poll from a development computer and respond to it'
+    server_client = ServerClient.new(server)
+    server_client.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
 
-  it 'should receive IPNs and forward them to the server'
+  end
 
-  it 'should create the response to a sandbox when it has sent an IPN'
+  it 'should receive a testing OFF HTTP request from the router and tell the server to turn test mode OFF' do
+    server = Server.new(TEST_MODE_ON)
+    server.should_receive(:cancel_test_mode).with('my_sandbox_id')
 
-  it 'should not respond to VERIFIED messages send from the sandbox'
+    server_client = ServerClient.new(server)
+    server_client.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'off', 'email' => 'bob@example.com'})
+  end
+
+  it 'should receive a poll from a development computer and respond to it' do
+    server = Server.new(TEST_MODE_ON)
+    server_client = ServerClient.new(server)
+    ipn_generator = IpnGenerator.new
+    ipn = ipn_generator.ipn
+    server_client.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
+    server.queue_push(ipn)
+    server_client.respond_to_computer_poll('my_sandbox_id').should == ipn
+
+  end
+
+
+  it 'should receive IPNs and forward them to the server' do
+    server = mock('server')
+    server.stub(:receive_ipn).with('an ipn')
+    server_client = ServerClient.new(server)
+    server_client.receive_ipn('an ipn')
+  end
+
+  it 'should create the response to a sandbox when the sandbox sent an IPN' do
+    server = mock('server')
+    server_client = ServerClient.new(server)
+    ipn_generator = IpnGenerator.new
+    ipn = ipn_generator.ipn
+    server_client.ipn_response(ipn).should == ipn_generator.verified_ipn
+
+  end
 
 end

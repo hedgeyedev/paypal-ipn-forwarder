@@ -39,19 +39,19 @@ class Server
     response
   end
 
-  def computer_testing(params)
-    id = params['my_id']
-    if params['test_mode'] == 'on'
-      if (!computer_online?(id))
-        begin_test_mode(id, params)
-      elsif same_sandbox_being_tested_twice?(id, params)
-         send_conflict_email(id, params['email'])
-         cancel_test_mode(id)
-      end
-    elsif (params['test_mode']== 'off')
-      cancel_test_mode(id)
-    end
-  end
+  #{def computer_testing(params)
+  #{  id = params['my_id']
+  #  if params['test_mode'] == 'on'
+  #    if (!computer_online?(id))
+  #      begin_test_mode(id, params)
+  #    elsif same_sandbox_being_tested_twice?(id, params)
+  #       send_conflict_email(id, params['email'])
+  #       cancel_test_mode(id)
+  #    end
+  #  elsif (params['test_mode']== 'off')
+  #    cancel_test_mode(id)
+  #  end
+  #end
 
   def computer_online?(id)
     @computers_testing[id]
@@ -145,19 +145,19 @@ class Server
   end
 
 
-  def respond_to_computer_poll(paypal_id, now=Time.now)
+  #def respond_to_computer_poll(paypal_id, now=Time.now)
     #a new instance of poll checker needs to be created in case poll is before test mode is turned on
     #and the sandbox is not registered beforehand
-    @poll_checker_instance[paypal_id] = ServerPollChecker.new(self) if @poll_checker_instance[paypal_id].nil?
-    @poll_checker_instance[paypal_id].record_poll_time(paypal_id)
-    if(!computer_online?(paypal_id))
-      @poll_checker_instance[paypal_id].unexpected_poll_time(paypal_id)
-    elsif ipn_response_present?(paypal_id)
-      send_verification
-    else
-      send_ipn_if_present(paypal_id)
-    end
-  end
+  #  @poll_checker_instance[paypal_id] = ServerPollChecker.new(self) if @poll_checker_instance[paypal_id].nil?
+  #  @poll_checker_instance[paypal_id].record_poll_time(paypal_id)
+  #  if(!computer_online?(paypal_id))
+  #    @poll_checker_instance[paypal_id].unexpected_poll_time(paypal_id)
+  #  elsif ipn_response_present?(paypal_id)
+  #    send_verification
+  #  else
+  #    send_ipn_if_present(paypal_id)
+  #  end
+  #end
 
   def send_ipn_if_present(paypal_id)
     if (ipn_present?(paypal_id))
@@ -170,6 +170,8 @@ class Server
     @ipn_response[paypal_id] = nil
   end
 
+  #TODO: delete bottom 2 methods as no longer keeping rack of verified messages
+  #TODO: delete send verified from server client and server
   def receive_ipn_response(ipn_response)
     paypal_id = paypal_id(ipn_response)
     @ipn_response[paypal_id] = "VERIFIED"
@@ -179,6 +181,18 @@ class Server
     ipn_response = @ipn_response[paypal_id]
     !ipn_response.nil?
   end
+
+  def record_computer_poll(paypal_id)
+    #a new instance of poll checker needs to be created in case poll is before test mode is turned on
+    #and the sandbox is not registered beforehand
+    @poll_checker_instance[paypal_id] = ServerPollChecker.new(self) if @poll_checker_instance[paypal_id].nil?
+    @poll_checker_instance[paypal_id].record_poll_time(paypal_id)
+  end
+
+  def unexpected_poll(paypal_id)
+    @poll_checker_instance[paypal_id].unexpected_poll_time(paypal_id)
+  end
+
 
 end
 
