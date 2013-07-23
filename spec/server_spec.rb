@@ -34,28 +34,7 @@ describe Server do
     @server.send_ipn_if_present(id_1).should == nil
   end
 
-  #TODO: fix this
-  it 'records that it has received an IPN response from a specific development computer' do
-    ipn_generator = IpnGenerator.new
-    ipn_response = ipn_generator.verified_ipn
-    @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on'})
-    @server.receive_ipn_response(ipn_response)
-    paypal_id = @server.paypal_id(ipn_response)
-    @server.ipn_response_present?(paypal_id).should == true
-  end
-
-   #TODO delete once ipn response is linked to testing computer
-  it 'confirms a IPN response for a polling request from the router for that IPN response' do
-    ipn_generator = IpnGenerator.new
-    ipn_response = ipn_generator.verified_ipn
-    @server.receive_ipn_response(ipn_response)
-    paypal_id = @server.paypal_id(ipn_response)
-    @server.ipn_response_present?(paypal_id).should == true
-
-  end
-
-  it 'denies an IPN response for a polling request from a router because no IPN exists for that router' do
-    @server.ipn_response_present?(@my_id).should == false
+  it 'denies an IPN for a polling request from a router because no IPN exists for that router' do
     @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', '@email' => 'bob@example.com'})
     @server.respond_to_computer_poll(@my_id).should == nil
   end

@@ -13,7 +13,6 @@ class Server
     LoadConfig.set_test_mode(!test.nil?)
     content = LoadConfig.new
     @computers_testing = content.computer_testing.clone
-    @ipn_response = content.ipn_response.clone
     @queue_map = content.queue_map.clone
     @email_map = content.email_map.clone
     @poll_checker_instance = content.poll_checker_instance.clone
@@ -150,10 +149,8 @@ class Server
     #and the sandbox is not registered beforehand
     @poll_checker_instance[paypal_id] = ServerPollChecker.new(self) if @poll_checker_instance[paypal_id].nil?
     @poll_checker_instance[paypal_id].record_poll_time(paypal_id)
-    if(!computer_online?(paypal_id))
+    unless computer_online?(paypal_id)
       @poll_checker_instance[paypal_id].unexpected_poll_time(paypal_id)
-    elsif ipn_response_present?(paypal_id)
-      send_verification
     else
       send_ipn_if_present(paypal_id)
     end
@@ -163,21 +160,6 @@ class Server
     if (ipn_present?(paypal_id))
       ipn = queue_pop(paypal_id)
     end
-  end
-
-  def send_verification
-    "VERIFIED"
-    @ipn_response[paypal_id] = nil
-  end
-
-  def receive_ipn_response(ipn_response)
-    paypal_id = paypal_id(ipn_response)
-    @ipn_response[paypal_id] = "VERIFIED"
-  end
-
-  def ipn_response_present?(paypal_id)
-    ipn_response = @ipn_response[paypal_id]
-    !ipn_response.nil?
   end
 
 end
