@@ -11,4 +11,3 @@ Feature: Setup
    When my computer turns off test mode
     Then henceforth any IPNs received from my computer's PayPal sandbox are simply acknowledged successfully
     And the IPNs are not accumulated
-

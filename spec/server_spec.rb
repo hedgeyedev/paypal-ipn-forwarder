@@ -12,6 +12,7 @@ describe Server do
     @my_id = 'my_sandbox_id'
   end
 
+  #TODO: reword test to still make sense in new configuration
   it 'forwards an ipn from a paypal sandbox to its corresponding computer' do
     sb = Sandbox.new
     ipn = sb.send
@@ -22,12 +23,17 @@ describe Server do
     computer = DevelopmentComputer.new
     computer.receive_ipn(ipn_retrieved)
     computer.ipn.should == ipn
-
   end
 
-  #this test was erased because it is wrong. It is testing what happens when an (unknown or known) sandbox sends an IPN to the server
-  #when it is non-testing. It should just be bounced and no email should be sent
-
+  it 'responds to a poll request with an IPN when one is present' do
+    sb = Sandbox.new
+    ipn = sb.send
+    @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', '@email' => 'bob@example.com'})
+    @server.receive_ipn(ipn)
+    paypal_id = @server.paypal_id(ipn)
+    @server.ipn_present?(paypal_id).should == true
+    @server.send_ipn_if_present(paypal_id).should == ipn
+  end
 
   it 'does not forward an ipn to a computer from a paypal sandbox that doesn\'t belong to it' do
     sb = Sandbox.new
@@ -70,7 +76,7 @@ describe Server do
     before(:each) do
       @sb = Sandbox.new
       @my_id = 'my_sandbox_id'
-      @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on'})
+      @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
     end
 
     it 'stores IPNs sent from a sandbox when a computer is testing' do
@@ -79,14 +85,20 @@ describe Server do
       ipn.should == @server.queue_pop(@my_id)
     end
 
-  end
+    it 'does NOT store IPNs sent from a sandbox when a computer is NOT testing' do
+      @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'off', 'email' => 'bob@example.com'})
+      ipn = @sb.send
+      @server.receive_ipn(ipn)
+      @server.queue_size(@my_id).should == 0
+    end
 
-  it 'stores the time that a computer polls' do
-    now = Time.now
-    @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
-    @server.respond_to_computer_poll(@my_id, now)
-    @server.last_computer_poll_time(@my_id).should == now
-
+    it 'purges an IPN once it has been sent to the computer' do
+      ipn = @sb.send
+      paypal_id = @server.paypal_id(ipn)
+      @server.queue_push(ipn)
+      @server.send_ipn_if_present(paypal_id)
+      @server.queue_size(paypal_id).should == 0
+    end
 
   end
 
@@ -94,25 +106,33 @@ describe Server do
     Pony.should_receive(:mail).with(any_args).twice
     @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
     @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob_1@example.com'})
-
   end
 
 
   context 'receives polling request without test mode activated' do
 
-    it 'should  send email to the developer, if one is on file' do
+    it 'should should send email to the developer, if one is on file' do
       Pony.should_receive(:mail).with(any_args)
-      @server.unexpected_poll(@my_id)
+      @server.respond_to_computer_poll(@my_id)
     end
 
-    it 'sends email to all developers if no email on file' do
+    it 'should sends email to all developers if no email on file' do
       Pony.should_receive(:mail).with(any_args).twice
-      @server.unexpected_poll('my_sandbox_unknown')
+      @server.respond_to_computer_poll('my_sandbox_unknown')
     end
 
-    it 'sends another notification if issue not handled 24 hours after previous email'
-
-
+    it 'should send another notification email if last email sent 24 ago as issue still not resolved' do
+      Pony.should_receive(:mail).with(any_args).twice
+      time = Time.now - 12.hours
+      @server.respond_to_computer_poll('my_sandbox_unknown', time)
+      time_new = Time.now + 12.hours
+      @server.respond_to_computer_poll('my_sandbox_unknown', time_new)
+    end
   end
+
+   context 'starts test mode' do
+
+     it 'records the time that test mode was started'
+   end
 
 end
