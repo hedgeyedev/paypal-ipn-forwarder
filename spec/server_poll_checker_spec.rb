@@ -13,6 +13,14 @@ describe ServerPollChecker do
     @sp_checker = ServerPollChecker.new(@server, true)
   end
 
+  it 'records the time that test mode was started or the last poll occurred' do
+    time = Time.now
+    paypal_id = 'my_sandbox_id'
+    @sp_checker.record_poll_time(paypal_id, time)
+    @sp_checker.last_poll_time(paypal_id).should == time
+
+  end
+
   it 'should record the time that an unexpected poll comes in and send an email' do
     Pony.should_receive(:mail).with(any_args)
     time = Time.now
@@ -20,7 +28,7 @@ describe ServerPollChecker do
     @sp_checker.last_unexpected_poll.should == time
   end
 
-  it 'should not record an unexpected poll if it occurrs within 24 hours of last email notification sent out' do
+  it 'should not record an unexpected poll if it occurs within 24 hours of last email notification sent out' do
     Pony.should_receive(:mail).with(any_args)
     time = Time.now - 60.0
     @sp_checker.unexpected_poll_time('my_sandbox_id', time)

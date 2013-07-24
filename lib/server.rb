@@ -58,7 +58,7 @@ class Server
 
   def begin_test_mode(id, params)
     @computers_testing[id] = true
-    @queue_map[id] = Queue.new
+    @queue_map[id]     = Queue.new
     email_mapper(id, params['email'])
     #the following line is needed in case the sandbox is a new one.
     @poll_checker_instance[id] = ServerPollChecker.new(self) if @poll_checker_instance[id].nil?

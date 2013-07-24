@@ -15,8 +15,12 @@ class ServerPollChecker
 
   end
 
-  def record_poll_time(paypal_id)
-    @last_poll_time[paypal_id] = Time.now
+  def record_poll_time(paypal_id, time=Time.now)
+    @last_poll_time[paypal_id] = time
+  end
+
+  def last_poll_time(paypal_id)
+    @last_poll_time[paypal_id]
   end
 
   def unexpected_poll_time(paypal_id, time=Time.now)
@@ -50,11 +54,11 @@ class ServerPollChecker
     loop do
       sleep time
       break if !@server.computer_online?(paypal_id)
-      if (@last_poll_time[paypal_id] <=> Time.now - time) == -1 || @last_poll_time[paypal_id].nil?
+      if (last_poll_time(paypal_id) <=> Time.now - time) == -1 || last_poll_time(paypal_id).nil?
         body = "Test mode has been turned on for sandbox with id: #{paypal_id} but no polling has occurred for it in an hour. Please address this issue."
         send_email(paypal_id, body)
-        @server.computer_testing({'my_id' => paypal_id, 'test_mode' => 'off'}) if (@last_poll_time[paypal_id] <=> Time.now - 3*time) == -1
-        break if (@last_poll_time[paypal_id] <=> Time.now - 3*time) == -1
+        @server.computer_testing({'my_id' => paypal_id, 'test_mode' => 'off'}) if (last_poll_time(paypal_id) <=> Time.now - 3*time) == -1
+        break if (last_poll_time(paypal_id) <=> Time.now - 3*time) == -1
       end
    end
   end

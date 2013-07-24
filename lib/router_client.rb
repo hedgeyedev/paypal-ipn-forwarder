@@ -6,8 +6,6 @@ class RouterClient
     @config = LoadConfig.new
     @server_url = @config.server_url
     @final_destination_url = @config.final_destination_url
-
-
   end
 
   def send_ipn(ipn)

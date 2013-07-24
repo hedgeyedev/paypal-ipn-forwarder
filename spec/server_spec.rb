@@ -104,9 +104,9 @@ describe Server do
 
     it 'should send another notification email if last email sent 24 ago as issue still not resolved' do
       Pony.should_receive(:mail).with(any_args).twice
-      time = Time.now - 12.hours
+      time = Time.now - 12*60*60
       @server.respond_to_computer_poll('my_sandbox_unknown', time)
-      time_new = Time.now + 12.hours
+      time_new = Time.now + 12*60*60
       @server.respond_to_computer_poll('my_sandbox_unknown', time_new)
     end
   end
@@ -116,7 +116,7 @@ describe Server do
     #not sure if test is too basic but added just in case
     it 'begins testings'
 
-    it 'records the time that test mode was started'
+
   end
 
 end
