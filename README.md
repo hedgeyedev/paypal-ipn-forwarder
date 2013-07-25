@@ -19,27 +19,26 @@ So, you're stuck, unless you can find a way to forward PayPal sandbox IPN addres
 ## The Solution!
 
 In addition to setting up this tool, you need a public facing *server*.  A cloud-based server
-such as Heroku will work fine. One of the gems in this project will operate as a Sinatra
+such as Heroku will work fine. The gem in this project will operate as a Sinatra
 server to receive and queue the PayPal IPN requests.
 
-Your development machine must be run the other gem in this project; this will
+Your development machine must run the gem as well; this will
 send HTTP requests to this public facing server to retrieve the
 IPN records in the *server*'s queue.  For each IPN record retrieved, this gem will
 forward it to your PayPal client as though PayPal had sent it directly.
 
-When your PayPal client
-responds, this gem will relay the response back to the *server*, which will in turn relay the response
-to the PayPal sandbox that made the request.
+
+Your PayPal client will need to be modified in order to not send out responses to the PayPal sandboxs.
 
 ### In More Detail
 
 Here are the components that play together:
 
 PayPal
-The *PayPal sandbox* that you want to include in your end-to-end testing.
+: The *PayPal sandbox* that you want to include in your end-to-end testing.
 
 Server
-: This package's gem implements a Sinatra server for the *PayPal sandbox* that stores the IPNs in a queue.  This Sinatra
+: This gem implements a Sinatra server for the *PayPal sandbox* that stores the IPNs in a queue.  This Sinatra app
 must run on a server exposed to the *PayPal sandbox*.
 
 Queue
@@ -65,10 +64,8 @@ Notice some assumptions that are implied from this flow:
     as soon as it's stored the IPN into the queue.
 
 1.  While the *server* is filling the *queue*, the *router* is polling the *queue* to see if any IPNs have arrived for it to retrieve.
-    If there is, then the *router* retrives it, pops it off the *queue* so that it isn't reused, and passes it via
-    an HTTP request to the *PayPal client*.  The *PayPal client*'s response is accepted as "good".  We're considering an
-    enhancement in which whether the response should be `success` or `failure` can be programmed into the *server*/*queue* to
-    test the `failure` path.
+    If there is, then the *router* retreives it, pops it off the *queue* so that it isn't reused, and passes it via
+    an HTTP request to the *PayPal client*.  The *PayPal client*'s response is muted.
 
 Ultimately, you probably have multiple development computers that you'd like to have a PayPal sandbox for
 each one.  The *server* can manage multiple connections; this will be described later.
@@ -78,9 +75,7 @@ each one.  The *server* can manage multiple connections; this will be described 
 1.  This Sinatra app only needs to be set up once to handle multiple PayPal sandboxes
     and multiple development machines.
 1.  PayPal IPN's received while the target development machine is unavailable are responded to with a success
-    response by this app.  The resulting IPN record is queued until the development machine's IPN handling
-    process comes on line at which time the queued acknowledges requests are forwarded to the local machine's
-    handling process.  The local machine's response is silently discarded by the Sinatra app.
+    response by this app.  The resulting IPN record is not queued.
 
 ## Requirements
 
@@ -99,11 +94,11 @@ development computers as follows:
 
 ### PayPal Sandbox ID
 
-For this, you can identify this in the IPN in the `receiver_email`.
+For this, you can identify this in the IPN in the `receiver_id`.
 
-### Development Machine ID
+### Development ID
 
-Invent a unique development "name" for each development computer that you want to hook up to a PayPal sandbox.
+For this, an email is used in order for some notifications and identification.
 
 ### Assemble a config.ru file:
 
@@ -117,18 +112,14 @@ On your server, put together this `config.ru` Ruby task:
         username == 'admin' and password == 'admin'  # Please use creds more challenging than these
       end
 
-      MAP = {
-        # PayPal Sandbox ID               => Your target development computer name
-        'paypal_1362421868_biz@gmail.com' => 'joe blow\'s machine'
-
-      }
       run PaypalIpnProxy.new(MAP)
 
 ### Configure the IPN address in your PayPal sandbox(es).
 
 In each PayPal sandbox, configure the *server*'s URL for PayPal to send the IPN messages to.
 
-TODO: provide information on where to do this in PayPal, at least a link.
+#TODO: provide information on where to do this in PayPal, at least a link.
+STOPPED HERE
 
 ### Configure the Router Component on Each Development Computer
 

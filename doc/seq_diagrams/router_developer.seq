@@ -10,7 +10,3 @@ Note over router: time passes...
 developer->router: Exit router
 router->server: Stop test mode
 Note over router: Router\nself-destructs
-
-
-
-
