@@ -1,0 +1,44 @@
+Title: developer interaction with router
+participant developer
+participant router
+participant server
+developer->router: Launch router
+Note over router: Router comes\ninto existence
+router->server: Start test mode
+router->server: Poll for IPN
+Note over router: time passes...
+developer->router: Exit router
+router->server: Stop test mode
+Note over router: Router\nself-destructs
+
+
+Title: router pollig interaction with server and CMS
+participant server
+participant router
+participant cms
+router->server: poll for IPN
+server-->router: No IPN
+router->router: Wait 5 seconds
+router->server: poll for IPN
+
+Title: router polling interaction with server and CMS
+participant server
+participant router
+participant cms
+router->server: poll for IPN
+server-->router: IPN returned
+router->cms: IPN\nhandshake
+router->router:wait 5\nseconds
+router->server: poll for IPN
+
+Title: IPN Success Handshake\nbetween router and CMS
+participant server
+participant router
+participant cms
+router->cms: IPN
+cms->server: IPN response
+router->server: poll for cms response
+router->cms: 'VERIFIED'
+
+
+
