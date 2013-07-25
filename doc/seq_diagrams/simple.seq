@@ -3,9 +3,8 @@ Participant Server
 Participant Queue
 Participant Router
 Participant PayPal\nClient
-PayPal->Server: IPN Request
-Server->Queue: Queue\nRequest
-Server-->PayPal: IPN Response
-Router->Queue: Poll Request
-Queue-->Router: IPN Request
+PayPal->Server: IPN Sent
+Server-->Queue: Queue\nIPN
+Server->PayPal: IPN Handshake\nfinished
+Router->>Queue: Poll for IPN
 Router->PayPal\nClient: IPN\nRequest

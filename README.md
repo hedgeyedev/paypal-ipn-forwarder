@@ -2,14 +2,14 @@
 
 ## The Problem!
 
-You can already set up PayPal sandboxes to interact with for your credit-card and other monetary handlings.
+You can already set up PayPal sandboxes to interact with your credit-card and other monetary handlings.
 Indeed, your development machine can "talk" directly w/ the sandbox.  However, if your production system
 receives IPN notifications from PayPal, you have probably already encountered the following problem:
 
 Can the PayPal sandbox "talk" directly to your development computer?  Not unless your development computer has a static IP address
 (which many find problematic -- security concerns, etc) or a public domain.
 
-![Blocked!](http://s3.hedgeye.com/dev_images/paypal_ipn_proxy/blocked.svg)
+![Blocked!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/master/doc/seq_diagrams/blocked.svg)
 
 Hence, if not, then you know you are unable to do "end-to-end" testing because you cannot test the PayPal IPN
 notification.
@@ -20,11 +20,11 @@ So, you're stuck, unless you can find a way to forward PayPal sandbox IPN addres
 
 In addition to setting up this tool, you need a public facing *server*.  A cloud-based server
 such as Heroku will work fine. The gem in this project will operate as a Sinatra
-server to receive and queue the PayPal IPN requests.
+server to receive and queue the PayPal IPN requests on the server.
 
-Your development machine must run the gem as well; this will
+The gem will be run on you development machine as well; it will
 send HTTP requests to this public facing server to retrieve the
-IPN records in the *server*'s queue.  For each IPN record retrieved, this gem will
+IPN records in the *server*'s queue.  For each IPN record retrieved, the gem will
 forward it to your PayPal client as though PayPal had sent it directly.
 
 
@@ -55,7 +55,7 @@ Of course, in this case, it will be receiving the requests from the *router* ins
 
 The sequence diagram shows how the messages are exchanged.
 
-![Forwarder/Proxy](http://s3.hedgeye.com/dev_images/paypal_ipn_proxy/simple.svg)
+![Forwarder/Proxy](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/readme/doc/seq_diagrams/simple.svg)
 
 Notice some assumptions that are implied from this flow:
 
@@ -63,9 +63,8 @@ Notice some assumptions that are implied from this flow:
     from inadvertently timing out the PayPal sandbox's request.  Hence, for this reason, the *server* completes the HTTP cycle
     as soon as it's stored the IPN into the queue.
 
-1.  While the *server* is filling the *queue*, the *router* is polling the *queue* to see if any IPNs have arrived for it to retrieve.
-    If there is, then the *router* retreives it, pops it off the *queue* so that it isn't reused, and passes it via
-    an HTTP request to the *PayPal client*.  The *PayPal client*'s response is muted.
+1.  The *PayPal client*'s response is muted. Usually, once the *PayPal client* receives an IPN, it conducts a handshake with PayPal to make sure that 
+	the IPN is valid. This is not performed during testing.
 
 Ultimately, you probably have multiple development computers that you'd like to have a PayPal sandbox for
 each one.  The *server* can manage multiple connections; this will be described later.
@@ -94,11 +93,12 @@ development computers as follows:
 
 ### PayPal Sandbox ID
 
-For this, you can identify this in the IPN in the `receiver_id`.
+For this, you can use the Secure Merchant Id located which can be found in the PayPal sandbox. In the
+profile tab, it is the second item which is presented.
 
 ### Development ID
 
-For this, an email is used in order for some notifications and identification.
+For this, the developer's email is used in order to deliver some notifications and identify the developer.
 
 ### Assemble a config.ru file:
 
@@ -112,19 +112,30 @@ On your server, put together this `config.ru` Ruby task:
         username == 'admin' and password == 'admin'  # Please use creds more challenging than these
       end
 
-      run PaypalIpnProxy.new(MAP)
+      run PaypalIpnProxy.new
 
 ### Configure the IPN address in your PayPal sandbox(es).
 
 In each PayPal sandbox, configure the *server*'s URL for PayPal to send the IPN messages to.
 
-#TODO: provide information on where to do this in PayPal, at least a link.
-STOPPED HERE
+[PayPal's guide](https://cms.paypal.com/cms_content/CA/en_US/files/developer/IPNGuide.pdf) describes
+how to do this in section 3 on page 23.
+
 
 ### Configure the Router Component on Each Development Computer
 
-This consists of installing the *router* gem and configuring it with the development computer's
-"name" described above so that the queue knows which IPNs belong to it.
+This consists of installing the *router* gem and creating an alias so that the developer does not have to find the id of the
+ Sandbox every time that they run the gem.
+
+The alias should be saved in a config file using:
+
+
+	alias paypal_testing_on='ruby start_paypal sandbox_id developer_id'
+
+
+
+where sandbox_id is the id of the sandbox that the developer will be using
+ and developer_id is the email of the developer.
 
 ### Run on Your Server
 
@@ -134,12 +145,34 @@ On your server:
 
       rackup -p <whatever port is set up to receive the PayPal IPN messages> -s thin
 
+### Start your Development computer's Router that talks with the server
+
+Using the alias, run the gem on the Developer's computer. Once started, the gem will alert the developer
+if something goes wrong in that terminal window.
+
 ### Start your Development computer's server that talks w/ its PayPal sandbox
 
 When you set up recurring payments on PayPal, PayPal will start sending IPN notifications to you whenever
-it deems necessary.  This will happen, among other activities, when it notifies you that it charged
+it deems necessary. This will happen, among other activities, when it notifies you that it charged
 a credit card or that someone issued a refund on the PayPal sandbox side.
 
-## Future Features
+## Capabilities
 
-1.  Find a way to configure one PayPal sandbox to service multiple development machines.
+The gem can handle any reasonable number of Sandbox's running at the same time. Below, is a big picture explanation of
+how it occurs:
+
+![2_Developers!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/readme/doc/seq_diagrams/multiple.svg)
+
+However, two developers can not be using the same sandbox. If this occurs, both users will have their testing session
+turned off on the server and an email will be sent to both of them.
+
+### Router interactions
+
+The following flow diagrams illustrate the interactions that the router partakes in:
+
+![No IPN!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/readme/doc/seq_diagrams/router_server.svg)
+
+If there is an IPN, the following occurs:
+
+![IPN!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/readme/doc/seq_diagrams/router.svg)
+
