@@ -1,7 +1,7 @@
 require_relative 'spec_helper'
 require_relative '../lib/server'
-require_relative '../lib/sandbox'
-require_relative '../lib/development_computer'
+require_relative '../lib/ipn_generator'
+require_relative '../lib/router_client'
 
 describe Server do
 
@@ -12,22 +12,9 @@ describe Server do
     @my_id = 'my_sandbox_id'
   end
 
-  #TODO: reword test to still make sense in new configuration
-  it 'forwards an ipn from a paypal sandbox to its corresponding computer' do
-    sb = Sandbox.new
-    ipn = sb.send
-    dev_id = 'my_sandbox_id'
-    @server.computer_testing({'my_id' => dev_id, 'test_mode' => 'on'})
-    @server.receive_ipn(ipn)
-    ipn_retrieved = @server.send_ipn_if_present(dev_id)
-    computer = DevelopmentComputer.new
-    computer.receive_ipn(ipn_retrieved)
-    computer.ipn.should == ipn
-  end
-
   it 'responds to a poll request with an IPN when one is present' do
-    sb = Sandbox.new
-    ipn = sb.send
+    sb = IpnGenerator.new
+    ipn = sb.ipn
     @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', '@email' => 'bob@example.com'})
     @server.receive_ipn(ipn)
     paypal_id = @server.paypal_id(ipn)
@@ -36,8 +23,8 @@ describe Server do
   end
 
   it 'does not forward an ipn to a computer from a paypal sandbox that doesn\'t belong to it' do
-    sb = Sandbox.new
-    ipn = sb.send
+    sb = IpnGenerator.new
+    ipn = sb.ipn
     id_1 = 'my_sandbox_id_1'
     id_2 = 'my_sandbox_id'
     @server.computer_testing({'my_id' => id_1, 'test_mode' => 'on'})
@@ -47,18 +34,20 @@ describe Server do
     @server.send_ipn_if_present(id_1).should == nil
   end
 
+  #TODO: fix this
   it 'records that it has received an IPN response from a specific development computer' do
-    computer = DevelopmentComputer.new
+    ipn_generator = IpnGenerator.new
+    ipn_response = ipn_generator.verified_ipn
     @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on'})
-    ipn_response = computer.send_ipn_response
     @server.receive_ipn_response(ipn_response)
     paypal_id = @server.paypal_id(ipn_response)
     @server.ipn_response_present?(paypal_id).should == true
   end
 
+   #TODO delete once ipn response is linked to testing computer
   it 'confirms a IPN response for a polling request from the router for that IPN response' do
-    computer = DevelopmentComputer.new
-    ipn_response = computer.send_ipn_response
+    ipn_generator = IpnGenerator.new
+    ipn_response = ipn_generator.verified_ipn
     @server.receive_ipn_response(ipn_response)
     paypal_id = @server.paypal_id(ipn_response)
     @server.ipn_response_present?(paypal_id).should == true
@@ -74,26 +63,28 @@ describe Server do
   context 'queue' do
 
     before(:each) do
-      @sb = Sandbox.new
+      @ipn_generator = IpnGenerator.new
       @my_id = 'my_sandbox_id'
       @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
     end
 
     it 'stores IPNs sent from a sandbox when a computer is testing' do
-      ipn = @sb.send
+      ipn = @ipn_generator.ipn
       @server.receive_ipn(ipn)
+      paypal_id = @server.paypal_id(ipn)
+      @server.queue_size(paypal_id).should == 1
       ipn.should == @server.queue_pop(@my_id)
     end
 
     it 'does NOT store IPNs sent from a sandbox when a computer is NOT testing' do
-      @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'off', 'email' => 'bob@example.com'})
-      ipn = @sb.send
+      ipn = @ipn_generator.fake_email
+      @server.queue_size(@my_id).should == 0
       @server.receive_ipn(ipn)
       @server.queue_size(@my_id).should == 0
     end
 
     it 'purges an IPN once it has been sent to the computer' do
-      ipn = @sb.send
+      ipn = @ipn_generator.ipn
       paypal_id = @server.paypal_id(ipn)
       @server.queue_push(ipn)
       @server.send_ipn_if_present(paypal_id)
@@ -112,7 +103,18 @@ describe Server do
   context 'receives polling request without test mode activated' do
 
     it 'should should send email to the developer, if one is on file' do
-      Pony.should_receive(:mail).with(any_args)
+      Pony.should_receive(:mail).with({:via => :smtp,
+                                       :to => "dmitri.ostapenko@gmail.com",
+                                       :from => "email-proxy-problems@superbox.com",
+                                       :subject => "A problem occured on the IPN proxy with sandbox my_sandbox_id",
+                                       :body => "Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on. The sandox id is my_sandbox_id.This problem is happening on a superbox belonging to you so this email was only sent to you. Please address it",
+                                       :via_options =>
+                                           {
+                                               :address => "localhost",
+                                               :openssl_verify_mode => "none"
+                                           }
+                                      })
+
       @server.respond_to_computer_poll(@my_id)
     end
 
@@ -130,9 +132,12 @@ describe Server do
     end
   end
 
-   context 'starts test mode' do
+  context 'receives start test mode' do
 
-     it 'records the time that test mode was started'
-   end
+    #not sure if test is too basic but added just in case
+    it 'begins testings'
+
+    it 'records the time that test mode was started'
+  end
 
 end

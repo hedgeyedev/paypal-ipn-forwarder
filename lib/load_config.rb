@@ -19,7 +19,7 @@ class LoadConfig
     @config['server_url']
   end
 
-  def development_computer_url
+  def final_destination_url
     @config['development_computer_url']
   end
 
@@ -36,10 +36,6 @@ class LoadConfig
 
   def sandbox_ids
     @config['sandbox_id']
-  end
-
-  def sandbox_map
-    @config['map']
   end
 
   def computer_testing
