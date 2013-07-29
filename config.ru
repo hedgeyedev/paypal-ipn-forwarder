@@ -1,57 +1,25 @@
-require 'sinatra/base'
-require 'rest_client'
+require 'sinatra/base';
+require 'rest_client';
+require File.expand_path('../lib/server_client', __FILE__)
 require File.expand_path('../lib/server', __FILE__)
+require File.expand_path('../lib/poller', __FILE__)
 
 # Run a demo to see if the port is opened up on the superbox
 
 class ServerRack < Sinatra::Base
 
-  def initialize(server = Server.new)
-    @server = server
+  #poller used for testing purposes
+  def self.initialize(server = ServerClient.new)
+    $server = server
+    @poller = Poller.new()
   end
 
-  def launch_ipn
-    cause_IPN_post_staement_against "localhost:8810/ipn/payemtns"
+  def self.launch_ipn
+    cause_IPN_post_staement_against "localhost:8810/payemtns/ipn"
   end
 
-  get '/invoke_ipn' do
-    launch_ipn
-  end
-
-  get '/ipn-response' do
-    params = request.body.read
-    # make sure request.body.read works
-    puts params
-    @server.respond_to_computer_poll(params)
-  end
-
-  post '/payments/ipn' do
-    ipn = request.body.read
-    unless ipn == 'VERIFIED' || ipn == 'INVALID'
-      @server.receive_ipn(ipn)
-      response = @server.ipn_response(ipn)
-      url      = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
-      RestClient.post url, response
-    end
-  end
-
-  post '/test' do
-    comp_id = request.body.read
-    @server.computer_testing(comp_id)
-  end
-
-  # Pretend to be the PayPal sandbox you're sending the response back to
-  post '/fake_payal' do
-
-  end
-
-  get '/' do
-    # return a 404
-  end
-
-  get '/launch' do
-    url        = 'http://localhost:7810/server/receive'
-    sample_ipn = <<EOF
+  def self.cause_IPN_post_staement_against(url)
+      sample_ipn = <<EOF
 mc_gross=19.95&protection_eligibility=Eligible&address_status=confirmed&pay\
 er_id=LPLWNMTBWMFAY&tax=0.00&address_street=1+Main+St&payment_date=20%3A12%\
 3A59+Jan+13%2C+2009+PST&payment_status=Completed&charset=windows-\
@@ -66,7 +34,53 @@ OfCXbDm2hu0ZELryHFjY-Vb7PAUvS6nMXgysbElEn9v-\
 e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
 ross=19.95&shipping=0.00
 EOF
-    RestClient.post url, sample_ipn
+    RestClient.post url sample_ipn
+  end
+
+
+  get '/invoke_ipn' do
+    server = Server.new
+    #$server = ServerClient.new(server)
+    server.use_IPN_post_staement_against "localhost:8810/payemtns/ipn"
+  end
+
+  get '/ipn-response' do
+    params = request.body.read
+    # make sure request.body.read works
+    puts params
+    @server.respond_to_computer_poll(params)
+  end
+
+  post '/payments/ipn' do
+    ipn = request.body.read
+    unless ipn == 'VERIFIED' || ipn == 'INVALID'
+      @server.receive_ipn(ipn)
+      response = @server.ipn_response(ipn)
+      #url      = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+      url = 'localhost:6810/receive_ipn/'
+      RestClient.post url, response
+    end
+  end
+
+  post '/test' do
+    comp_id = request.body.read
+    @server.computer_testing(comp_id)
+  end
+
+  # Pretend to be the PayPal sandbox you're sending the response back to
+  post '/fake_payal' do
+  end
+
+  get '/bob' do
+    "404: but got here"
+    # return a 404
+  end
+
+  get '/' do
+    "Hello Wofrld"
+  end
+
+  post '/receive_ipn/' do
   end
 
   post '/server/receive' do
@@ -114,7 +128,7 @@ EOF
 
 end
 
-run ServerRack
+run ServerRack.new
 
 
 
