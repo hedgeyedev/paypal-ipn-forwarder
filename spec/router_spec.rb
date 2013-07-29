@@ -15,12 +15,11 @@ describe Router do
     LoadConfig.set_test_mode(true)
     content = LoadConfig.new
     @server_url = content.server_url
-    @server_client = ServerClient.new
     @router = Router.new(@development_computer, TEST_MODE_ON)
     @router.sandbox_id=('my_sandbox_id')
     @poller = Poller.new(@router, @server_url)
     @email = 'bob@example.com'
-    @my_id = 'my_sandbox_id'
+    @sandbox_id = 'my_sandbox_id'
   end
 
   context 'interactions with server' do
@@ -29,7 +28,7 @@ describe Router do
 
       def expected_rest_client_message(mode)
         @email = 'bob@example.com'
-        RestClient.should_receive(:post).with(@server_url, {params: {my_id: @my_id,
+        RestClient.should_receive(:post).with(@server_url, {params: {sandbox_id: @sandbox_id,
                                                                      test_mode: mode,
                                                                      :email => @email,
         }})
@@ -62,7 +61,7 @@ describe Router do
     end
 
     it 'automatically identifies the developer computer' do
-      @router.sandbox_id.should == @my_id
+      @router.sandbox_id.should == @sandbox_id
 
     end
 

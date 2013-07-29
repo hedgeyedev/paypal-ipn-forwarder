@@ -6,7 +6,7 @@ require_relative '../lib/ipn_generator'
 
   before(:each) do
     @server = Server.new(TEST_MODE_ON)
-    @server.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
+    @server.begin_test_mode('my_sandbox_id', {'my_sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', '@email' => 'bob@example.com'})
   end
 
   it 'turns on test mode for a computer once it receives a test-mode message' do

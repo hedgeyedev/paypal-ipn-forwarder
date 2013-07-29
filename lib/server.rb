@@ -7,6 +7,7 @@ require_relative 'load_config'
 require_relative 'mail_sender'
 require_relative 'server_poll_checker'
 
+
 class Server
 
   def initialize(test=nil)
@@ -142,8 +143,8 @@ class Server
     @poll_checker_instance[paypal_id].record_poll_time(paypal_id)
   end
 
-  def unexpected_poll(paypal_id)
-    @poll_checker_instance[paypal_id].unexpected_poll_time(paypal_id)
+  def unexpected_poll(paypal_id, time=Time.now)
+    @poll_checker_instance[paypal_id].unexpected_poll_time(paypal_id, time)
   end
 
 end
