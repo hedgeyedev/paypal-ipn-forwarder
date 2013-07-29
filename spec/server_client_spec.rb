@@ -7,12 +7,14 @@ describe ServerClient do
 
   TEST_MODE_ON = true
 
+
+
   it 'should receive a testing ON HTTP request from the router and tell the server to turn test mode ON' do
     server = Server.new(TEST_MODE_ON)
-    server.should_receive(:begin_test_mode).with('my_sandbox_id', {'my_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
+    server.should_receive(:begin_test_mode).with('my_sandbox_id', {'my_sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
 
     server_client = ServerClient.new(server)
-    server_client.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
+    server_client.computer_testing( {'my_sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
 
   end
 
@@ -21,7 +23,7 @@ describe ServerClient do
     server.should_receive(:cancel_test_mode).with('my_sandbox_id')
 
     server_client = ServerClient.new(server)
-    server_client.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'off', 'email' => 'bob@example.com'})
+    server_client.computer_testing({'my_sandbox_id' => 'my_sandbox_id', 'test_mode' => 'off', 'email' => 'bob@example.com'})
   end
 
   it 'should receive a poll from a development computer and respond to it' do
@@ -29,7 +31,7 @@ describe ServerClient do
     server_client = ServerClient.new(server)
     ipn_generator = IpnGenerator.new
     ipn = ipn_generator.ipn
-    server_client.computer_testing({'my_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
+    server_client.computer_testing({'my_sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
     server.queue_push(ipn)
     server_client.respond_to_computer_poll('my_sandbox_id').should == ipn
 
@@ -50,6 +52,17 @@ describe ServerClient do
     ipn = ipn_generator.ipn
     server_client.ipn_response(ipn).should == ipn_generator.verified_ipn
 
+  end
+
+  it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing and send out emails' do
+    Pony.should_receive(:mail).with(any_args).twice
+    server = Server.new(TEST_MODE_ON)
+    server_client = ServerClient.new(server)
+    @sandox_id = 'sandbox_id'
+    server_client.computer_testing({'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
+    server.computer_online?(@sandbox_id).should == true
+    server.same_sandbox_being_tested_twice?(@sandbox_id, {'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob1@example.com'}).should == true
+    server_client.computer_testing({'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob1@example.com'})
   end
 
 end

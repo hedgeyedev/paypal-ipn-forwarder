@@ -9,13 +9,13 @@ describe Server do
 
   before(:each) do
     @server = Server.new(TEST_MODE_ON)
-    @my_id = 'my_sandbox_id'
+    @sandbox_id = 'my_sandbox_id'
   end
 
   it 'responds to a poll request with an IPN when one is present' do
     sb = IpnGenerator.new
     ipn = sb.ipn
-    @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', '@email' => 'bob@example.com'})
+    @server.begin_test_mode(@sandbox_id, {'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
     @server.receive_ipn(ipn)
     paypal_id = @server.paypal_id(ipn)
     @server.ipn_present?(paypal_id).should == true
@@ -27,24 +27,24 @@ describe Server do
     ipn = sb.ipn
     id_1 = 'my_sandbox_id_1'
     id_2 = 'my_sandbox_id'
-    @server.computer_testing({'my_id' => id_1, 'test_mode' => 'on'})
-    @server.computer_testing({'my_id' => id_2, 'test_mode' => 'on'})
+    @server.begin_test_mode(id_1, {'sandbox_id' => id_1, 'test_mode' => 'on', 'email' => 'bob@example.com'})
+    @server.begin_test_mode(id_2, {'sandbox_id' => id_2, 'test_mode' => 'on', 'email' => 'bob@example.com'})
     @server.receive_ipn(ipn)
     @server.ipn_present?(id_1).should == false
     @server.send_ipn_if_present(id_1).should == nil
   end
 
   it 'denies an IPN for a polling request from a router because no IPN exists for that router' do
-    @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', '@email' => 'bob@example.com'})
-    @server.respond_to_computer_poll(@my_id).should == nil
+    @server.begin_test_mode(@sandbox_id, {'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
+    @server.send_ipn_if_present(@sandbox_id).should == nil
   end
 
   context 'queue' do
 
     before(:each) do
       @ipn_generator = IpnGenerator.new
-      @my_id = 'my_sandbox_id'
-      @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
+      @sandbox_id = 'my_sandbox_id'
+      @server.begin_test_mode(@sandbox_id, {'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
     end
 
     it 'stores IPNs sent from a sandbox when a computer is testing' do
@@ -52,14 +52,14 @@ describe Server do
       @server.receive_ipn(ipn)
       paypal_id = @server.paypal_id(ipn)
       @server.queue_size(paypal_id).should == 1
-      ipn.should == @server.queue_pop(@my_id)
+      ipn.should == @server.queue_pop(@sandbox_id)
     end
 
     it 'does NOT store IPNs sent from a sandbox when a computer is NOT testing' do
       ipn = @ipn_generator.fake_email
-      @server.queue_size(@my_id).should == 0
+      @server.queue_size(@sandbox_id).should == 0
       @server.receive_ipn(ipn)
-      @server.queue_size(@my_id).should == 0
+      @server.queue_size(@sandbox_id).should == 0
     end
 
     it 'purges an IPN once it has been sent to the computer' do
@@ -71,13 +71,6 @@ describe Server do
     end
 
   end
-
-  it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing' do
-    Pony.should_receive(:mail).with(any_args).twice
-    @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
-    @server.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob_1@example.com'})
-  end
-
 
   context 'receives polling request without test mode activated' do
 
@@ -94,20 +87,23 @@ describe Server do
                                            }
                                       })
 
-      @server.respond_to_computer_poll(@my_id)
+      @server.record_computer_poll(@sandbox_id)
+      @server.unexpected_poll(@sandbox_id)
     end
 
     it 'should sends email to all developers if no email on file' do
       Pony.should_receive(:mail).with(any_args).twice
-      @server.respond_to_computer_poll('my_sandbox_unknown')
+      @server.record_computer_poll('my_sandbox_unknown')
+      @server.unexpected_poll('my_sandbox_unknown')
     end
 
     it 'should send another notification email if last email sent 24 ago as issue still not resolved' do
       Pony.should_receive(:mail).with(any_args).twice
       time = Time.now - 12*60*60
-      @server.respond_to_computer_poll('my_sandbox_unknown', time)
+      @server.record_computer_poll('my_sandbox_unknown')
+      @server.unexpected_poll('my_sandbox_unknown')
       time_new = Time.now + 12*60*60
-      @server.respond_to_computer_poll('my_sandbox_unknown', time_new)
+      @server.unexpected_poll('my_sandbox_unknown', time_new)
     end
   end
 

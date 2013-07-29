@@ -5,7 +5,7 @@ class ServerClient
   end
 
   def computer_testing(params)
-    id = params['my_id']
+    id = params['my_sandbox_id']
     if params['test_mode'] == 'on'
       if (!@server.computer_online?(id))
         @server.begin_test_mode(id, params)
@@ -22,8 +22,6 @@ class ServerClient
     @server.record_computer_poll(paypal_id)
     if(!@server.computer_online?(paypal_id))
       @server.unexpected_poll(paypal_id)
-    elsif @server.ipn_response_present?(paypal_id)
-      @server.send_verification
     else
       @server.send_ipn_if_present(paypal_id)
     end

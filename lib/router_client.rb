@@ -14,7 +14,7 @@ class RouterClient
 
 
   def set_test_mode(mode, email, sandbox_id)
-    RestClient.post(@server_url, { params: { my_id: sandbox_id, test_mode: mode, email: email
+    RestClient.post(@server_url, { params: { sandbox_id: sandbox_id, test_mode: mode, email: email
     } })
   end
 
