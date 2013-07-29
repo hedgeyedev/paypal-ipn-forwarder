@@ -42,10 +42,6 @@ class LoadConfig
     @config['computer_testing']
   end
 
-  def ipn_response
-    @config['ipn_response']
-  end
-
   def queue_map
     @config['queue_map']
   end

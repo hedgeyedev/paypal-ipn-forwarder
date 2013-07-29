@@ -35,10 +35,6 @@ describe LoadConfig do
     @config.computer_testing.should == {'my_sandbox_id'=>false, 'my_sandbox_id_1'=>false}
   end
 
-  it 'retrieves ipn_responses for the server hash' do
-    @config.ipn_response.should == {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
-  end
-
   it 'retrieves the queue map for the server' do
     @config.queue_map.should ==  {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
   end

@@ -13,7 +13,6 @@ class Server
     LoadConfig.set_test_mode(!test.nil?)
     content = LoadConfig.new
     @computers_testing = content.computer_testing.clone
-    @ipn_response = content.ipn_response.clone
     @queue_map = content.queue_map.clone
     @email_map = content.email_map.clone
     @poll_checker_instance = content.poll_checker_instance.clone
@@ -45,7 +44,7 @@ class Server
 
   def begin_test_mode(id, params)
     @computers_testing[id] = true
-    @queue_map[id] = Queue.new
+    @queue_map[id]     = Queue.new
     email_mapper(id, params['email'])
     #the following line is needed in case the sandbox is a new one.
     @poll_checker_instance[id] = ServerPollChecker.new(self) if @poll_checker_instance[id].nil?
@@ -108,7 +107,7 @@ class Server
       queue.push(ipn)
     end
   end
-  
+
   #if the queue does not exist(due to sandbox not being in test mode), then the size of the queue will be 0
   def queue_size(paypal_id)
     queue = @queue_map[paypal_id]
@@ -136,23 +135,6 @@ class Server
     end
   end
 
-  def send_verification
-    "VERIFIED"
-    @ipn_response[paypal_id] = nil
-  end
-
-  #TODO: delete bottom 2 methods as no longer keeping rack of verified messages
-  #TODO: delete send verified from server client and server
-  def receive_ipn_response(ipn_response)
-    paypal_id = paypal_id(ipn_response)
-    @ipn_response[paypal_id] = "VERIFIED"
-  end
-
-  def ipn_response_present?(paypal_id)
-    ipn_response = @ipn_response[paypal_id]
-    !ipn_response.nil?
-  end
-
   def record_computer_poll(paypal_id)
     #a new instance of poll checker needs to be created in case poll is before test mode is turned on
     #and the sandbox is not registered beforehand
@@ -163,7 +145,6 @@ class Server
   def unexpected_poll(paypal_id)
     @poll_checker_instance[paypal_id].unexpected_poll_time(paypal_id)
   end
-
 
 end
 

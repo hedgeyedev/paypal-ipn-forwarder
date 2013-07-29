@@ -15,7 +15,10 @@ describe RouterClient do
     @dev_computer.send_ipn('sample_IPN')
   end
 
-  it 'should send a HTTP request telling server that test mode has turned on'
+  it 'should send a HTTP request telling server that test mode has turned on' do
+    RestClient.should_receive(:post).with('http://your_server.example.com', {:params=>{:my_id=>'my_sandbox_id', :test_mode=>'on', :email=>'bob@example.com'}})
+    @dev_computer.set_test_mode('on', 'bob@example.com', 'my_sandbox_id')
+  end
 
 
 end
