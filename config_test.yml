@@ -1,4 +1,4 @@
-server_url : 'http://your_server.example.com'
+server_url : 'http://localhost:8810/'
 development_computer_url : 'http://localhost:3000/payments/ipn'
 
 :via : :smtp

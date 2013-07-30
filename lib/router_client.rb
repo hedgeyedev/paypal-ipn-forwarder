@@ -5,6 +5,7 @@ class RouterClient
     LoadConfig.set_test_mode(test)
     @config = LoadConfig.new
     @server_url = @config.server_url
+    @server_url += 'test'
     @final_destination_url = @config.final_destination_url
   end
 
@@ -12,10 +13,10 @@ class RouterClient
     RestClient.post @final_destination_url, ipn
   end
 
-
+   #TODO: figure out server url
   def set_test_mode(mode, email, sandbox_id)
-    RestClient.post(@server_url, { params: { sandbox_id: sandbox_id, test_mode: mode, email: email
-    } })
+    RestClient.post(@server_url,  { sandbox_id: sandbox_id, test_mode: mode, email: email
+     })
   end
 
 end

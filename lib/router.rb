@@ -8,7 +8,7 @@ class Router
   TEST_OFF = 'off'
 
   attr_accessor :sandbox_id
-
+   #TODO: rename dev_computer to router Client
   def initialize(target, test=nil)
     @development_computer  = target
   end

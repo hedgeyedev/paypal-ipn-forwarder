@@ -3,7 +3,7 @@ class Poller
 
   def initialize(router, server_url)
     @router = router
-    @server_url = server_url
+    @server_url = server_url + 'computer_poll'
     @sandbox_id = @router.sandbox_id
   end
 

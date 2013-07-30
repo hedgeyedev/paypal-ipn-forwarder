@@ -1,3 +1,4 @@
+require 'rest_client'
 class IpnGenerator
    def ipn
    @sample_ipn = <<EOF
@@ -25,6 +26,13 @@ EOF
 
   def verified_ipn
     verified_ipn = 'cmd=_notify-validate&' + ipn
+  end
+
+
+  def send_via_http(url)
+      @url = url
+      sample_ipn = ipn
+      RestClient.post @url, sample_ipn
   end
 
 end

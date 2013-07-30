@@ -1,18 +1,30 @@
-require 'sinatra/base';
-require 'rest_client';
+require 'sinatra/base'
+require 'rest_client'
+require 'cgi'
 require File.expand_path('../lib/server_client', __FILE__)
 require File.expand_path('../lib/server', __FILE__)
 require File.expand_path('../lib/poller', __FILE__)
+require File.expand_path('../lib/ipn_generator', __FILE__)
+require File.expand_path('../lib/router_client', __FILE__)
 
 # Run a demo to see if the port is opened up on the superbox
 
 class ServerRack < Sinatra::Base
-
-  #poller used for testing purposes
-  def self.initialize(server = ServerClient.new)
-    $server = server
-    @poller = Poller.new()
+  configure do
+    TEST_MODE_ON = true
+    @@server = Server.new(TEST_MODE_ON)
+    @@server_client = ServerClient.new(@@server)
+    @@router = RouterClient.new(TEST_MODE_ON)
+  #  set :server, Server.new
+  ##  set :server_client, ServerClient.new(settings.server)
   end
+
+  #methods still not working. TODO: fix them
+  def self.initialize(server = ServerClient.new)
+    @server = Server.new
+    @server_client = ServerClient.new(@@server)
+  end
+
 
   def self.launch_ipn
     cause_IPN_post_staement_against "localhost:8810/payemtns/ipn"
@@ -39,23 +51,42 @@ EOF
 
 
   get '/invoke_ipn' do
-    server = Server.new
+    sample_ipn = <<EOF
+mc_gross=19.95&protection_eligibility=Eligible&address_status=confirmed&pay\
+er_id=LPLWNMTBWMFAY&tax=0.00&address_street=1+Main+St&payment_date=20%3A12%\
+3A59+Jan+13%2C+2009+PST&payment_status=Completed&charset=windows-\
+1252&address_zip=95131&first_name=Test&mc_fee=0.88&address_country_code=US&\
+address_name=Test+User&notify_version=2.6&custom=&payer_status=verified&add\
+ress_country=United+States&address_city=San+Jose&quantity=1&verify_sign=Atk\
+OfCXbDm2hu0ZELryHFjY-Vb7PAUvS6nMXgysbElEn9v-\
+1XcmSoGtf&payer_email=gpmac_1231902590_per%40paypal.com&txn_id=61E67681CH32\
+38416&payment_type=instant&last_name=User&address_state=CA&receiver_email=email\
+&payment_fee=0.88&receiver_id=S8XGHLYDW9T3S\
+&txn_type=express_checkout&item_name=&mc_currency=USD&item_number=&residenc\
+e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
+ross=19.95&shipping=0.00
+EOF
+    server = IpnGenerator.new
+    #puts "#{settings.server}"
     #$server = ServerClient.new(server)
-    server.use_IPN_post_staement_against "localhost:8810/payemtns/ipn"
+    server.send_via_http "localhost:8810/payments/ipn"
+   # RestClient.post "localhost:8810/payemtns/ipn", sample_ipn
   end
 
-  get '/ipn-response' do
+  get '/computer_poll' do
     params = request.body.read
     # make sure request.body.read works
     puts params
-    @server.respond_to_computer_poll(params)
+    @@server_client.respond_to_computer_poll(params)
   end
 
   post '/payments/ipn' do
     ipn = request.body.read
+    #puts "#{settings.server}"
+
     unless ipn == 'VERIFIED' || ipn == 'INVALID'
-      @server.receive_ipn(ipn)
-      response = @server.ipn_response(ipn)
+      @@server_client.receive_ipn(ipn)
+      response = @@server_client.ipn_response(ipn)
       #url      = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
       url = 'localhost:6810/receive_ipn/'
       RestClient.post url, response
@@ -63,21 +94,25 @@ EOF
   end
 
   post '/test' do
-    comp_id = request.body.read
-    @server.computer_testing(comp_id)
+    params = request.body.read
+    @@server_client.computer_testing(params)
   end
 
   # Pretend to be the PayPal sandbox you're sending the response back to
   post '/fake_payal' do
   end
 
-  get '/bob' do
-    "404: but got here"
-    # return a 404
-  end
-
   get '/' do
     "Hello Wofrld"
+  end
+
+  get '/test_on' do
+    @@router.set_test_mode('on', 'bib@example.com', 'my_sandbox_id')
+  end
+
+  get '/start_computer_poll' do
+    RestClient.get('localhost:8810/computer_poll')
+    #RestClient.get "localhost:8810/payments/ipn"
   end
 
   post '/receive_ipn/' do

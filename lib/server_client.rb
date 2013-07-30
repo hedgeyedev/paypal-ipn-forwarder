@@ -1,3 +1,4 @@
+require 'cgi'
 class ServerClient
 
   def initialize(server)
@@ -5,15 +6,16 @@ class ServerClient
   end
 
   def computer_testing(params)
-    id = params['my_sandbox_id']
-    if params['test_mode'] == 'on'
-      if (!@server.computer_online?(id))
+    params_parsed = CGI::parse(params)
+    id = params_parsed['my_sandbox_id'].first
+    if params_parsed['test_mode'].first == 'on'
+      if !@server.computer_online?(id)
         @server.begin_test_mode(id, params)
       elsif @server.same_sandbox_being_tested_twice?(id, params)
         @server.send_conflict_email(id, params['email'])
         @server.cancel_test_mode(id)
       end
-    elsif (params['test_mode']== 'off')
+    elsif params_parsed['test_mode'].first == 'off'
       @server.cancel_test_mode(id)
     end
   end
