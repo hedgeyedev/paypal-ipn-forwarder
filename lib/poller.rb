@@ -8,7 +8,11 @@ class Poller
   end
 
   def retrieve_ipn
-    RestClient.get @server_url, :params => {'sandbox_id' => @sandbox_id}
+    begin
+      RestClient.get @server_url, :params => {'sandbox_id' => @sandbox_id}
+    rescue StandardError
+      puts 'the connection to the server is failing please check that the server is online'
+    end
   end
 
   #caller is for testing-only

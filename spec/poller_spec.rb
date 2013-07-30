@@ -38,5 +38,10 @@ describe Poller do
     @poller.retrieve_ipn
   end
 
+  it 'alerts the developer if an error occurs during a poll' do
+    STDOUT.should_receive(:puts).with('the connection to the server is failing please check that the server is online')
+    @poller.retrieve_ipn
+  end
+
 
 end

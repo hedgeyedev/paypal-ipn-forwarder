@@ -18,7 +18,11 @@ class Router
   end
 
   def turn_test_mode_on(email)
-    @router_client.set_test_mode(TEST_ON, email, @sandbox_id)
+    begin
+      @router_client.set_test_mode(TEST_ON, email, @sandbox_id)
+    rescue StandardError
+      puts 'The connection to the server is experiencing errors. Test mode was NOT turned on. Make sure the server is running!'
+    end
   end
 
   #TODO there is nothing calling this method currently. Make sure it is hardwired in or test mode will never be turned off

@@ -24,6 +24,11 @@ describe Router do
 
   context 'interactions with server' do
 
+    it 'can not reach the server when starting test mode' do
+      STDOUT.should_receive(:puts).with('The connection to the server is experiencing errors. Test mode was NOT turned on. Make sure the server is running!')
+      @router.turn_test_mode_on('bob@example.com')
+    end
+
     context 'test mode' do
 
       def expected_rest_client_message(mode)
