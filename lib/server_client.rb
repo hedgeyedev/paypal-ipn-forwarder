@@ -7,7 +7,7 @@ class ServerClient
 
   def computer_testing(params)
     params_parsed = CGI::parse(params)
-    id = params_parsed['my_sandbox_id'].first
+    id = params_parsed['sandbox_id'].first
     if params_parsed['test_mode'].first == 'on'
       if !@server.computer_online?(id)
         @server.begin_test_mode(id, params)
@@ -22,10 +22,10 @@ class ServerClient
 
   def respond_to_computer_poll(paypal_id, now=Time.now)
     @server.record_computer_poll(paypal_id)
-    if(!@server.computer_online?(paypal_id))
-      @server.unexpected_poll(paypal_id)
-    else
+    if(@server.computer_online?(paypal_id))
       @server.send_ipn_if_present(paypal_id)
+    else
+      @server.unexpected_poll(paypal_id)
     end
   end
 

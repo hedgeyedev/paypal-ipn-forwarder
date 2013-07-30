@@ -1,14 +1,14 @@
 require 'rest_client'
 class Poller
 
-  def initialize(router, server_url)
+  def initialize(router, server_url, sandbox)
     @router = router
     @server_url = server_url + 'computer_poll'
-    @sandbox_id = @router.sandbox_id
+    !sandbox.nil? ? @sandbox_id = sandbox : @sandbox_id = @router.sandbox_id
   end
 
   def retrieve_ipn
-    RestClient.get(@server_url, @sandbox_id)
+    RestClient.get @server_url, :params => {'sandbox_id' => @sandbox_id}
   end
 
   #caller is for testing-only

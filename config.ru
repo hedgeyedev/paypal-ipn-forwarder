@@ -51,39 +51,27 @@ EOF
 
 
   get '/invoke_ipn' do
-    sample_ipn = <<EOF
-mc_gross=19.95&protection_eligibility=Eligible&address_status=confirmed&pay\
-er_id=LPLWNMTBWMFAY&tax=0.00&address_street=1+Main+St&payment_date=20%3A12%\
-3A59+Jan+13%2C+2009+PST&payment_status=Completed&charset=windows-\
-1252&address_zip=95131&first_name=Test&mc_fee=0.88&address_country_code=US&\
-address_name=Test+User&notify_version=2.6&custom=&payer_status=verified&add\
-ress_country=United+States&address_city=San+Jose&quantity=1&verify_sign=Atk\
-OfCXbDm2hu0ZELryHFjY-Vb7PAUvS6nMXgysbElEn9v-\
-1XcmSoGtf&payer_email=gpmac_1231902590_per%40paypal.com&txn_id=61E67681CH32\
-38416&payment_type=instant&last_name=User&address_state=CA&receiver_email=email\
-&payment_fee=0.88&receiver_id=S8XGHLYDW9T3S\
-&txn_type=express_checkout&item_name=&mc_currency=USD&item_number=&residenc\
-e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
-ross=19.95&shipping=0.00
-EOF
-    server = IpnGenerator.new
+
+    ipn_send_test = IpnGenerator.new
     #puts "#{settings.server}"
     #$server = ServerClient.new(server)
-    server.send_via_http "localhost:8810/payments/ipn"
+    ipn_send_test.send_via_http "localhost:8810/payments/ipn"
    # RestClient.post "localhost:8810/payemtns/ipn", sample_ipn
   end
 
   get '/computer_poll' do
-    params = request.body.read
+    #TODO: figure out what occurs if params nill
     # make sure request.body.read works
-    puts params
+    params = request['sandbox_id']
+    puts request['sandbox_id']
+    puts @@server.computer_online?(params)
     @@server_client.respond_to_computer_poll(params)
   end
 
   post '/payments/ipn' do
     ipn = request.body.read
     #puts "#{settings.server}"
-
+    #TODO: seperate paypal response and storing to get rid of bugs
     unless ipn == 'VERIFIED' || ipn == 'INVALID'
       @@server_client.receive_ipn(ipn)
       response = @@server_client.ipn_response(ipn)
@@ -111,8 +99,9 @@ EOF
   end
 
   get '/start_computer_poll' do
-    RestClient.get('localhost:8810/computer_poll')
-    #RestClient.get "localhost:8810/payments/ipn"
+    poller = Poller.new(nil, 'http://localhost:8810/', 'my_sandbox_id')
+    poller.retrieve_ipn
+    #Restlient.get "localhost:8810/payments/ipn"
   end
 
   post '/receive_ipn/' do
