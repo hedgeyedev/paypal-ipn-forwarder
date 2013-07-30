@@ -8,7 +8,7 @@ describe ServerClient do
   TEST_MODE_ON = true
 
 
-
+    #TODO: fix tests so the pass with CGI
   it 'should receive a testing ON HTTP request from the router and tell the server to turn test mode ON' do
     server = Server.new(TEST_MODE_ON)
     server.should_receive(:begin_test_mode).with('my_sandbox_id', {'my_sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})

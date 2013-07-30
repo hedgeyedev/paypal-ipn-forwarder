@@ -1,7 +1,7 @@
 require 'rest_client'
 class Poller
 
-  def initialize(router, server_url, sandbox)
+  def initialize(router, server_url, sandbox=nil)
     @router = router
     @server_url = server_url + 'computer_poll'
     !sandbox.nil? ? @sandbox_id = sandbox : @sandbox_id = @router.sandbox_id
@@ -15,8 +15,8 @@ class Poller
   def poll_for_ipn(caller=nil)
     loop do
       ipn = retrieve_ipn
-      @router.send_ipn ipn unless (ipn.nil?)
-      sleep @time_in_sec
+      @router.send_ipn ipn unless (ipn.nil? || ipn == '')
+      sleep @time_in_sec.to_i
       break unless (caller.nil? || caller.keep_polling?)
     end
   end

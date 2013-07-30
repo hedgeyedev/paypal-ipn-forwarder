@@ -11,7 +11,7 @@ describe LoadConfig do
   end
 
   it 'retrieves the server URL' do
-    @config.server_url.should == 'http://your_server.example.com'
+    @config.server_url.should == 'http://localhost:8810/'
   end
 
 

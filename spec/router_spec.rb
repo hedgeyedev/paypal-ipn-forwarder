@@ -11,11 +11,11 @@ describe Router do
   TEST_MODE_ON = true
 
   before(:each) do
-    @development_computer = RouterClient.new(TEST_MODE_ON)
+    @router_client = RouterClient.new(TEST_MODE_ON)
     LoadConfig.set_test_mode(true)
     content = LoadConfig.new
-    @server_url = content.server_url
-    @router = Router.new(@development_computer, TEST_MODE_ON)
+    @server_url = content.server_url + 'test'
+    @router = Router.new(@router_client, TEST_MODE_ON)
     @router.sandbox_id=('my_sandbox_id')
     @poller = Poller.new(@router, @server_url)
     @email = 'bob@example.com'
@@ -28,10 +28,10 @@ describe Router do
 
       def expected_rest_client_message(mode)
         @email = 'bob@example.com'
-        RestClient.should_receive(:post).with(@server_url, {params: {sandbox_id: @sandbox_id,
-                                                                     test_mode: mode,
-                                                                     :email => @email,
-        }})
+        RestClient.should_receive(:post).with(@server_url, {sandbox_id: @sandbox_id,
+                                                            test_mode: mode,
+                                                            :email => @email
+        })
       end
 
       it 'has started' do
@@ -68,7 +68,7 @@ describe Router do
     it 'processes an IPN' do
       ipn = create_an_ipn_somehow
       ipn_response = create_ipn_response_somehow
-      @development_computer.stub!(:send_ipn).with(ipn).and_return(ipn_response)
+      @router_client.stub!(:send_ipn).with(ipn).and_return(ipn_response)
       @router.send_ipn(ipn)
 
     end

@@ -5,10 +5,20 @@ require_relative '../lib/poller'
 require_relative '../lib/load_config'
 require_relative '../lib/router_client'
 
-computer = RouterClient.new
-router = Router.new(computer)
-router.sandbox_id(ARGV[1])
-router.turn_test_mode_on(ARGV[2])
+TEST_MODE_ON = true
+TEST_MODE_OFF = false
+ARGV[2].nil? ? TEST_MODE = TEST_MODE_OFF : TEST_MODE = TEST_MODE_ON
+puts ARGV[2]
+puts TEST_MODE
+computer = RouterClient.new(TEST_MODE)
+router = Router.new(computer, TEST_MODE)
+router.sandbox_id = ARGV[0]
+router.turn_test_mode_on("#{ARGV[1]}")
+
+rescue ConnectionRefusedError
+  prints "error"
+end
+
 config = LoadConfig.new
 polling_interval = config.polling_interval_seconds
 server_url = config.server_url

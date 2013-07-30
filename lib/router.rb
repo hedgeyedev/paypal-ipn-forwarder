@@ -10,20 +10,20 @@ class Router
   attr_accessor :sandbox_id
    #TODO: rename dev_computer to router Client
   def initialize(target, test=nil)
-    @development_computer  = target
+    @router_client  = target
   end
 
   def send_ipn(ipn)
-    @development_computer.send_ipn(ipn)
+    @router_client.send_ipn(ipn)
   end
 
   def turn_test_mode_on(email)
-    @development_computer.set_test_mode(TEST_ON, email, @sandbox_id)
+    @router_client.set_test_mode(TEST_ON, email, @sandbox_id)
   end
 
   #TODO there is nothing calling this method currently. Make sure it is hardwired in or test mode will never be turned off
   def turn_test_mode_off(email)
-    @development_computer.set_test_mode(TEST_OFF, email, @sandbox_id)
+    @router_client.set_test_mode(TEST_OFF, email, @sandbox_id)
   end
 
 end
