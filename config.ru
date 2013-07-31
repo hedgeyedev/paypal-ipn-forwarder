@@ -23,8 +23,6 @@ class ServerRack < Sinatra::Base
   get '/computer_poll' do
     #TODO: figure out what occurs if params nill
     params = request['sandbox_id']
-    puts request['sandbox_id']
-    puts @@server.computer_online?(params)
     @@server_client.respond_to_computer_poll(params)
   end
 
