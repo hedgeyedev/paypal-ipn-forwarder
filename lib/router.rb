@@ -25,9 +25,13 @@ class Router
     end
   end
 
-  #TODO there is nothing calling this method currently. Make sure it is hardwired in or test mode will never be turned off
   def turn_test_mode_off(email)
-    @router_client.set_test_mode(TEST_OFF, email, @sandbox_id)
+    begin
+      @router_client.set_test_mode(TEST_OFF, email, @sandbox_id)
+    rescue StandardError
+      puts 'The connection to the server is not working. please make sure that TESTING IS TURNED OFF on the server
+      otherwise IPN WILL CONTINUE TO ACCUMULATE'
+    end
   end
 
 end
