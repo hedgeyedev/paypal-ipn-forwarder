@@ -111,7 +111,7 @@ describe Server do
 
     it 'should send an email to the developer informing them of the problem' do
       Pony.should_receive(:mail).with(any_args)
-      @server.poll_with_incomplete_indo('email@email', 'off', '')
+      @server.poll_with_incomplete_info('email@email', 'off', '')
     end
   end
 

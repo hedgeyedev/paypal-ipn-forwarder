@@ -6,7 +6,7 @@ development_computer_url : 'http://localhost:3000/payments/ipn'
   :address : 0.0.0.1
   :openssl_verify_mode : none
 
-polling_interval_seconds : '10.0'
+polling_interval_seconds : '5.0'
 
 poll_checking_interval_seconds : '3600.0'
 

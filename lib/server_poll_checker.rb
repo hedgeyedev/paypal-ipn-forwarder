@@ -65,7 +65,7 @@ class ServerPollChecker
    end
   end
 
-  def email_developer_incompelete_request(email, test_mode, id, time=Time.now)
+  def email_developer_incomplete_request(email, test_mode, id, time=Time.now)
     to = email
     subject = 'Your computer is polling the Superbox IPN forwarder but is missing information. No IPN will be retrieved'
     body = "Your development computer is polling the Superbox IPN forwarder.

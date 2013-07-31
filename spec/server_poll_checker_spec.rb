@@ -44,6 +44,7 @@ describe ServerPollChecker do
     @sp_checker.unexpected_poll_time('my_sandbox_id', time_fast_forward)
   end
 
+  #TODO: fork processes
   it 'should send an email notification if polling has not occurred within an hour of test mode being turned on and repeat notification three times if not fixed' do
     Pony.should_receive(:mail).with(any_args).exactly(3).times
     @sp_checker.record_poll_time('my_sandbox_id')
@@ -59,8 +60,8 @@ describe ServerPollChecker do
 
   it 'should not send an email if last incomplete information poll was less than hour ago' do
       Pony.should_receive(:mail).with(any_args)
-      @sp_checker.email_developer_incompelete_request('email@email', 'off', '')
-      @sp_checker.email_developer_incompelete_request('email@email', 'off', '', Time.now + 10)
+      @sp_checker.email_developer_incomplete_request('email@email', 'off', '')
+      @sp_checker.email_developer_incomplete_request('email@email', 'off', '', Time.now + 10)
   end
 end
 

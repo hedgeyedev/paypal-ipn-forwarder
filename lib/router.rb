@@ -8,7 +8,6 @@ class Router
   TEST_OFF = 'off'
 
   attr_accessor :sandbox_id
-   #TODO: rename dev_computer to router Client
   def initialize(target, test=nil)
     @router_client  = target
   end
@@ -19,7 +18,7 @@ class Router
 
   def turn_test_mode_on(email)
     begin
-      @router_client.set_test_mode(TEST_ON, @sandbox_id)
+      @router_client.set_test_mode(TEST_ON, email, @sandbox_id)
     rescue StandardError
       puts 'The connection to the server is experiencing errors. Test mode was NOT turned on. Make sure the server is running!'
     end

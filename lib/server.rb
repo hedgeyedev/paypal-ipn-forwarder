@@ -148,7 +148,8 @@ class Server
   end
 
   def poll_with_incomplete_info(email, test_mode, id)
-    @poll_checker_instance [id].email_developer_incompelete_request(email, test_mode, id)
+    @poll_checker_instance[id] = ServerPollChecker.new(self) if @poll_checker_instance[id].nil?
+    @poll_checker_instance [id].email_developer_incomplete_request(email, test_mode, id)
   end
 
 end
