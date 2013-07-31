@@ -24,7 +24,7 @@ describe Router do
 
   context 'interactions with server' do
 
-    it 'can not reach the server when starting test mode' do
+    it 'developer notified that router can not reach the server when starting test mode' do
       STDOUT.should_receive(:puts).with('The connection to the server is experiencing errors. Test mode was NOT turned on. Make sure the server is running!')
       @router.turn_test_mode_on('bob@example.com')
     end
@@ -72,8 +72,7 @@ describe Router do
 
     it 'processes an IPN' do
       ipn = create_an_ipn_somehow
-      ipn_response = create_ipn_response_somehow
-      @router_client.stub!(:send_ipn).with(ipn).and_return(ipn_response)
+      @router_client.stub!(:send_ipn).with(ipn)
       @router.send_ipn(ipn)
 
     end

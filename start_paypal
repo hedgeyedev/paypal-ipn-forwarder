@@ -5,7 +5,7 @@
 # computer.
 #
 # This requires two arguments: the id of your Paypal
-# sandbox, and you email.
+# sandbox, and your email.
 #
 # An optional third parameter exists for testing. If running
 # in test mode, include a third parameter
@@ -15,7 +15,7 @@
 #    start_paypal '<your paypal sandbox ID>' '<your email address>'
 #
 #
-# Usage for production:
+# Usage for testing:
 #
 #    start_paypal '<your paypal sandbox ID>' '<your email address>' 'test'
 #
