@@ -5,11 +5,19 @@
 # computer.
 #
 # This requires two arguments: the id of your Paypal
-# sandbox, and you email
+# sandbox, and you email.
 #
-# Hence, usage:
+# An optional third parameter exists for testing. If running
+# in test mode, include a third parameter
 #
-#    start_paypal '<your paypal sandbox ID>'  '<your email address>'
+# Hence, usage for production:
+#
+#    start_paypal '<your paypal sandbox ID>' '<your email address>'
+#
+#
+# Usage for production:
+#
+#    start_paypal '<your paypal sandbox ID>' '<your email address>' 'test'
 #
 require_relative 'lib/router'
 require_relative 'lib/poller'
@@ -19,8 +27,8 @@ require_relative 'lib/router_client'
 TEST_MODE_ON = true
 TEST_MODE_OFF = false
 ARGV[2].nil? ? TEST_MODE = TEST_MODE_OFF : TEST_MODE = TEST_MODE_ON
-computer = RouterClient.new(TEST_MODE)
-router = Router.new(computer, TEST_MODE)
+router_client = RouterClient.new(TEST_MODE)
+router = Router.new(router_client, TEST_MODE)
 router.sandbox_id = ARGV[0]
 
 puts 'Paypal testing sequence has started'
@@ -32,14 +40,14 @@ server_url = config.server_url
 poller = Poller.new(router, server_url)
 poller.time_in_sec=polling_interval
 
-process_id =  fork{poller.poll_for_ipn}
+@process_id =  fork{poller.poll_for_ipn}
 File.write(Router::PROCESS_FILE_NAME, process_id, nil, nil)
 
 
 while command = STDIN.gets
   puts "From stdin: !#{command}!"
    if command.downcase == "stop\n"
-     Process.kill("HUP", process_id)
+     Process.kill("HUP", @process_id)
      router.turn_test_mode_off(ARGV[1])
      puts 'Paypal testing has been terminated'
      break

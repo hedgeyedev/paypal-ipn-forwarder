@@ -1,4 +1,5 @@
 require 'cgi'
+require 'rest-client'
 class ServerClient
 
   def initialize(server)
@@ -36,6 +37,11 @@ class ServerClient
 
   def receive_ipn(ipn=nil)
     @server.receive_ipn(ipn)
+  end
+
+  def send_paypal_response(url, message)
+    RestClient.post url, message
+
   end
 
 
