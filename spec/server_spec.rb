@@ -107,6 +107,14 @@ describe Server do
     end
   end
 
+  context 'receives polling request with missing information' do
+
+    it 'should send an email to the developer informing them of the problem' do
+      Pony.should_receive(:mail).with(any_args)
+      @server.poll_with_incomplete_indo('email@email', 'off', '')
+    end
+  end
+
   context 'receives start test mode' do
 
     #not sure if test is too basic but added just in case

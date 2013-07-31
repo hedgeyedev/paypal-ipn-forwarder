@@ -9,7 +9,9 @@ class ServerPollChecker
   def initialize(server, test=nil)
     LoadConfig.set_test_mode(!test.nil?)
     @content = LoadConfig.new
+    #places variables to 2 day before creation of class instance
     @last_unexpected_poll = Time.now - 2*24*60*60
+    @last_incomplete_poll = Time.now - 2*24*60*60
     @last_poll_time = @content.last_poll_time.clone
     @server = server
 
@@ -61,6 +63,20 @@ class ServerPollChecker
         break if (last_poll_time(paypal_id) <=> Time.now - 3*time) == -1
       end
    end
+  end
+
+  def email_developer_incompelete_request(email, test_mode, id, time=Time.now)
+    to = email
+    subject = 'Your computer is polling the Superbox IPN forwarder but is missing information. No IPN will be retrieved'
+    body = "Your development computer is polling the Superbox IPN forwarder.
+    Here is the information it is providing:\nemail:#{email}\ntest_mode:#{test_mode}\nid:#{id}\n
+    One of those fields is blank. Please fix this problem and start polling again."
+
+    if (@last_incomplete_poll + 60*60 <=> time) == -1
+      @last_incomplete_poll = Time.now
+      mailsender = MailSender.new
+      mailsender.send(to, subject, body)
+    end
   end
 
 end

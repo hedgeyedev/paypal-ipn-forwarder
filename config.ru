@@ -21,14 +21,13 @@ class ServerRack < Sinatra::Base
   end
 
   get '/computer_poll' do
-    #TODO: figure out what occurs if params nill
     params = request['sandbox_id']
-    @@server_client.respond_to_computer_poll(params)
+    @@server_client.respond_to_computer_poll(params) if !params.nil? && param != ''
   end
 
   post '/payments/ipn' do
     ipn = request.body.read
-    unless ipn == 'VERIFIED' || ipn == 'INVALID'
+    if ipn != 'VERIFIED' && ipn != 'INVALID' && ipn != '' && !ipn.nil?
       @@server_client.receive_ipn(ipn)
       response = @@server_client.ipn_response(ipn)
       url      = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
@@ -40,7 +39,14 @@ class ServerRack < Sinatra::Base
 
   post '/test' do
     params = request.body.read
-    @@server_client.computer_testing(params)
+    params_parsed = CGI::parse(params)
+    id = params_parsed['sandbox_id'].first
+    email = params_parsed['email'].first
+    test_mode = params_parsed['test_mode'].first
+    if id != '' && email != '' && mode != ''
+      @@server_client.computer_testing(params_parsed)
+    elsif email != ''
+       @@server.poll_with_incomplete_info(email, test_mode, id)
   end
 
   # Pretend to be the PayPal sandbox you're sending the response back to
@@ -50,11 +56,11 @@ class ServerRack < Sinatra::Base
   end
 
   get '/' do
-    "Hello Wofrld"
+    "Hello World"
   end
 
   get '/turn_testing_on' do
-    @@router.set_test_mode('on', 'bib@example.com', 'my_sandbox_id')
+    @@router.set_test_mode('on',nil, 'my_sandbox_id')
   end
 
   get '/start_computer_poll' do

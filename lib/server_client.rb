@@ -1,13 +1,11 @@
-require 'cgi'
 require 'rest-client'
 class ServerClient
 
   def initialize(server)
     @server = server
   end
-
-  def computer_testing(params)
-    params_parsed = CGI::parse(params)
+  def computer_testing(params_parsed)
+    puts 'heheheh'
     id = params_parsed['sandbox_id'].first
     if params_parsed['test_mode'].first == 'on'
       if !@server.computer_online?(id)

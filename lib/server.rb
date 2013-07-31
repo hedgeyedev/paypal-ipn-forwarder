@@ -147,5 +147,9 @@ class Server
     @poll_checker_instance[paypal_id].unexpected_poll_time(paypal_id, time)
   end
 
+  def poll_with_incomplete_info(email, test_mode, id)
+    @poll_checker_instance [id].email_developer_incompelete_request(email, test_mode, id)
+  end
+
 end
 

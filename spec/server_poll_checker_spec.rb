@@ -56,5 +56,11 @@ describe ServerPollChecker do
     @sp_checker.check_testing_polls_occurring('my_sandbox_id', 0.1)
     @server.computer_online?('my_sandbox_id').should == false
   end
+
+  it 'should not send an email if last incomplete information poll was less than hour ago' do
+      Pony.should_receive(:mail).with(any_args)
+      @sp_checker.email_developer_incompelete_request('email@email', 'off', '')
+      @sp_checker.email_developer_incompelete_request('email@email', 'off', '', Time.now + 10)
+  end
 end
 
