@@ -8,7 +8,6 @@ describe ServerClient do
   TEST_MODE_ON = true
 
 
-    #TODO: fix tests so the pass with CGI
   it 'should receive a testing ON HTTP request from the router and tell the server to turn test mode ON' do
     server = Server.new(TEST_MODE_ON)
     server.should_receive(:begin_test_mode).with('my_sandbox_id', {'sandbox_id' => ['my_sandbox_id'], 'test_mode' => ['on'], 'email' => ['bob@example.com']})
@@ -65,7 +64,6 @@ describe ServerClient do
     server_client.computer_testing({'sandbox_id' => [@my_id], 'test_mode' => ['on'], 'email' => ['bob1@example.com']})
   end
 
-  #TODO: fix test so passes with CGI
   it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing' do
     Pony.should_receive(:mail).with(any_args).twice
     server = Server.new(TEST_MODE_ON)

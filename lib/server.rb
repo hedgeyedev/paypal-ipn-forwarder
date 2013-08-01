@@ -7,6 +7,7 @@ require_relative 'load_config'
 require_relative 'mail_sender'
 require_relative 'server_poll_checker'
 
+PROCESS_ID = '.process_id_for_poll_checker'
 
 class Server
 
@@ -47,6 +48,7 @@ class Server
     @computers_testing[id] = true
     @queue_map[id]     = Queue.new
     email_mapper(id, params['email'])
+
     #the following line is needed in case the sandbox is a new one.
     @poll_checker_instance[id] = ServerPollChecker.new(self) if @poll_checker_instance[id].nil?
     @poll_checker_instance[id].record_poll_time(id)
@@ -54,7 +56,9 @@ class Server
     #polling is happening now that test mode is on. if not, it sends an email to the developer. It will do that every hour three times
     #and then turn off testing mode
 
-    #@poll_checker_instance[id].check_testing_polls_occurring(id)
+
+    process_id =  fork{@poll_checker_instance[id].check_testing_polls_occurring(id)}
+    File.write(Server::PROCESS_ID, process_id, nil, nil)
   end
 
   def cancel_test_mode(id)

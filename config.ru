@@ -49,6 +49,7 @@ class ServerRack < Sinatra::Base
       @@server_client.computer_testing(params_parsed)
     elsif email != ''
        @@server.poll_with_incomplete_info(email, test_mode, id)
+    end
   end
 
   # Pretend to be the PayPal sandbox you're sending the response back to

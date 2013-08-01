@@ -118,7 +118,10 @@ describe Server do
   context 'receives start test mode' do
 
     #not sure if test is too basic but added just in case
-    it 'begins testings'
+    it 'begins testings' do
+      @server.begin_test_mode(@sandbox_id, {'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
+      @server.computer_online?('my_sandbox_id').should == true
+    end
 
 
   end

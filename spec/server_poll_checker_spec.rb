@@ -5,12 +5,13 @@ require 'timecop'
 require_relative '../lib/server_poll_checker'
 require_relative '../lib/server'
 
+TEST_MODE_ON = true
 
 describe ServerPollChecker do
 
   before(:each) do
-    @server = Server.new(true)
-    @sp_checker = ServerPollChecker.new(@server, true)
+    @server = Server.new(TEST_MODE_ON)
+    @sp_checker = ServerPollChecker.new(@server, TEST_MODE_ON)
   end
 
   it 'records the time that test mode was started or the last poll occurred' do
@@ -47,12 +48,14 @@ describe ServerPollChecker do
   #TODO: fork processes
   it 'should send an email notification if polling has not occurred within an hour of test mode being turned on and repeat notification three times if not fixed' do
     Pony.should_receive(:mail).with(any_args).exactly(3).times
+    @server.begin_test_mode('my_sandbox_id', {'sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
     @sp_checker.record_poll_time('my_sandbox_id')
     @sp_checker.check_testing_polls_occurring('my_sandbox_id', 0.1)
   end
 
   it 'should turn off test mode once three emails have been sent warning of no polling occurring' do
     Pony.should_receive(:mail).with(any_args).exactly(3).times
+    @server.begin_test_mode('my_sandbox_id', {'sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
     @sp_checker.record_poll_time('my_sandbox_id')
     @sp_checker.check_testing_polls_occurring('my_sandbox_id', 0.1)
     @server.computer_online?('my_sandbox_id').should == false
