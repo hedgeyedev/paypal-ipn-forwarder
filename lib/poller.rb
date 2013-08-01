@@ -4,7 +4,7 @@ class Poller
   def initialize(router, server_url, sandbox=nil)
     @router = router
     @server_url = server_url + 'computer_poll'
-    !sandbox.nil? ? @sandbox_id = sandbox : @sandbox_id = @router.sandbox_id
+    sandbox.nil? ? @sandbox_id = @router.sandbox_id : @sandbox_id = sandbox
   end
 
   def retrieve_ipn

@@ -35,7 +35,7 @@ describe Router do
         @email = 'bob@example.com'
         RestClient.should_receive(:post).with(@server_url, {sandbox_id: @sandbox_id,
                                                             test_mode: mode,
-                                                            :email => @email
+                                                            email: @email
         })
       end
 

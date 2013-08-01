@@ -65,4 +65,13 @@ describe ServerClient do
     server_client.computer_testing({'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob1@example.com'})
   end
 
+  #TODO: fix test so passes with CGI
+  it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing' do
+    Pony.should_receive(:mail).with(any_args).twice
+    server = Server.new(TEST_MODE_ON)
+    server_client = ServerClient.new(server)
+    server_client.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
+    server_client.computer_testing({'my_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob_1@example.com'})
+  end
+
 end

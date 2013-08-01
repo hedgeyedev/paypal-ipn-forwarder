@@ -38,6 +38,8 @@ class ServerRack < Sinatra::Base
   end
 
   post '/test' do
+  #TODO: make sure test off messages still work
+
     params = request.body.read
     params_parsed = CGI::parse(params)
     id = params_parsed['sandbox_id'].first
@@ -60,7 +62,7 @@ class ServerRack < Sinatra::Base
   end
 
   get '/turn_testing_on' do
-    @@router.set_test_mode('on',nil, 'my_sandbox_id')
+    @@router.set_test_mode('on', 'bob@example.com' , 'my_sandbox_id')
   end
 
   get '/start_computer_poll' do
