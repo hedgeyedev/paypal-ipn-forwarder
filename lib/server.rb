@@ -63,7 +63,7 @@ class Server
   end
 
   def same_sandbox_being_tested_twice?(id, params)
-    params['email'] != @email_map[id]
+    params['email'].first != @email_map[id]
   end
 
   def send_conflict_email(paypal_id, email)
