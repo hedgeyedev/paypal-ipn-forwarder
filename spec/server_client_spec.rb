@@ -59,18 +59,15 @@ describe ServerClient do
     server_client = ServerClient.new(server)
     @my_id = 'my_sandbox_id'
     server_client.computer_testing({'sandbox_id' => [@my_id], 'test_mode' => ['on'], 'email' => ['bob@example.com']})
-    server.computer_online?(@my_id).should == true
-    server.same_sandbox_being_tested_twice?(@my_id, {'sandbox_id' => [@my_id], 'test_mode' => ['on'], 'email' => ['bob1@example.com']}).should == true
-    server_client.computer_testing({'sandbox_id' => [@my_id], 'test_mode' => ['on'], 'email' => ['bob1@example.com']})
+    server_client.computer_testing({'sandbox_id' => [@my_id], 'test_mode' => ['on'], 'email' => ['bob_1@example.com']})
   end
 
-  it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing' do
-    Pony.should_receive(:mail).with(any_args).twice
+  it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing but doesnt send out email because it is the same person' do
     server = Server.new(TEST_MODE_ON)
     @my_id = 'my_sandbox_id'
     server_client = ServerClient.new(server)
     server_client.computer_testing({'sandbox_id' => [@my_id], 'test_mode' => ['on'], 'email' => ['bob@example.com']})
-    server_client.computer_testing({'sandbox_id' => [@my_id], 'test_mode' => ['on'], 'email' => ['bob_1@example.com']})
+    server_client.computer_testing({'sandbox_id' => [@my_id], 'test_mode' => ['on'], 'email' => ['bob@example.com']})
   end
 
 end

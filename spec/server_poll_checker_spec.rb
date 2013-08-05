@@ -49,14 +49,14 @@ describe ServerPollChecker do
     Pony.should_receive(:mail).with(any_args).exactly(3).times
     @server.begin_test_mode('my_sandbox_id', {'sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
     @sp_checker.record_poll_time('my_sandbox_id')
-    @sp_checker.check_testing_polls_occurring('my_sandbox_id', 1)
+    @sp_checker.check_testing_polls_occurring('my_sandbox_id', 0.4)
   end
 
   it 'should turn off test mode once three emails have been sent warning of no polling occurring' do
     Pony.should_receive(:mail).with(any_args).exactly(3).times
     @server.begin_test_mode('my_sandbox_id', {'sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
     @sp_checker.record_poll_time('my_sandbox_id')
-    @sp_checker.check_testing_polls_occurring('my_sandbox_id', 1)
+    @sp_checker.check_testing_polls_occurring('my_sandbox_id', 0.4)
     @server.computer_online?('my_sandbox_id').should == false
   end
 

@@ -10,8 +10,10 @@ class Poller
   def retrieve_ipn
     begin
       RestClient.get @server_url, :params => {'sandbox_id' => @sandbox_id}
+    rescue SystemCallError
+      puts 'There is a problem regarding the connection to the server. A SystemCallError occured. Please check the server is online and that test mode has occurred. Check your inbox in case another developer attempted to turn on test mode for your sandbox'
     rescue StandardError
-      puts 'the connection to the server is failing please check that the server is online'
+      puts 'There was an error with the server. THe connection is fine because a StandardError occured and not a SystemCallError. Please run some test and make sure that testing is turned on for your sandbox. Check whether you were testing in two different terminals and the other terminal window turned off testing'
     end
   end
 

@@ -8,7 +8,7 @@ development_computer_url : 'http://localhost:3000/payments/ipn'
 
 polling_interval_seconds : '5.0'
 
-poll_checking_interval_seconds : '.3'
+poll_checking_interval_seconds : '.1'
 
 no_polling_time_before_email : 3600
 

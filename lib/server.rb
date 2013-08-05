@@ -60,7 +60,6 @@ class Server
 
         Signal.trap("HUP") do
           @poll_checker_instance[id].loop_boolean = false
-          puts 'hup done'
         end
 
       end
@@ -72,7 +71,7 @@ class Server
       #by storing the process ids in a hash.
 
       File.write(PROCESS_ID+'_'+id, @process_id, nil)
-      puts '' #without this printline, this error appears when testing is turned on:
+      #puts '' #without this printline, this error appears when testing is turned on:
       #Rack::Lint::LintError: Status must be >=100 seen as integer
       #I don't know why this occurs.
     end
@@ -86,7 +85,7 @@ class Server
   end
 
   def same_sandbox_being_tested_twice?(id, params)
-    params['email'].first != @email_map[id]
+    params['email'].first != @email_map[id].first
   end
 
   def send_conflict_email(paypal_id, email)
