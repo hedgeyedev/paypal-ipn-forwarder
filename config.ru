@@ -20,14 +20,15 @@ class ServerRack < Sinatra::Base
     ipn_send_test.send_via_http "localhost:8810/payments/ipn"
   end
 
+ #TODO: test DeMorgan's boolean statement
   get '/computer_poll' do
     params = request['sandbox_id']
-    @@server_client.respond_to_computer_poll(params) if !params.nil? && param != ''
+    @@server_client.respond_to_computer_poll(params) unless params.nil? || params.length == 0
   end
 
   post '/payments/ipn' do
     ipn = request.body.read
-    if ipn != 'VERIFIED' && ipn != 'INVALID' && ipn != '' && !ipn.nil?
+    unless ipn.nil? || ipn =~ /(|VERIFIED|INVALID)/
       @@server_client.receive_ipn(ipn)
       response = @@server_client.ipn_response(ipn)
       url      = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
@@ -39,7 +40,6 @@ class ServerRack < Sinatra::Base
 
   post '/test' do
   #TODO: make sure test off messages still work
-
     params = request.body.read
     params_parsed = CGI::parse(params)
     id = params_parsed['sandbox_id'].first
@@ -49,16 +49,18 @@ class ServerRack < Sinatra::Base
       @@server_client.computer_testing(params_parsed)
     elsif email != ''
        @@server.poll_with_incomplete_info(email, test_mode, id)
+    end
+
   end
 
   # Pretend to be the PayPal sandbox you're sending the response back to
-  post '/fake_payal' do
+  post '/fake_paypal' do
     url = 'localhost:8810/receive_ipn/'
     RestClient.post url, "VERIFIED"
   end
 
   get '/' do
-    "Hello World"
+    halt(404)
   end
 
   get '/turn_testing_on' do
