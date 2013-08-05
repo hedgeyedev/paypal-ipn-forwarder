@@ -14,6 +14,7 @@ class Server
   PROCESS_ID = '.process_id_for_poll_checker'
 
   def initialize(test=nil)
+    @test_mode = !test.nil?
     LoadConfig.set_test_mode(!test.nil?)
     content = LoadConfig.new
     @computers_testing = content.computer_testing.clone
@@ -52,31 +53,36 @@ class Server
     @poll_checker_instance[id] = ServerPollChecker.new(self) if @poll_checker_instance[id].nil?
     @poll_checker_instance[id].record_poll_time(id)
 
-    @process_id =  fork do
-      @poll_checker_instance[id].check_testing_polls_occurring(id)
+    unless @test_mode
+      @process_id =  fork do
 
-      Signal.trap("HUP") do
-        @poll_checker_instance[id].loop_boolean = false
-        puts 'hup done'
+        @poll_checker_instance[id].check_testing_polls_occurring(id)
+
+        Signal.trap("HUP") do
+          @poll_checker_instance[id].loop_boolean = false
+          puts 'hup done'
+        end
+
       end
+      Process.detach(@process_id)
 
+
+      #discussion point: is it worth it to write the process id in a file? This could seem helpful if a developer
+      #went to the program and was trying to find errant processes. On the other hand, could also be simply implemented
+      #by storing the process ids in a hash.
+
+      File.write(PROCESS_ID+'_'+id, @process_id, nil)
+      puts '' #without this printline, this error appears when testing is turned on:
+      #Rack::Lint::LintError: Status must be >=100 seen as integer
+      #I don't know why this occurs.
     end
-    Process.detach(@process_id)
-    #discussion point: is it worth it to write the process id in a file? This could seem helpful if a developer
-    #went to the program and was trying to find errant processes. On the other hand, could also be simply implemented
-    #by storing the process ids in a hash.
-
-    File.write(PROCESS_ID+'_'+id, @process_id, nil)
-    puts '' #without this printline, this error appears when testing is turned on:
-    #Rack::Lint::LintError: Status must be >=100 seen as integer
-    #I don't know why this occurs.
   end
 
   def cancel_test_mode(id)
     @computers_testing[id] = false
     @queue_map[id] = nil
     process_id = File.read(PROCESS_ID+'_'+id).to_i
-    Process.kill("HUP", process_id)
+    Process.kill("HUP", process_id) unless @test_mode
   end
 
   def same_sandbox_being_tested_twice?(id, params)
