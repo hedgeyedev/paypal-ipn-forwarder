@@ -52,7 +52,7 @@ describe LoadConfig do
   end
 
   it 'should retrieve the interval for poll checking in seconds' do
-    @config.poll_checking_interval_seconds.should == '3600.0'
+    @config.poll_checking_interval_seconds.should == '.3  '
   end
 
 end

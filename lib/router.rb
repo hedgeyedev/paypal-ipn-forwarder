@@ -24,6 +24,7 @@ class Router
     end
   end
 
+  #TODO: figure out how to diversify messages
   def turn_test_mode_off(email)
     begin
       @router_client.set_test_mode(TEST_OFF, email, @sandbox_id)

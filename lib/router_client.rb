@@ -13,9 +13,8 @@ class RouterClient
     RestClient.post @final_destination_url, ipn
   end
 
-   #TODO: figure out server url
   def set_test_mode(mode, email, sandbox_id)
-    RestClient.post(@server_url,  { sandbox_id: sandbox_id, test_mode: mode, email: email
+    RestClient.post(@server_url,  { 'sandbox_id' => sandbox_id, 'test_mode' => mode, 'email' => email
      })
   end
 

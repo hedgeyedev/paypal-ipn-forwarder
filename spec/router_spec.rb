@@ -33,9 +33,9 @@ describe Router do
 
       def expected_rest_client_message(mode)
         @email = 'bob@example.com'
-        RestClient.should_receive(:post).with(@server_url, {sandbox_id: @sandbox_id,
-                                                            test_mode: mode,
-                                                            email: @email
+        RestClient.should_receive(:post).with(@server_url, {'sandbox_id' => @sandbox_id,
+                                                            'test_mode' => mode,
+                                                            'email' => @email
         })
       end
 

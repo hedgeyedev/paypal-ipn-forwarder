@@ -7,9 +7,11 @@ require_relative 'load_config'
 require_relative 'mail_sender'
 require_relative 'server_poll_checker'
 
-PROCESS_ID = '.process_id_for_poll_checker'
+
 
 class Server
+
+  PROCESS_ID = '.process_id_for_poll_checker'
 
   def initialize(test=nil)
     LoadConfig.set_test_mode(!test.nil?)
@@ -18,9 +20,6 @@ class Server
     @queue_map = content.queue_map.clone
     @email_map = content.email_map.clone
     @poll_checker_instance = content.poll_checker_instance.clone
-    @poll_checker_instance.each_value {|key, value|
-    value = ServerPollChecker.new(self)
-    }
   end
 
   def paypal_id(ipn)
@@ -52,18 +51,32 @@ class Server
     #the following line is needed in case the sandbox is a new one.
     @poll_checker_instance[id] = ServerPollChecker.new(self) if @poll_checker_instance[id].nil?
     @poll_checker_instance[id].record_poll_time(id)
-    #Im not sure how to implement this. THe method call below has to fork off and be run in the background separately. It checks that
-    #polling is happening now that test mode is on. if not, it sends an email to the developer. It will do that every hour three times
-    #and then turn off testing mode
 
+    @process_id =  fork do
+      @poll_checker_instance[id].check_testing_polls_occurring(id)
 
-    process_id =  fork{@poll_checker_instance[id].check_testing_polls_occurring(id)}
-    File.write(Server::PROCESS_ID, process_id, nil, nil)
+      Signal.trap("HUP") do
+        @poll_checker_instance[id].loop_boolean = false
+        puts 'hup done'
+      end
+
+    end
+    Process.detach(@process_id)
+    #discussion point: is it worth it to write the process id in a file? This could seem helpful if a developer
+    #went to the program and was trying to find errant processes. On the other hand, could also be simply implemented
+    #by storing the process ids in a hash.
+
+    File.write(PROCESS_ID+'_'+id, @process_id, nil)
+    puts '' #without this printline, this error appears when testing is turned on:
+    #Rack::Lint::LintError: Status must be >=100 seen as integer
+    #I don't know why this occurs.
   end
 
   def cancel_test_mode(id)
     @computers_testing[id] = false
     @queue_map[id] = nil
+    process_id = File.read(PROCESS_ID+'_'+id).to_i
+    Process.kill("HUP", process_id)
   end
 
   def same_sandbox_being_tested_twice?(id, params)
@@ -95,14 +108,13 @@ class Server
     queue
   end
 
-  #TODO: figure out a way to test this
   def email_content_generator(method_called_by, paypal_id)
     to = @email_map[paypal_id]
     subject = 'There is no queue on the Superbox IPN forwarder'
     body = "on the Superbox IPN forwarder, there is no queue set up for this function: #{method_called_by} for your developer_id #{paypal_id}"
 
-      mailsender = MailSender.new
-      mailsender.send(to, subject, body)
+    mailsender = MailSender.new
+    mailsender.send(to, subject, body)
   end
 
   def queue_push(ipn)
@@ -153,8 +165,7 @@ class Server
 
   def poll_with_incomplete_info(email, test_mode, id)
     @poll_checker_instance[id] = ServerPollChecker.new(self) if @poll_checker_instance[id].nil?
-    @poll_checker_instance [id].email_developer_incomplete_request(email, test_mode, id)
+    @poll_checker_instance[id].email_developer_incomplete_request(email, test_mode, id)
   end
 
 end
-

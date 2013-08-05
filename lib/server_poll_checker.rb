@@ -4,7 +4,7 @@ require 'timecop'
 
 class ServerPollChecker
 
-  attr_accessor :last_unexpected_poll
+  attr_accessor :last_unexpected_poll, :loop_boolean
 
   def initialize(server, test=nil)
     LoadConfig.set_test_mode(!test.nil?)
@@ -52,18 +52,29 @@ class ServerPollChecker
     end
   end
 
-  def check_testing_polls_occurring(paypal_id, time=@content.poll_checking_interval_seconds)
+  def check_testing_polls_occurring(paypal_id, time=@content.no_polling_time_before_email)
+    sleep_time = @content.poll_checking_interval_seconds.to_i
+    @loop_boolean = true
+    @last_email_sent = last_poll_time(paypal_id)
     loop do
-      sleep time
-      break if !@server.computer_online?(paypal_id)
-      if (last_poll_time(paypal_id) <=> Time.now - time) == -1 || last_poll_time(paypal_id).nil?
+      #puts time
+      sleep sleep_time
+      break unless @loop_boolean
+      #puts @server.computer_online?(paypal_id)
+      #puts 'running'
+      #puts "hup#{@loop_boolean}"
+      #puts time
+
+      if (@last_email_sent <=> Time.now - time) == -1 && (last_poll_time(paypal_id) <=> Time.now - time) == -1
         body = "Test mode has been turned on for sandbox with id: #{paypal_id} but no polling has occurred for it in an hour. Please address this issue.
         A simple way is to turn testing off by running 'ruby stop_paypal' in the paypal ipn forwarder gem"
         send_email(paypal_id, body)
+        puts "email #{last_poll_time(paypal_id)}!#{Time.now - 3*time}"
+        @last_email_sent = Time.now
         @server.cancel_test_mode(paypal_id) if (last_poll_time(paypal_id) <=> Time.now - 3*time) == -1
         break if (last_poll_time(paypal_id) <=> Time.now - 3*time) == -1
       end
-   end
+    end
   end
 
   def email_developer_incomplete_request(email, test_mode, id, time=Time.now)

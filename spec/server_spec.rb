@@ -122,8 +122,23 @@ describe Server do
       @server.begin_test_mode(@sandbox_id, {'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
       @server.computer_online?('my_sandbox_id').should == true
     end
-
-
   end
+
+  it 'should send an email to a developer if a queue is not in test mode and something is trying to access it' do
+    Pony.should_receive(:mail).with({:via => :smtp,
+                                     :to => "dmitri.ostapenko@gmail.com",
+                                     :from => "email-proxy-problems@superbox.com",
+                                     :subject => "There is no queue on the Superbox IPN forwarder",
+                                     :body => "on the Superbox IPN forwarder, there is no queue set up for this function: my method for your developer_id my_sandbox_id",
+                                     :via_options =>
+                                         {
+                                             :address => "localhost",
+                                             :openssl_verify_mode => "none"
+                                         }
+                                    })
+
+    @server.queue_identify('my_sandbox_id', 'my method')
+  end
+
 
 end

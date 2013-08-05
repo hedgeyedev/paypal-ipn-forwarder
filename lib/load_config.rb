@@ -62,4 +62,8 @@ class LoadConfig
     @config['poll_checking_interval_seconds']
   end
 
+  def no_polling_time_before_email
+    @config['no_polling_time_before_email']
+  end
+
 end
