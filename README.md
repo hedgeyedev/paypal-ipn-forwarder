@@ -124,18 +124,25 @@ how to do this in section 3 on page 23.
 
 ### Configure the Router Component on Each Development Computer
 
-This consists of installing the *router* gem and creating an alias so that the developer does not have to find the id of the
+This consists of installing the *router* gem and creating two aliases so that the developer does not have to find the id of the
  Sandbox every time that they run the gem.
 
-The alias should be saved in a config file using:
+The aliases should be saved in a config file using:
 
 
 	alias paypal_testing_on='ruby start_paypal sandbox_id developer_id'
-
+	alias paypal_testing_off='ruby stop_paypal sandbox)id developer_id'
 
 
 where sandbox_id is the id of the sandbox that the developer will be using
- and developer_id is the email of the developer.
+ and developer_id is the email of the developer. The paypal_tesitng_off alias
+ only needs to be used when testing was turned off incorrectly.The correct way to turn off
+ testing is by the command:
+
+    stop
+
+ in the same terminal window where testing was occurring. If testing was turned off using [Command][C]
+ then the paypal_testing_off alias will turn off test mode on the server.
 
 ### Run on Your Server
 
