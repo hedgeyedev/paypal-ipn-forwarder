@@ -1,0 +1,12 @@
+Title: developer interaction with router
+participant developer
+participant router
+participant server
+developer->router: Launch router
+Note over router: Router comes\ninto existence
+router->server: Start test mode
+router->server: Poll for IPN
+Note over router: time passes...
+developer->router: Exit router
+router->server: Stop test mode
+Note over router: Router\nself-destructs
