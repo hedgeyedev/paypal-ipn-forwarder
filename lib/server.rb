@@ -55,7 +55,7 @@ class Server
     @poll_checker_instance[id] = ServerPollChecker.new(self) if @poll_checker_instance[id].nil?
     @poll_checker_instance[id].record_poll_time(id)
 
-    @ipn_reception_checker_instance[id] = ServerIpnReceptionChecker.new(self)
+    @ipn_reception_checker_instance[id] = ServerIpnReceptionChecker.new(self, id)
 
     unless @test_mode
       @ipn_reception_checker_instance[id].check_ipn_received
