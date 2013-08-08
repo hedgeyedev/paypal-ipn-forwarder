@@ -41,13 +41,12 @@ poller = Poller.new(router, server_url)
 poller.time_in_sec=polling_interval
 
 @process_id =  fork{poller.poll_for_ipn}
-File.write(Router::PROCESS_FILE_NAME, @process_id, nil, nil)
 
  #TODO: make sure an error isnt issued if the 2nd process has already been terminated
 while command = STDIN.gets
    if command.downcase == "stop\n"
      Process.kill("HUP", @process_id)
-     process_id = File.read(Router::PROCESS_FILE_NAME)
+     process_id = File.read(Poller::PROCESS_FILE_NAME)
      Process.kill("HUP", process_id)
      router.turn_test_mode_off(ARGV[1])
      puts 'Paypal testing has been terminated'

@@ -51,8 +51,15 @@ describe LoadConfig do
     @config.poll_checker_instance.should == {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
   end
 
+  it 'retrieves a hash of ipn_reception_checker instances' do
+    @config.ipn_reception_checker_instance.should == {'my_sandbox_id'=>nil, 'my_sandbox_id_1'=>nil}
+  end
+
   it 'should retrieve the interval for poll checking in seconds' do
     @config.poll_checking_interval_seconds.should == '.1'
   end
 
+  it 'should retrieve the time that passes before an email is send to a developer stating that no IPNs are being received on the server' do
+   @config.no_ipn_time_before_email.should == 1
+  end
 end

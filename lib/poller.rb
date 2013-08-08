@@ -1,6 +1,8 @@
 require 'rest_client'
 class Poller
 
+  PROCESS_FILE_NAME = '.process_id'
+
   def initialize(router, server_url, sandbox=nil)
     @router = router
     @server_url = server_url + 'computer_poll'
@@ -45,7 +47,7 @@ class Poller
 
     end
     Process.detach(@process_id)
-    File.write(Router::PROCESS_FILE_NAME, @process_id, nil, nil)
+    File.write(Poller::PROCESS_FILE_NAME, @process_id, nil, nil)
   end
 
   def verify_ipn_received(time=5.0)

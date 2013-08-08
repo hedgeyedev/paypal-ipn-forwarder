@@ -1,6 +1,5 @@
 require_relative 'load_config'
 require_relative '../lib/mail_sender'
-require 'timecop'
 
 class ServerPollChecker
 
@@ -33,8 +32,9 @@ class ServerPollChecker
     end
   end
 
+  #TODO: email map used incorrectly here-needs to come fromt he server
   def send_email(paypal_id, body)
-    @email_map = @content.email_map
+    @email_map = @server.email_map
     unless @email_map[paypal_id].nil?
       to = @email_map[paypal_id]
       subject = "A problem occured on the IPN proxy with sandbox #{paypal_id}"

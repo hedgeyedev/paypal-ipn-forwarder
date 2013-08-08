@@ -6,6 +6,7 @@ require 'awesome_print'
 require_relative 'load_config'
 require_relative 'mail_sender'
 require_relative 'server_poll_checker'
+require_relative '../lib/server_ipn_reception_checker'
 
 
 
@@ -21,6 +22,7 @@ class Server
     @queue_map = content.queue_map.clone
     @email_map = content.email_map.clone
     @poll_checker_instance = content.poll_checker_instance.clone
+    @ipn_reception_checker_instance = content.ipn_reception_checker_instance
   end
 
   def paypal_id(ipn)
@@ -53,7 +55,10 @@ class Server
     @poll_checker_instance[id] = ServerPollChecker.new(self) if @poll_checker_instance[id].nil?
     @poll_checker_instance[id].record_poll_time(id)
 
+    @ipn_reception_checker_instance[id] = ServerIpnReceptionChecker.new(self)
+
     unless @test_mode
+      @ipn_reception_checker_instance[id].check_ipn_received
       @process_id =  fork do
 
         @poll_checker_instance[id].check_testing_polls_occurring(id)
@@ -69,11 +74,7 @@ class Server
       #discussion point: is it worth it to write the process id in a file? This could seem helpful if a developer
       #went to the program and was trying to find errant processes. On the other hand, could also be simply implemented
       #by storing the process ids in a hash.
-
       File.write(PROCESS_ID+'_'+id, @process_id, nil)
-      #puts '' #without this printline, this error appears when testing is turned on:
-      #Rack::Lint::LintError: Status must be >=100 seen as integer
-      #I don't know why this occurs.
     end
   end
 
@@ -82,6 +83,7 @@ class Server
     @queue_map[id] = nil
     process_id = File.read(PROCESS_ID+'_'+id).to_i
     Process.kill("HUP", process_id) unless @test_mode
+    Process.kill("HUP", @process_id) unless @test_mode
   end
 
   def same_sandbox_being_tested_twice?(id, params)
@@ -171,6 +173,10 @@ class Server
   def poll_with_incomplete_info(email, test_mode, id)
     @poll_checker_instance[id] = ServerPollChecker.new(self) if @poll_checker_instance[id].nil?
     @poll_checker_instance[id].email_developer_incomplete_request(email, test_mode, id)
+  end
+
+  def email_map
+    @email_map
   end
 
 end

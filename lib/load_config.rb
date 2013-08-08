@@ -66,4 +66,12 @@ class LoadConfig
     @config['no_polling_time_before_email']
   end
 
+  def no_ipn_time_before_email
+    @config['no_ipn_time_before_email']
+  end
+
+  def ipn_reception_checker_instance
+    @config['ipn_reception_checker_instance']
+  end
+
 end
