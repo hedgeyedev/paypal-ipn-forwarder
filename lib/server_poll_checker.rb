@@ -57,14 +57,8 @@ class ServerPollChecker
     @loop_boolean = true
     @last_email_sent = last_poll_time(paypal_id)
     loop do
-      #puts time
       sleep sleep_time
       break unless @loop_boolean
-      #puts @server.computer_online?(paypal_id)
-      #puts 'running'
-      #puts "hup#{@loop_boolean}"
-      #puts time
-
       if (@last_email_sent <=> Time.now - time) == -1 && (last_poll_time(paypal_id) <=> Time.now - time) == -1
         body = "Test mode has been turned on for sandbox with id: #{paypal_id} but no polling has occurred for it in an hour. Please address this issue.
         A simple way is to turn testing off by running 'ruby stop_paypal' in the paypal ipn forwarder gem"

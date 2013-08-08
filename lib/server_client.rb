@@ -38,7 +38,6 @@ class ServerClient
 
   def send_paypal_response(url, message)
     RestClient.post url, message
-
   end
 
 

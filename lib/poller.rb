@@ -6,7 +6,11 @@ class Poller
     @server_url = server_url + 'computer_poll'
     sandbox.nil? ? @sandbox_id = @router.sandbox_id : @sandbox_id = sandbox
     @ipn_received = false
+    @time_polling_started = Time.now
+
   end
+
+  attr_accessor :time_polling_started
 
   def retrieve_ipn
     begin
@@ -32,9 +36,30 @@ class Poller
   end
 
   def check_ipn_received
+    @process_id =  fork do
 
+      verify_ipn_received
+      Signal.trap("HUP") do
+        @ipn_received = true
+      end
+
+    end
+    Process.detach(@process_id)
+    File.write(Router::PROCESS_FILE_NAME, @process_id, nil, nil)
+  end
+
+  def verify_ipn_received(time=5.0)
+    loop do
+      sleep time
+      if (Time.now <=> @time_polling_started + 60*10) == 1
+        puts 'an IPN has still not been received, 10 minutes after testing'
+        break
+      end
+      break if @ipn_received
+    end
   end
 
   attr_writer :time_in_sec
+  attr_writer :ipn_received
 
 end

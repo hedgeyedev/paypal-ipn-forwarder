@@ -1,6 +1,8 @@
+require 'timecop'
 require_relative 'spec_helper'
 require_relative '../lib/poller'
 require_relative '../lib/router'
+require_relative '../lib/load_config'
 
 describe Poller do
 
@@ -43,6 +45,14 @@ describe Poller do
   it 'alerts the developer if an error occurs during a poll' do
     STDOUT.should_receive(:puts).with('There is a problem regarding the connection to the server. A SystemCallError occured. Please check the server is online and that test mode has occurred. Check your inbox in case another developer attempted to turn on test mode for your sandbox')
     @poller.retrieve_ipn
+  end
+
+  it 'should alert the developer if an IPN has not been received 10 minutes after testing has started' do
+    STDOUT.should_receive(:puts).with('an IPN has still not been received, 10 minutes after testing')
+    @poller.time_polling_started = Time.now
+    Timecop.travel(Time.now+60*10)
+    @poller.verify_ipn_received(1)
+
   end
 
 
