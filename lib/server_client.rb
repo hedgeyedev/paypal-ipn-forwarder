@@ -8,9 +8,9 @@ class ServerClient
     id = params_parsed['sandbox_id'].first
     if params_parsed['test_mode'].first == 'on'
       if !@server.computer_online?(id)
-        @server.begin_test_mode(id, params)
-      elsif @server.same_sandbox_being_tested_twice?(id, params)
-        @server.send_conflict_email(id, params['email'])
+        @server.begin_test_mode(id, params_parsed)
+      elsif @server.same_sandbox_being_tested_twice?(id, params_parsed)
+        @server.send_conflict_email(id, params_parsed['email'].first)
         @server.cancel_test_mode(id)
       end
     elsif params_parsed['test_mode'].first == 'off'

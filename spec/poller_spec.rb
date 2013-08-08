@@ -8,19 +8,21 @@ describe Poller do
 
   before(:each) do
     @router = Router.new(nil, TEST_MODE_ON)
-    @server_url = 'my_sandbox_id'
-    @router.sandbox_id=(@server_url)
-    @url = 'dummy_url/'
+    LoadConfig.set_test_mode(true)
+    content = LoadConfig.new
+    @sandbox_id = 'my_sandbox_id'
+    @url = content.server_url
+    @router.sandbox_id=(@sandbox_id)
     @poller = Poller.new(@router, @url)
   end
 
   it 'should send a GET request' do
-    RestClient.should_receive(:get).with('dummy_url/computer_poll', {:params=>{'sandbox_id'=>'my_sandbox_id'}})
+    RestClient.should_receive(:get).with('http://localhost:8810/computer_poll', {:params=>{'sandbox_id'=>'my_sandbox_id'}})
     @poller.retrieve_ipn
   end
 
   it 'polls at specified intervals' do
-    RestClient.should_receive(:get).with('dummy_url/computer_poll', {:params=>{'sandbox_id'=>'my_sandbox_id'}}).twice
+    RestClient.should_receive(:get).with('http://localhost:8810/computer_poll', {:params=>{'sandbox_id'=>'my_sandbox_id'}}).twice
     @poller.time_in_sec=0.02
     @polling_count = 2
     @poller.poll_for_ipn(self)
@@ -34,12 +36,12 @@ describe Poller do
 
 
   it 'retrieves an ipn when the server has one to return' do
-    RestClient.should_receive(:get).with('dummy_url/computer_poll', {:params=>{'sandbox_id'=>'my_sandbox_id'}})
+    RestClient.should_receive(:get).with('http://localhost:8810/computer_poll', {:params=>{'sandbox_id'=>'my_sandbox_id'}})
     @poller.retrieve_ipn
   end
 
   it 'alerts the developer if an error occurs during a poll' do
-    STDOUT.should_receive(:puts).with('the connection to the server is failing please check that the server is online')
+    STDOUT.should_receive(:puts).with('There is a problem regarding the connection to the server. A SystemCallError occured. Please check the server is online and that test mode has occurred. Check your inbox in case another developer attempted to turn on test mode for your sandbox')
     @poller.retrieve_ipn
   end
 

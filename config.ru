@@ -39,18 +39,18 @@ class ServerRack < Sinatra::Base
   end
 
   post '/test' do
-  #TODO: make sure test off messages still work
+
     params = request.body.read
     params_parsed = CGI::parse(params)
     id = params_parsed['sandbox_id'].first
     email = params_parsed['email'].first
     test_mode = params_parsed['test_mode'].first
-    if id != '' && email != '' && mode != ''
+    puts 'testing'
+    if id != '' && email != '' && test_mode != ''
       @@server_client.computer_testing(params_parsed)
     elsif email != ''
        @@server.poll_with_incomplete_info(email, test_mode, id)
     end
-
   end
 
   # Pretend to be the PayPal sandbox you're sending the response back to
@@ -75,6 +75,11 @@ class ServerRack < Sinatra::Base
   post '/message' do
     ipn = request.body.read
   end
+
+  get '/test_state' do
+    @@server.computer_online?('my_sandbox_id')
+  end
+
 
   run! if __FILE__ == $0
 

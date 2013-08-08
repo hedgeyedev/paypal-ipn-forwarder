@@ -11,7 +11,6 @@
 #
 #     ruby stop_paypal  '<your paypal sandbox ID>' '<email address>'
 
-#TODO: change so cancels testing on server when gem not running on computer
 require_relative 'lib/router'
 require_relative 'lib/router_client'
 

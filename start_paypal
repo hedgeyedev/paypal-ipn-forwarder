@@ -41,11 +41,10 @@ poller = Poller.new(router, server_url)
 poller.time_in_sec=polling_interval
 
 @process_id =  fork{poller.poll_for_ipn}
-File.write(Router::PROCESS_FILE_NAME, process_id, nil, nil)
+File.write(Router::PROCESS_FILE_NAME, @process_id, nil, nil)
 
 
 while command = STDIN.gets
-  puts "From stdin: !#{command}!"
    if command.downcase == "stop\n"
      Process.kill("HUP", @process_id)
      router.turn_test_mode_off(ARGV[1])
