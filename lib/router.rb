@@ -10,9 +10,11 @@ class Router
   attr_accessor :sandbox_id
   def initialize(target, test=nil)
     @router_client  = target
+    @ipn_received = false
   end
 
   def send_ipn(ipn)
+    @ipn_received = true
     @router_client.send_ipn(ipn)
   end
 

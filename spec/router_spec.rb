@@ -79,4 +79,21 @@ describe Router do
 
   end
 
+  context 'receives an IPN from the paypal sandbox' do
+    it ''
+  end
+
+  Scenario: Server not responding to my PayPal sandbox's IPN notifications
+                                            Given the server knows that my computer is in test mode
+                                            When polling has not retrieved any IPNs for this test for 10 minutes
+                                            Then my computer alerts me that it is not receiving any IPNs from the server
+
+
+
+
+                                            Scenario: Server not accumulating IPNs
+                                            TODO (maybe)
+
+                                            Scenario: Server not disposing of IPNs after computer retrieves them
+                                            TODO (maybe)
 end

@@ -5,6 +5,7 @@ class Poller
     @router = router
     @server_url = server_url + 'computer_poll'
     sandbox.nil? ? @sandbox_id = @router.sandbox_id : @sandbox_id = sandbox
+    @ipn_received = false
   end
 
   def retrieve_ipn
@@ -19,10 +20,17 @@ class Poller
   def poll_for_ipn(caller=nil)
     loop do
       ipn = retrieve_ipn
-      @router.send_ipn ipn unless (ipn.nil? || ipn == '')
+      unless (ipn.nil? || ipn == '')
+        @router.send_ipn ipn
+        @ipn_received = true
+      end
       sleep @time_in_sec.to_i
       break unless (caller.nil? || caller.keep_polling?)
     end
+  end
+
+  def check_ipn_received
+
   end
 
   attr_writer :time_in_sec
