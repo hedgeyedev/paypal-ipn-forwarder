@@ -55,7 +55,7 @@ Of course, in this case, it will be receiving the requests from the *router* ins
 
 The sequence diagram shows how the messages are exchanged.
 
-![Forwarder/Proxy](/readme/doc/seq_diagrams/simple.svg)
+![Forwarder/Proxy](paypal-ipn-forwarder.github.io/simple.svg)
 
 Notice some assumptions that are implied from this flow:
 
