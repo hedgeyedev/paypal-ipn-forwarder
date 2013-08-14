@@ -9,7 +9,7 @@ receives IPN notifications from PayPal, you have probably already encountered th
 Can the PayPal sandbox "talk" directly to your development computer?  Not unless your development computer has a static IP address
 (which many find problematic -- security concerns, etc) or a public domain.
 
-![Blocked!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/master/doc/seq_diagrams/blocked.svg)
+![Blocked!](/doc/seq_diagrams/blocked.svg)
 
 Hence, if not, then you know you are unable to do "end-to-end" testing because you cannot test the PayPal IPN
 notification.
@@ -168,7 +168,7 @@ a credit card or that someone issued a refund on the PayPal sandbox side.
 The gem can handle any reasonable number of Sandbox's running at the same time. Below, is a big picture explanation of
 how it occurs:
 
-![2_Developers!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/readme/doc/seq_diagrams/multiple.svg)
+![2_Developers!](/doc/seq_diagrams/multiple.svg)
 
 However, two developers can not be using the same sandbox. If this occurs, both users will have their testing session
 turned off on the server and an email will be sent to both of them.
@@ -177,9 +177,9 @@ turned off on the server and an email will be sent to both of them.
 
 The following flow diagrams illustrate the interactions that the router partakes in:
 
-![No IPN!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/readme/doc/seq_diagrams/router_server.svg)
+![No IPN!](/doc/seq_diagrams/router_server.svg)
 
 If there is an IPN, the following occurs:
 
-![IPN!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/readme/doc/seq_diagrams/router.svg)
+![IPN!](/doc/seq_diagrams/router.svg)
 
