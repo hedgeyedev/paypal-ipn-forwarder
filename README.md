@@ -9,7 +9,7 @@ receives IPN notifications from PayPal, you have probably already encountered th
 Can the PayPal sandbox "talk" directly to your development computer?  Not unless your development computer has a static IP address
 (which many find problematic -- security concerns, etc) or a public domain.
 
-![Blocked!](http://oldfartdeveloper.github.io/paypal-ipn-forwarder/doc/sequence_diagrams/blocked.svg)
+![Blocked!](http://oldfartdeveloper.github.io/paypal-ipn-forwarder/blocked.svg)
 
 Hence, if not, then you know you are unable to do "end-to-end" testing because you cannot test the PayPal IPN
 notification.
@@ -55,7 +55,7 @@ Of course, in this case, it will be receiving the requests from the *router* ins
 
 The sequence diagram shows how the messages are exchanged.
 
-![Forwarder/Proxy](http://oldfartdeveloper.github.io/paypal-ipn-forwarder/doc/sequence_diagrams/simple.svg)
+![Forwarder/Proxy](http://oldfartdeveloper.github.io/paypal-ipn-forwarder/simple.svg)
 
 Notice some assumptions that are implied from this flow:
 
