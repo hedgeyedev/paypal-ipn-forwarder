@@ -56,7 +56,7 @@ Of course, in this case, it will be receiving the requests from the *router* ins
 
 The sequence diagram shows how the messages are exchanged.
 
-![Forwarder/Proxy](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/readme/doc/seq_diagrams/simple.svg)
+![Forwarder/Proxy](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/server_client_fleshing/doc/seq_diagrams/simple.svg)
 
 Notice some assumptions that are implied from this flow:
 
@@ -171,7 +171,7 @@ a credit card or that someone issued a refund on the PayPal sandbox side.
 The gem can handle any reasonable number of Sandbox's running at the same time. Below, is a big picture explanation of
 how it occurs:
 
-![2_Developers!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/readme/doc/seq_diagrams/multiple.svg)
+![2_Developers!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/server_client_fleshing/doc/seq_diagrams/multiple.svg)
 
 However, two developers can not be using the same sandbox. If this occurs, both users will have their testing session
 turned off on the server and an email will be sent to both of them.
@@ -180,9 +180,9 @@ turned off on the server and an email will be sent to both of them.
 
 The following flow diagrams illustrate the interactions that the router partakes in:
 
-![No IPN!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/readme/doc/seq_diagrams/router_server.svg)
+![No IPN!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/server_client_fleshing/doc/seq_diagrams/router_server.svg)
 
 If there is an IPN, the following occurs:
 
-![IPN!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/readme/doc/seq_diagrams/router.svg)
+![IPN!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/server_client_fleshing/doc/seq_diagrams/router.svg)
 
