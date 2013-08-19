@@ -1,0 +1,9 @@
+Title: router polling interaction with server and PayPal client
+participant server
+participant router
+participant PayPal client
+router->server: poll for IPN
+server-->router: IPN returned
+router->PayPal client: IPN\ndelivered
+router->router:wait 5\nseconds
+router->server: poll for IPN

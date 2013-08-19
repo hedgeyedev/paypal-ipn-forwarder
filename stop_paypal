@@ -1,10 +1,27 @@
 #!/usr/bin/env ruby
+#
+#To be used when the paypal gem being run on
+#the computer was turned off incorrectly
+# i.e. using [control-C].
+#
+#This requires two paramater: the id of your Paypal
+# sandbox, and your email
+#
+#Hence, usage:
+#
+#     ruby stop_paypal  '<your paypal sandbox ID>' '<email address>'
 
 require_relative 'lib/router'
+require_relative 'lib/router_client'
 
-process_id = File.read(Router::PROCESS_FILE_NAME)
-Process.kill("HUP", process_id)
-Process.wait
-puts 'Paypal testing has been terminated'
+TEST_MODE_ON = true
+TEST_MODE_OFF = false
+ARGV[2].nil? ? TEST_MODE = TEST_MODE_OFF : TEST_MODE = TEST_MODE_ON
+
+router_client = RouterClient.new(TEST_MODE)
+router = Router.new(router_client, TEST_MODE)
+router.sandbox_id = ARGV[0]
+router.turn_test_mode_off(ARGV[1])
+
 
 

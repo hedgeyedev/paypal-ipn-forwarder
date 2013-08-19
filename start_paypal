@@ -4,15 +4,52 @@
 # including IPN notifications to your development
 # computer.
 #
-# This requires an argument: the id of your Paypal
-# sandbox.
+# This requires two arguments: the id of your Paypal
+# sandbox, and your email.
 #
-# Hence, usage:
+# An optional third parameter exists for testing. If running
+# in test mode, include a third parameter
 #
-#    start_paypal '<your paypal sandbox ID>'
+# Hence, usage for production:
+#
+#    start_paypal '<your paypal sandbox ID>' '<your email address>'
+#
+#
+# Usage for testing:
+#
+#    start_paypal '<your paypal sandbox ID>' '<your email address>' 'test'
 #
 require_relative 'lib/router'
+require_relative 'lib/poller'
+require_relative 'lib/load_config'
+require_relative 'lib/router_client'
 
-process_id = fork{ "exec 'bin/router #{ARGV[1]} #{ARGV[2]}'" }
-File.write(Router::PROCESS_FILE_NAME, process_id, nil, nil)
-puts 'Paypal testing has started'
+TEST_MODE_ON = true
+TEST_MODE_OFF = false
+ARGV[2].nil? ? TEST_MODE = TEST_MODE_OFF : TEST_MODE = TEST_MODE_ON
+router_client = RouterClient.new(TEST_MODE)
+router = Router.new(router_client, TEST_MODE)
+router.sandbox_id = ARGV[0]
+
+puts 'Paypal testing sequence has started'
+
+router.turn_test_mode_on(ARGV[1])
+config = LoadConfig.new
+polling_interval = config.polling_interval_seconds
+server_url = config.server_url
+poller = Poller.new(router, server_url)
+poller.time_in_sec=polling_interval
+
+@process_id =  fork{poller.poll_for_ipn}
+
+ #TODO: make sure an error isnt issued if the 2nd process has already been terminated
+while command = STDIN.gets
+   if command.downcase == "stop\n"
+     Process.kill("HUP", @process_id)
+     process_id = File.read(Poller::PROCESS_FILE_NAME)
+     Process.kill("HUP", process_id)
+     router.turn_test_mode_off(ARGV[1])
+     puts 'Paypal testing has been terminated'
+     break
+   end
+end
