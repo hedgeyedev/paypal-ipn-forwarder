@@ -32,24 +32,36 @@ Your PayPal client will need to be modified in order to not send out responses t
 
 ### In More Detail
 
-Here are the components that play together:
+There are three main components which interact in order to make this process work. They are: **Paypal**, 
+**Server**, and the **Development Computer**
 
-**PayPal**
-: The *PayPal sandbox* that you want to include in your end-to-end testing.
+####PayPal
+The *PayPal sandbox* that you want to include in your end-to-end testing.
+
+####Server
+This gem implements a Sinatra server for the *PayPal sandbox* that stores the IPNs in a queue.  This Sinatra app
+must run on a server exposed to the *PayPal sandbox* and have capability to respond to requests sent by the *Development Computer*.
+
+####Development Computer
+The *Development Computer* is the local machine that a developer uses for everyday work. It needs to have a internet connection
+in order to be able to interact with the *server*.
+
+### In Minute Detail
+
+Each of the three main components has smaller moving parts inside which interact with each other to make everything run smoothly.
+
 
 **Server**
-: This gem implements a Sinatra server for the *PayPal sandbox* that stores the IPNs in a queue.  This Sinatra app
-must run on a server exposed to the *PayPal sandbox*.
-
-**Queue**
+- Queue
 : Part of the Sinatra server.  The Sinatra server puts IPN requests from the *PayPal sandbox* into the *queue*.  The *router*
 retrieves them.
 
-**Router**
+**Development Computer**
+- Router
 : Part of the gem running as a process on the development computer.  It retrieves IPNs from the *queue* and relays them
 as requests to the developer's *PayPal client*.
 
-**PayPal Client**
+- PayPal Client
 : Part of the developer's business application, running on the develper's computer,
 that receives and processes IPN requests from (normally) the *PayPal sandbox*.
 Of course, in this case, it will be receiving the requests from the *router* instead.
@@ -66,6 +78,8 @@ Notice some assumptions that are implied from this flow:
 
 1.  The *PayPal client*'s response is muted. Usually, once the *PayPal client* receives an IPN,
     it conducts a handshake with PayPal to make sure that the IPN is valid. This is not performed during testing.
+
+1.  Lastly, note that the queue is part of the server and is not run outside or independently of the server.
 
 Ultimately, you probably have multiple development computers that you'd like to have a PayPal sandbox for
 each one.  The *server* can manage multiple connections; this will be described later.
