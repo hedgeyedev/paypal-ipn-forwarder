@@ -32,54 +32,51 @@ Your PayPal client will need to be modified in order to not send out responses t
 
 ### In More Detail
 
-There are three main components which interact in order to make this process work. They are: **Paypal**, 
+There are three main components which interact in order to make this process work: **Paypal**, 
 **Server**, and the **Development Computer**
 
 ####PayPal
+
 The *PayPal sandbox* that you want to include in your end-to-end testing.
 
 ####Server
-This gem implements a Sinatra server for the *PayPal sandbox* that stores the IPNs in a queue.  This Sinatra app
-must run on a server exposed to the *PayPal sandbox* and have capability to respond to requests sent by the *Development Computer*.
+
+This gem implements a Sinatra server that stores the *PayPal sandbox* notification IPNs into a queue.
+When the *Development Computer* requests a notification IPN, this server pops the oldest one from the
+queue and returns it.
+
+This Sinatra app must run on a server exposed to both the *PayPal sandbox* and the *Development Computer*.
 
 ####Development Computer
-The *Development Computer* is the local machine that a developer uses for everyday work. It needs to have a internet connection
-in order to be able to interact with the *server*.
 
-### In Minute Detail
+The *Development Computer* is the local machine that a developer uses for everyday work.
+It needs to have a internet connection with the *server*.
 
-Each of the three main components has smaller moving parts inside which interact with each other to make everything run smoothly.
-
-
-**Server**
-- Queue
-: Part of the Sinatra server.  The Sinatra server puts IPN requests from the *PayPal sandbox* into the *queue*.  The *router*
-retrieves them.
-
-**Development Computer**
-- Router
-: Part of the gem running as a process on the development computer.  It retrieves IPNs from the *queue* and relays them
-as requests to the developer's *PayPal client*.
-
-- PayPal Client
-: Part of the developer's business application, running on the develper's computer,
+Inside the *development computer* is the **PayPal Client**, the
+part of the developer's business application
 that receives and processes IPN requests from (normally) the *PayPal sandbox*.
-Of course, in this case, it will be receiving the requests from the *router* instead.
+But, in this case, it will be receiving the requests from the *router* instead.
 
-The sequence diagram shows how the messages are exchanged.
+The **router** is a daemon that retrieves notification IPNs from the *server*'s *queue* and relays them
+as requests to the developer's *payPal client*.
+
+#### How the messages are exchanged
 
 ![Forwarder/Proxy](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/server_client_fleshing/doc/seq_diagrams/simple.svg)
 
 Notice some assumptions that are implied from this flow:
 
-1.  This setup assumes that all requests are successful.  This is a tradeoff to prevent the multiple hops and router queuing
-    from inadvertently timing out the PayPal sandbox's request.  Hence, for this reason, the *server* completes the HTTP cycle
+1.  This setup assumes that all requests are successful.
+    This is a tradeoff to prevent the multiple hops and router queuing
+    from inadvertently timing out the PayPal sandbox's request.
+    Hence, for this reason, the *server* completes the HTTP cycle
     as soon as it's stored the IPN into the queue.
 
 1.  The *PayPal client*'s response is muted. Usually, once the *PayPal client* receives an IPN,
-    it conducts a handshake with PayPal to make sure that the IPN is valid. This is not performed during testing.
+    it conducts a handshake with PayPal to make sure that the IPN is valid. This is not performed during testing
+    because, as noted above, it introduces too much timing variability for the handshake.
 
-1.  Lastly, note that the queue is part of the server and is not run outside or independently of the server.
+1.  Lastly, note that the *queue* is part of the *server* and is not run outside or independently of the *server*.
 
 Ultimately, you probably have multiple development computers that you'd like to have a PayPal sandbox for
 each one.  The *server* can manage multiple connections; this will be described later.
@@ -91,7 +88,7 @@ each one.  The *server* can manage multiple connections; this will be described 
 1.  PayPal IPN's received while the target development machine is unavailable are responded to with a success
     response by this app.  The resulting IPN record is not queued.
 
-## Requirements
+## Prerequisites
 
 If you have these resources, then this project may be useful to you:
 
@@ -108,7 +105,7 @@ development computers as follows:
 
 ### PayPal Sandbox ID
 
-For this, you can use the Secure Merchant Id located which can be found in the PayPal sandbox. In the
+For this, you can use the `Secure Merchant Id` located which can be found in the PayPal sandbox. In the
 profile tab, it is the second item which is presented.
 
 ### Development ID
@@ -124,12 +121,13 @@ require 'paypal-ipn-proxy'
 
 # Gotta have some kind of security; this is the cheapest.
 # Feel free to use something more rigorous.
-use Rack::Auth::Basic, YARD_SERVER_TITLE_FOR_LOGIN do |username, password|
+use Rack::Auth::Basic, 'PayPal IPN Forwarder' do |username, password|
   username == 'admin' and password == 'admin'  # Please use creds more challenging than these
 end
 
 run PaypalIpnProxy.new
 ```
+*NOTE: Actually, we need to update this to have the user* **modify** *the sample config.ru.*
 
 ### Configure the IPN address in your PayPal sandbox(es).
 
@@ -138,28 +136,24 @@ In each PayPal sandbox, configure the *server*'s URL for PayPal to send the IPN 
 [PayPal's guide](https://cms.paypal.com/cms_content/CA/en_US/files/developer/IPNGuide.pdf) describes
 how to do this in section 3 on page 23.
 
-
 ### Configure the Router Component on Each Development Computer
 
-This consists of installing the *router* gem and creating two aliases so that the developer does not have to find the id of the
- Sandbox every time that they run the gem.
+This consists of installing the *router* gem and creating two aliases
+so that the developer does not have to find the id of the
+Sandbox every time that they run the gem.
 
-The aliases should be saved in a config file using:
+The aliases should be saved in a bash config file (or equivalent) using:
 
 ```bash
 alias paypal_testing_on='ruby start_paypal sandbox_id developer_id'
 alias paypal_testing_off='ruby stop_paypal sandbox)id developer_id'
 ```
 
-where sandbox_id is the id of the sandbox that the developer will be using
- and developer_id is the email of the developer. The paypal_tesitng_off alias
- only needs to be used when testing was turned off incorrectly.The correct way to turn off
- testing is by the command:
-
-    stop
-
- in the same terminal window where testing was occurring. If testing was turned off using [Command][C]
- then the paypal_testing_off alias will turn off test mode on the server.
+where `sandbox_id` is the id of the sandbox that the developer will be using
+and `developer_id` is the email of the developer. The `paypal_tesitng_off` alias
+only needs to be used when testing was turned off incorrectly.  The correct way to turn off
+testing is to simply do `control C` in the same terminal window where testing was occurring;
+this will turn off test mode on the server.
 
 ### Run on Your Server
 
@@ -167,7 +161,9 @@ _NOTE: Recommend using `thin` if you are using more than one PayPal sandbox._
 
 On your server:
 
-      rackup -p <whatever port is set up to receive the PayPal IPN messages> -s thin
+      rackup -s thin
+
+Note that PayPal only allows their test sandbox to talk to port 80.
 
 ### Start your Development computer's Router that talks with the server
 
