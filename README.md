@@ -20,31 +20,32 @@ So, you're stuck, unless you can find a way to forward PayPal sandbox IPN addres
 
 In addition to setting up this tool, you need a public facing *server*.  A cloud-based server
 such as Heroku will work fine. The gem in this project will operate as a Sinatra
-server to receive and queue the PayPal IPN requests on the server.
+server app to receive and queue the PayPal IPN requests on the server.
 
 The gem will be run on you development machine as well; it will
-send HTTP requests to this public facing server to retrieve the
-IPN records in the *server*'s queue.  For each IPN record retrieved, the gem will
+send HTTP requests to this public facing server app to retrieve the
+IPN records in the *server app*'s queue.  For each IPN record retrieved, the gem will
 forward it to your PayPal client as though PayPal had sent it directly.
 
 
-Your PayPal client will need to be modified in order to not send out responses to the PayPal sandboxs.
+Your PayPal client will need to be modified in order to not send out responses to the PayPal sandboxes.
 
 ### In More Detail
 
 There are three main components which interact in order to make this process work. They are: **Paypal**, 
-**Server**, and the **Development Computer**
+the **Server**, and the **Development Computer**
 
 ####PayPal
 The *PayPal sandbox* that you want to include in your end-to-end testing.
 
 ####Server
-This gem implements a Sinatra server for the *PayPal sandbox* that stores the IPNs in a queue.  This Sinatra app
+This gem implements a Sinatra server app for the *PayPal sandbox* that stores the IPNs in a queue.  This Sinatra app
 must run on a server exposed to the *PayPal sandbox* and have capability to respond to requests sent by the *Development Computer*.
 
 ####Development Computer
 The *Development Computer* is the local machine that a developer uses for everyday work. It needs to have a internet connection
-in order to be able to interact with the *server*.
+in order to be able to interact with the *server app* and the capability of to run the *PayPal Client* which is the final receiver of
+the PayPal IPNs.
 
 ### In Minute Detail
 
@@ -52,8 +53,12 @@ Each of the three main components has smaller moving parts inside which interact
 
 
 **Server**
+-Server App
+: The *Server App* is part of the gem. It is run on the server and handles communication with the *router* and the *PayPal Sandbox*.
+  The *Server App* also contains the queues which store the IPNs until they are retrieved by the corresponding routers.
+
 - Queue
-: Part of the Sinatra server.  The Sinatra server puts IPN requests from the *PayPal sandbox* into the *queue*.  The *router*
+: Part of the Sinatra *Server App*.  The Sinatra *Server App* puts IPN requests from the *PayPal sandbox* into the *queue*.  The *router*
 retrieves them.
 
 **Development Computer**
@@ -73,22 +78,21 @@ The sequence diagram shows how the messages are exchanged.
 Notice some assumptions that are implied from this flow:
 
 1.  This setup assumes that all requests are successful.  This is a tradeoff to prevent the multiple hops and router queuing
-    from inadvertently timing out the PayPal sandbox's request.  Hence, for this reason, the *server* completes the HTTP cycle
+    from inadvertently timing out the PayPal sandbox's request.  Hence, for this reason, the *server app* completes the HTTP cycle
     as soon as it's stored the IPN into the queue.
 
 1.  The *PayPal client*'s response is muted. Usually, once the *PayPal client* receives an IPN,
     it conducts a handshake with PayPal to make sure that the IPN is valid. This is not performed during testing.
 
-1.  Lastly, note that the queue is part of the server and is not run outside or independently of the server.
 
 Ultimately, you probably have multiple development computers that you'd like to have a PayPal sandbox for
-each one.  The *server* can manage multiple connections; this will be described later.
+each one.  The *server app* can manage multiple connections; this will be described later.
 
 ## Features
 
 1.  This Sinatra app only needs to be set up once to handle multiple PayPal sandboxes
     and multiple development machines.
-1.  PayPal IPN's received while the target development machine is unavailable are responded to with a success
+1.  PayPal IPNs received while the target development machine is unavailable are responded to with a success
     response by this app.  The resulting IPN record is not queued.
 
 ## Requirements
@@ -133,7 +137,7 @@ run PaypalIpnProxy.new
 
 ### Configure the IPN address in your PayPal sandbox(es).
 
-In each PayPal sandbox, configure the *server*'s URL for PayPal to send the IPN messages to.
+In each PayPal sandbox, configure the server's URL for PayPal to send the IPN messages to.
 
 [PayPal's guide](https://cms.paypal.com/cms_content/CA/en_US/files/developer/IPNGuide.pdf) describes
 how to do this in section 3 on page 23.
@@ -159,7 +163,7 @@ where sandbox_id is the id of the sandbox that the developer will be using
     stop
 
  in the same terminal window where testing was occurring. If testing was turned off using [Command][C]
- then the paypal_testing_off alias will turn off test mode on the server.
+ then the paypal_testing_off alias will turn off test mode on the *server app*.
 
 ### Run on Your Server
 
@@ -169,7 +173,7 @@ On your server:
 
       rackup -p <whatever port is set up to receive the PayPal IPN messages> -s thin
 
-### Start your Development computer's Router that talks with the server
+### Start your Development computer's Router that talks with the server app
 
 Using the alias, run the gem on the Developer's computer. Once started, the gem will alert the developer
 if something goes wrong in that terminal window.
@@ -188,7 +192,7 @@ how it occurs:
 ![2_Developers!](https://rawgithub.com/dostapenko/paypal-ipn-forwarder/server_client_fleshing/doc/seq_diagrams/multiple.svg)
 
 However, two developers can not be using the same sandbox. If this occurs, both users will have their testing session
-turned off on the server and an email will be sent to both of them.
+turned off on the *server app* and an email will be sent to both of them.
 
 ### Router interactions
 

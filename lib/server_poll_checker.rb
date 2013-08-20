@@ -32,7 +32,7 @@ class ServerPollChecker
     end
   end
 
-  #TODO: email map used incorrectly here-needs to come fromt he server
+  #TODO: email map used incorrectly here-needs to come from the server
   def send_email(paypal_id, body)
     @email_map = @server.email_map
     unless @email_map[paypal_id].nil?
