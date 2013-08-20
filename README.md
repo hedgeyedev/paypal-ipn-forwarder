@@ -27,17 +27,12 @@ send HTTP requests to this public facing server app to retrieve the
 IPN records in the *server app*'s queue.  For each IPN record retrieved, the gem will
 forward it to your PayPal client as though PayPal had sent it directly.
 
-
 Your PayPal client will need to be modified in order to not send out responses to the PayPal sandboxes.
 
 ### In More Detail
 
-There are three main components which interact in order to make this process work. They are: **Paypal**,
-the **Server**, and the **Development Computer**
-=======
 There are three main components which interact in order to make this process work: **Paypal**,
 **Server**, and the **Development Computer**
-
 
 This gem implements a Sinatra server that stores the *PayPal sandbox* notification IPNs into a queue.
 When the *Development Computer* requests a notification IPN, this server pops the oldest one from the
@@ -151,16 +146,23 @@ alias paypal_testing_on='ruby start_paypal sandbox_id developer_id'
 alias paypal_testing_off='ruby stop_paypal sandbox)id developer_id'
 ```
 
-where sandbox_id is the id of the sandbox that the developer will be using
-and developer_id is the email of the developer. The paypal_tesitng_off alias
-only needs to be used when testing was turned off incorrectly.The correct way to turn off
-testing is by the command:
+where `sandbox_id` is the id of the sandbox that the developer will be using
+and `developer_id` is the email of the developer.
 
-    stop
+#### Running the Router
 
- in the same terminal window where testing was occurring. If testing was turned off using [Command][C]
- then the paypal_testing_off alias will turn off test mode on the *server app*.
-=
+To start the *router*:
+
+     paypal_testing_on
+
+To stop:
+
+     stop
+
+If you inadvertently `control-c` out of the terminal window, that will not stop the process.
+In this case, in another terminal you can stop the *router* process by:
+
+     paypal_testing_off
 
 ### Run on Your Server
 
