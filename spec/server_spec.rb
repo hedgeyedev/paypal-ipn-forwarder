@@ -140,5 +140,13 @@ describe Server do
     @server.queue_identify('my_sandbox_id', 'my method')
   end
 
+  it 'should reject IPNs which have a value of "VERIFIED", "INVALID", or empty string ' do
+    ["VERIFIED", "INVALID", ""].each { |word|
+      @server.actual_ipn?(word).should be_false
+    }
+
+  end
+
+
 
 end

@@ -47,7 +47,7 @@ class Server
 
   def begin_test_mode(id, params)
     @computers_testing[id] = true
-    @queue_map[id]     = Queue.new
+    @queue_map[id] = Queue.new
     email_mapper(id, params['email'])
 
     #the following line is needed in case the sandbox is a new one.
@@ -80,8 +80,7 @@ class Server
   def cancel_test_mode(id)
     @computers_testing[id] = false
     @queue_map[id] = nil
-    process_id = File.read(PROCESS_ID+'_'+id).to_i
-    Process.kill("HUP", process_id) unless @test_mode
+
     Process.kill("HUP", @process_id) unless @test_mode
   end
 
@@ -176,6 +175,10 @@ class Server
 
   def email_map
     @email_map
+  end
+
+  def actual_ipn?(ipn)
+    ipn.length != 0 && (ipn =~ /(VERIFIED|INVALID)/) != 0
   end
 
 end

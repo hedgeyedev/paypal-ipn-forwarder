@@ -28,7 +28,8 @@ class ServerRack < Sinatra::Base
 
   post '/payments/ipn' do
     ipn = request.body.read
-    unless ipn.nil? || ipn =~ /(|VERIFIED|INVALID)/
+    unless ipn.nil? || @@server.actual_ipn?(ipn)
+      puts ipn
       @@server_client.receive_ipn(ipn)
       response = @@server_client.ipn_response(ipn)
       url      = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
@@ -77,7 +78,16 @@ class ServerRack < Sinatra::Base
   end
 
   get '/test_state' do
-    @@server.computer_online?('my_sandbox_id')
+    @@server.computer_online?('id@example.com')
+  end
+
+  post '/hello' do
+    "hello scott"
+  end
+
+  post '/show_ipn' do
+    ipn = request.body.read
+    @@server.printo(ipn)
   end
 
 
