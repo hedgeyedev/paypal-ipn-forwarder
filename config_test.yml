@@ -1,4 +1,4 @@
-server_url : 'http://your_server.example.com'
+server_url : 'http://localhost:8810/'
 development_computer_url : 'http://localhost:3000/payments/ipn'
 
 :via : :smtp
@@ -8,21 +8,17 @@ development_computer_url : 'http://localhost:3000/payments/ipn'
 
 polling_interval_seconds : '5.0'
 
-poll_checking_interval_seconds : '3600.0'
+poll_checking_interval_seconds : '.1'
+
+no_polling_time_before_email : 3600
+
+no_ipn_time_before_email : 1
 
 sandbox_id : ['my_sandbox_id','my_sandbox_id_1']
-
-map:
-  'gpmac_1231902686_biz@paypal.com': 'my_sandbox_id'
-  'paypal@gmail.com': 'my_sandbox_id_1'
 
 computer_testing:
   'my_sandbox_id': false
   'my_sandbox_id_1': false
-
-ipn_response:
-  'my_sandbox_id': ~
-  'my_sandbox_id_1': ~
 
 queue_map:
   'my_sandbox_id': ~
@@ -39,3 +35,10 @@ email_map :
 poll_checker_instance :
   'my_sandbox_id': ~
   'my_sandbox_id_1': ~
+
+ipn_reception_checker_instance :
+  'my_sandbox_id': ~
+  'my_sandbox_id_1': ~
+
+
+

@@ -1,0 +1,7 @@
+Title: router polling interaction with server
+participant server
+participant router
+router->server: poll for IPN
+server-->router: No IPN
+router->router: Wait 5 seconds
+router->server: poll for IPN

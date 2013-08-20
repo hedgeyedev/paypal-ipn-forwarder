@@ -19,7 +19,7 @@ class LoadConfig
     @config['server_url']
   end
 
-  def development_computer_url
+  def final_destination_url
     @config['development_computer_url']
   end
 
@@ -38,16 +38,8 @@ class LoadConfig
     @config['sandbox_id']
   end
 
-  def sandbox_map
-    @config['map']
-  end
-
   def computer_testing
     @config['computer_testing']
-  end
-
-  def ipn_response
-    @config['ipn_response']
   end
 
   def queue_map
@@ -68,6 +60,18 @@ class LoadConfig
 
   def poll_checking_interval_seconds
     @config['poll_checking_interval_seconds']
+  end
+
+  def no_polling_time_before_email
+    @config['no_polling_time_before_email']
+  end
+
+  def no_ipn_time_before_email
+    @config['no_ipn_time_before_email']
+  end
+
+  def ipn_reception_checker_instance
+    @config['ipn_reception_checker_instance']
   end
 
 end
