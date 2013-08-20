@@ -1,15 +1,15 @@
-Participant PayPal1
-Participant PayPal2
+Participant ((Actor))\nPayPal Sandbox1
+Participant ((Actor))\nPayPal Sandbox2
 Participant Server
 Participant Queue1
 Participant Queue2
-Participant Computer1
-Participant Computer2
-PayPal1->Server: IPN-1 sent
+Participant ((Actor))\nComputer1
+Participant ((Actor))\nComputer2
+((Actor))\nPayPal Sandbox1->Server: IPN-1 sent
 Server-->Queue1: Queue IPN-1
-Server->PayPal1: IPN-1 handshake finished
-PayPal2->Server: IPN-2 sent
+Server->((Actor))\nPayPal Sandbox1: IPN-1 handshake finished
+((Actor))\nPayPal Sandbox2->Server: IPN-2 sent
 Server-->Queue2: Queue IPN-2
-Server->PayPal2: IPN-2 handshake\nfinished
-Computer1->>Queue1: Poll for IPN\nin Queue1
-Computer2->>Queue2: Poll for IPN\nin Queue2
+Server->((Actor))\nPayPal Sandbox2: IPN-2 handshake\nfinished
+((Actor))\nComputer1->>Queue1: Poll for IPN\nin Queue1
+((Actor))\nComputer2->>Queue2: Poll for IPN\nin Queue2PayPal2
