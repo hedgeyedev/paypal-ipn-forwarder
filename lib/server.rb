@@ -22,7 +22,6 @@ class Server
     @queue_map = content.queue_map.clone
     @email_map = content.email_map.clone
     @poll_checker_instance = content.poll_checker_instance.clone
-    @ipn_reception_checker_instance = content.ipn_reception_checker_instance
   end
 
   def paypal_id(ipn)
@@ -58,7 +57,7 @@ class Server
     @ipn_reception_checker_instance[id] = ServerIpnReceptionChecker.new(self, id)
 
     unless @test_mode
-      @ipn_reception_checker_instance[id].check_ipn_received
+
       @process_id =  fork do
 
         @poll_checker_instance[id].check_testing_polls_occurring(id)
