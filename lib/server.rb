@@ -47,6 +47,7 @@ class Server
 
   def begin_test_mode(id, params)
     @computers_testing[id] = true
+    puts @computers_testing[id]
     @queue_map[id] = Queue.new
     email_mapper(id, params['email'])
 
@@ -54,7 +55,6 @@ class Server
     @poll_checker_instance[id] = ServerPollChecker.new(self) if @poll_checker_instance[id].nil?
     @poll_checker_instance[id].record_poll_time(id)
 
-    @ipn_reception_checker_instance[id] = ServerIpnReceptionChecker.new(self, id)
 
     unless @test_mode
 
@@ -178,7 +178,14 @@ class Server
   end
 
   def actual_ipn?(ipn)
-    ipn.length != 0 && (ipn =~ /(VERIFIED|INVALID)/) != 0
+    ipn.length == 0 && (ipn =~ /(VERIFIED|INVALID)/) == 0
+  end
+
+  def printo(vars)
+    id = paypal_id(vars)
+    puts vars +'\n'
+    puts id
+
   end
 
 end

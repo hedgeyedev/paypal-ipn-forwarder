@@ -142,7 +142,7 @@ describe Server do
 
   it 'should reject IPNs which have a value of "VERIFIED", "INVALID", or empty string ' do
     ["VERIFIED", "INVALID", ""].each { |word|
-      @server.actual_ipn?(word).should be_false
+      @server.actual_ipn?(word).should == true
     }
 
   end

@@ -28,6 +28,9 @@ class ServerRack < Sinatra::Base
 
   post '/payments/ipn' do
     ipn = request.body.read
+    puts 'blob'
+    puts ipn.nil?
+    puts @@server.actual_ipn?(ipn)
     unless ipn.nil? || @@server.actual_ipn?(ipn)
       puts ipn
       @@server_client.receive_ipn(ipn)
