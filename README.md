@@ -27,17 +27,12 @@ send HTTP requests to this public facing server app to retrieve the
 IPN records in the *server app*'s queue.  For each IPN record retrieved, the gem will
 forward it to your PayPal client as though PayPal had sent it directly.
 
-
 Your PayPal client will need to be modified in order to not send out responses to the PayPal sandboxes.
 
 ### In More Detail
 
-There are three main components which interact in order to make this process work. They are: **Paypal**,
-the **Server**, and the **Development Computer**
-=======
 There are three main components which interact in order to make this process work: **Paypal**,
 **Server**, and the **Development Computer**
-
 
 This gem implements a Sinatra server that stores the *PayPal sandbox* notification IPNs into a queue.
 When the *Development Computer* requests a notification IPN, this server pops the oldest one from the
@@ -168,7 +163,7 @@ If you inadvertently `control-c` out of the terminal window, that will not stop 
 In this case, in another terminal you can stop the *router* process by:
 
      paypal_testing_off
-     
+
 ### Run on Your Server
 
 _NOTE: Recommend using `thin` if you are using more than one PayPal sandbox._
