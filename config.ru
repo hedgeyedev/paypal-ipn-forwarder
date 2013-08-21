@@ -6,6 +6,7 @@ require File.expand_path('../lib/server', __FILE__)
 require File.expand_path('../lib/poller', __FILE__)
 require File.expand_path('../lib/ipn_generator', __FILE__)
 require File.expand_path('../lib/router_client', __FILE__)
+require File.expand_path('../lib/mail_sender', __FILE__)
 
 class ServerRack < Sinatra::Base
   configure do
@@ -13,6 +14,7 @@ class ServerRack < Sinatra::Base
     @@server = Server.new(TEST_MODE_ON)
     @@server_client = ServerClient.new(@@server)
     @@router = RouterClient.new(TEST_MODE_ON)
+    @@mail = MailSender.new
   end
 
   get '/invoke_ipn' do
@@ -91,6 +93,11 @@ class ServerRack < Sinatra::Base
   post '/show_ipn' do
     ipn = request.body.read
     @@server.printo(ipn)
+  end
+
+  get '/send_email' do
+    @@mail.send('developer@gmail.com', "fracking test", "hello from the imac" )
+
   end
 
 

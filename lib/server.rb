@@ -22,6 +22,7 @@ class Server
     @queue_map = content.queue_map.clone
     @email_map = content.email_map.clone
     @poll_checker_instance = content.poll_checker_instance.clone
+    @ipn_reception_checker_instance = Hash.new
   end
 
   def paypal_id(ipn)
@@ -42,18 +43,23 @@ class Server
   end
 
   def computer_online?(id)
+    puts @computers_testing[id]
+    puts "computer online?? #{id}"
     @computers_testing[id]
   end
 
   def begin_test_mode(id, params)
     @computers_testing[id] = true
     puts @computers_testing[id]
+    puts 'computer testing started'
     @queue_map[id] = Queue.new
     email_mapper(id, params['email'])
 
     #the following line is needed in case the sandbox is a new one.
     @poll_checker_instance[id] = ServerPollChecker.new(self) if @poll_checker_instance[id].nil?
     @poll_checker_instance[id].record_poll_time(id)
+
+    @ipn_reception_checker_instance[id] = ServerIpnReceptionChecker.new(self, id)
 
 
     unless @test_mode
@@ -80,7 +86,8 @@ class Server
   def cancel_test_mode(id)
     @computers_testing[id] = false
     @queue_map[id] = nil
-
+    process_id = File.read(PROCESS_ID+'_'+id).to_i
+    Process.kill("HUP", process_id) unless @test_mode
     Process.kill("HUP", @process_id) unless @test_mode
   end
 
