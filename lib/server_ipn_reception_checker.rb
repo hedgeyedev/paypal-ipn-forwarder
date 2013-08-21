@@ -3,7 +3,7 @@ require_relative '../lib/mail_sender'
 
 class ServerIpnReceptionChecker
 
-  PROCESS_FILE_NAME = '.process_id_for_ipn_checker'
+  PROCESS_FILE_NAME = '.process_id_for_poll_checker'
 
   def initialize(server, paypal_id, test=nil)
     LoadConfig.set_test_mode(!test.nil?)
@@ -17,10 +17,11 @@ class ServerIpnReceptionChecker
   def check_ipn_received
     @process_id =  fork do
 
-      verify_ipn_received
       Signal.trap("HUP") do
         @ipn_received = true
       end
+
+      verify_ipn_received
 
     end
     Process.detach(@process_id)
@@ -29,7 +30,6 @@ class ServerIpnReceptionChecker
 
   def verify_ipn_received(time=1.0)
     loop do
-      puts Time.now
       if (Time.now <=> @time_test_started + 60*9) == 1
         send_email_that_no_ipn_received
         break

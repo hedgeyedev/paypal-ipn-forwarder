@@ -61,16 +61,16 @@ class Server
 
     @ipn_reception_checker_instance[id] = ServerIpnReceptionChecker.new(self, id)
 
-
     unless @test_mode
+      @ipn_reception_checker_instance[id].check_ipn_received
 
       @process_id =  fork do
-
-        @poll_checker_instance[id].check_testing_polls_occurring(id)
 
         Signal.trap("HUP") do
           @poll_checker_instance[id].loop_boolean = false
         end
+
+        @poll_checker_instance[id].check_testing_polls_occurring(id)
 
       end
       Process.detach(@process_id)
@@ -79,7 +79,7 @@ class Server
       #discussion point: is it worth it to write the process id in a file? This could seem helpful if a developer
       #went to the program and was trying to find errant processes. On the other hand, could also be simply implemented
       #by storing the process ids in a hash.
-      File.write(PROCESS_ID+'_'+id, @process_id, nil)
+      #File.write(PROCESS_ID+'_'+id, @process_id, nil)
     end
   end
 
@@ -89,6 +89,7 @@ class Server
     process_id = File.read(PROCESS_ID+'_'+id).to_i
     Process.kill("HUP", process_id) unless @test_mode
     Process.kill("HUP", @process_id) unless @test_mode
+    @ipn_reception_checker_instance[id] = nil
   end
 
   def same_sandbox_being_tested_twice?(id, params)

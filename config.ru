@@ -11,9 +11,9 @@ require File.expand_path('../lib/mail_sender', __FILE__)
 class ServerRack < Sinatra::Base
   configure do
     TEST_MODE_ON = true
-    @@server = Server.new(TEST_MODE_ON)
+    @@server = Server.new
     @@server_client = ServerClient.new(@@server)
-    @@router = RouterClient.new(TEST_MODE_ON)
+    @@router = RouterClient.new
     @@mail = MailSender.new
   end
 
