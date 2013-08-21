@@ -40,10 +40,12 @@ class Poller
   def check_ipn_received
     @process_id =  fork do
 
-      verify_ipn_received
+
       Signal.trap("HUP") do
         @ipn_received = true
       end
+
+      verify_ipn_received
 
     end
     Process.detach(@process_id)
