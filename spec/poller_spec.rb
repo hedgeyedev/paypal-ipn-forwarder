@@ -16,7 +16,7 @@ describe Poller do
     @url = content.server_url
     @router.sandbox_id=(@sandbox_id)
     @poller = Poller.new(@router, @url)
-    @time_before_no_ipn_notification
+    @time_before_no_ipn_notification = content.no_ipn_time_before_notification
   end
 
   it 'should send a GET request' do

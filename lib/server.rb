@@ -13,7 +13,7 @@ require_relative '../lib/server_ipn_reception_checker'
 class Server
 
   PROCESS_ID_IPN_CHECKER = '.process_id_for_ipn_checker'
-  POLL_CHECKER_PROCESS_ID = '/process_id_for_poll_checker'
+  POLL_CHECKER_PROCESS_ID = '.process_id_for_poll_checker'
 
   def initialize(test=nil)
     @test_mode = !test.nil?

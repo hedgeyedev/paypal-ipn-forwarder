@@ -32,7 +32,6 @@ router = Router.new(router_client, TEST_MODE)
 router.sandbox_id = ARGV[0]
 
 puts 'Paypal testing sequence has started'
-puts 'bob'
 router.turn_test_mode_on(ARGV[1])
 config = LoadConfig.new
 
