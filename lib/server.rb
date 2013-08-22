@@ -22,6 +22,7 @@ class Server
     @queue_map = content.queue_map.clone
     @email_map = content.email_map.clone
     @poll_checker_instance = content.poll_checker_instance.clone
+    @ipn_reception_checker_instance = Hash.new
   end
 
   def paypal_id(ipn)
@@ -42,12 +43,12 @@ class Server
   end
 
   def computer_online?(id)
+
     @computers_testing[id]
   end
 
   def begin_test_mode(id, params)
     @computers_testing[id] = true
-    puts @computers_testing[id]
     @queue_map[id] = Queue.new
     email_mapper(id, params['email'])
 
@@ -55,16 +56,18 @@ class Server
     @poll_checker_instance[id] = ServerPollChecker.new(self) if @poll_checker_instance[id].nil?
     @poll_checker_instance[id].record_poll_time(id)
 
+    @ipn_reception_checker_instance[id] = ServerIpnReceptionChecker.new(self, id)
 
     unless @test_mode
+      @ipn_reception_checker_instance[id].check_ipn_received
 
       @process_id =  fork do
-
-        @poll_checker_instance[id].check_testing_polls_occurring(id)
 
         Signal.trap("HUP") do
           @poll_checker_instance[id].loop_boolean = false
         end
+
+        @poll_checker_instance[id].check_testing_polls_occurring(id)
 
       end
       Process.detach(@process_id)
@@ -73,15 +76,17 @@ class Server
       #discussion point: is it worth it to write the process id in a file? This could seem helpful if a developer
       #went to the program and was trying to find errant processes. On the other hand, could also be simply implemented
       #by storing the process ids in a hash.
-      File.write(PROCESS_ID+'_'+id, @process_id, nil)
+      #File.write(PROCESS_ID+'_'+id, @process_id, nil)
     end
   end
 
   def cancel_test_mode(id)
     @computers_testing[id] = false
     @queue_map[id] = nil
-
+    process_id = File.read(PROCESS_ID+'_'+id).to_i
+    Process.kill("HUP", process_id) unless @test_mode
     Process.kill("HUP", @process_id) unless @test_mode
+    @ipn_reception_checker_instance[id] = nil
   end
 
   def same_sandbox_being_tested_twice?(id, params)

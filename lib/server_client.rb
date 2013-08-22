@@ -9,6 +9,7 @@ class ServerClient
     if params_parsed['test_mode'].first == 'on'
       if !@server.computer_online?(id)
         @server.begin_test_mode(id, params_parsed)
+        puts 'test mode has began'
       elsif @server.same_sandbox_being_tested_twice?(id, params_parsed)
         @server.send_conflict_email(id, params_parsed['email'].first)
         @server.cancel_test_mode(id)
@@ -20,7 +21,6 @@ class ServerClient
 
   def respond_to_computer_poll(paypal_id, now=Time.now)
     @server.record_computer_poll(paypal_id)
-    puts @server.computer_online?(paypal_id)
     if(@server.computer_online?(paypal_id))
       @server.send_ipn_if_present(paypal_id)
     else

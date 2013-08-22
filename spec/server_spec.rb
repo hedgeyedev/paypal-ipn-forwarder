@@ -76,7 +76,7 @@ describe Server do
 
     it 'should should send email to the developer, if one is on file' do
       Pony.should_receive(:mail).with({:via => :smtp,
-                                       :to => "dmitri.ostapenko@gmail.com",
+                                       :to => "developer@gmail.com",
                                        :from => "email-proxy-problems@superbox.com",
                                        :subject => "A problem occured on the IPN proxy with sandbox my_sandbox_id",
                                        :body => "Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on. The sandox id is my_sandbox_id.This problem is happening on a superbox belonging to you so this email was only sent to you. Please address it",
@@ -126,7 +126,7 @@ describe Server do
 
   it 'should send an email to a developer if a queue is not in test mode and something is trying to access it' do
     Pony.should_receive(:mail).with({:via => :smtp,
-                                     :to => "dmitri.ostapenko@gmail.com",
+                                     :to => "developer@gmail.com",
                                      :from => "email-proxy-problems@superbox.com",
                                      :subject => "There is no queue on the Superbox IPN forwarder",
                                      :body => "on the Superbox IPN forwarder, there is no queue set up for this function: my method for your developer_id my_sandbox_id",

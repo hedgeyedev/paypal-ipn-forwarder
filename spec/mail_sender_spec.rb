@@ -23,7 +23,7 @@ describe MailSender do
       'subject' => 'hey, look this went through'
   }
   TO = {
-      :to => 'dmitri.ostapenko@gmail.com',
+      :to => 'developer@gmail.com',
       :body => 'this is a test email body message. HEY scott or Dmitri or James',
       :subject => 'test email from hedgeye. is this working? '
   }
@@ -39,7 +39,7 @@ describe MailSender do
   end
 
   it 'should send an email' do
-    Pony.should_receive(:mail).with({:to => 'dmitri.ostapenko@gmail.com',
+    Pony.should_receive(:mail).with({:to => 'developer@gmail.com',
                                      :body => 'this is a test email body message. HEY scott or Dmitri or James',
                                      :subject => 'test email from hedgeye. is this working? ',
                                      :via => :smtp,
