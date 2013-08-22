@@ -178,7 +178,7 @@ class Server
   end
 
   def ipn_valid?(ipn)
-    ipn.length != 0 && (ipn =~ /(VERIFIED|INVALID)/) != 0 && !ipn.nil?
+    !ipn.nil? && ipn.length > 0 && (ipn =~ /(VERIFIED|INVALID)/) != 0
   end
 
   def printo(vars)

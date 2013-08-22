@@ -32,7 +32,7 @@ class ServerIpnReceptionChecker
 
   def verify_ipn_received(time=1.0)
     loop do
-      if (Time.now >= @time_test_started + @time_before_email) == 1
+      if (Time.now >= @time_test_started + @time_before_email)
         send_email_that_no_ipn_received
         break
       end
