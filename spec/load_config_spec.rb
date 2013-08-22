@@ -60,6 +60,6 @@ describe LoadConfig do
   end
 
   it 'should retrieve the time that passes before an email is send to a developer stating that no IPNs are being received on the server' do
-   @config.no_ipn_time_before_email.should == 1
+   @config.no_ipn_time_before_notification.should == 1
   end
 end

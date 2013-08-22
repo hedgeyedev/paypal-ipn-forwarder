@@ -1,4 +1,5 @@
 require_relative 'load_config'
+require_relative '../lib/server'
 require_relative '../lib/mail_sender'
 
 class ServerIpnReceptionChecker
@@ -11,6 +12,7 @@ class ServerIpnReceptionChecker
     @server = server
     @paypal_id = paypal_id
     @time_test_started = Time.now
+    @time_before_email = @content.no_ipn_time_before_notification
 
   end
 
@@ -25,12 +27,12 @@ class ServerIpnReceptionChecker
 
     end
     Process.detach(@process_id)
-    File.write(ServerIpnReceptionChecker::PROCESS_FILE_NAME + '_' + @paypal_id, @process_id, nil, nil)
+    File.write(SERVER::PROCESS_ID_IPN_CHECKER + '_' + @paypal_id, @process_id, nil, nil)
   end
 
   def verify_ipn_received(time=1.0)
     loop do
-      if (Time.now <=> @time_test_started + 60*9) == 1
+      if (Time.now <=> @time_test_started + @time_before_email) == 1
         send_email_that_no_ipn_received
         break
       end

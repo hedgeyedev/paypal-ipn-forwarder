@@ -16,6 +16,7 @@ describe Poller do
     @url = content.server_url
     @router.sandbox_id=(@sandbox_id)
     @poller = Poller.new(@router, @url)
+    @time_before_no_ipn_notification
   end
 
   it 'should send a GET request' do
@@ -50,7 +51,7 @@ describe Poller do
   it 'should alert the developer if an IPN has not been received 10 minutes after testing has started' do
     STDOUT.should_receive(:puts).with('an IPN has still not been received, 10 minutes after testing')
     @poller.time_polling_started = Time.now
-    Timecop.travel(Time.now+60*10)
+    Timecop.travel(Time.now+@time_before_no_ipn_notification)
     @poller.verify_ipn_received(1)
 
   end

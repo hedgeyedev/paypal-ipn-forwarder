@@ -20,6 +20,7 @@ class Router
     begin
       @router_client.set_test_mode(TEST_ON, email, @sandbox_id)
     rescue SystemCallError
+      puts 'darmn'
       puts 'The connection to the server is experiencing errors. Test mode was NOT turned on. Make sure the server is running!'
     rescue StandardError
       puts 'Something went wrong while turning on test mode on the server. It was not a connection issue.Try running test using localhost to see what the mistake is. Also check your inbox for emails from the server. One possible scnerio is that the sanbx was already being used by a different developer'

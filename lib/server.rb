@@ -12,7 +12,8 @@ require_relative '../lib/server_ipn_reception_checker'
 
 class Server
 
-  PROCESS_ID = '.process_id_for_ipn_checker'
+  PROCESS_ID_IPN_CHECKER = '.process_id_for_ipn_checker'
+  POLL_CHECKER_PROCESS_ID = '/process_id_for_poll_checker'
 
   def initialize(test=nil)
     @test_mode = !test.nil?
@@ -67,6 +68,8 @@ class Server
 
         @poll_checker_instance[id].check_testing_polls_occurring(id)
       end
+
+      File.write(POLL_CHECKER_PROCESS_ID+'_'+id, @process_id, nil, nil)
       Process.detach(@process_id)
     end
   end
@@ -74,9 +77,10 @@ class Server
   def cancel_test_mode(id)
     @computers_testing[id] = false
     @queue_map[id] = nil
-    process_id = File.read(PROCESS_ID+'_'+id).to_i
-    Process.kill("HUP", process_id) unless @test_mode
-    Process.kill("HUP", @process_id) unless @test_mode
+    process_id_ipn_checker = File.read(PROCESS_ID_IPN_CHECKER+'_'+id).to_i
+    process_id_poll_checker = File.read(POLL_CHECKER_PROCESS_ID+'_'+id).to_i
+    Process.kill("HUP", process_id_ipn_checker) unless @test_mode
+    Process.kill("HUP", process_id_poll_checker) unless @test_mode
     @ipn_reception_checker_instance[id] = nil
   end
 
@@ -173,8 +177,8 @@ class Server
     @email_map
   end
 
-  def actual_ipn?(ipn)
-    ipn.length == 0 && (ipn =~ /(VERIFIED|INVALID)/) == 0
+  def ipn_valid?(ipn)
+    ipn.length != 0 && (ipn =~ /(VERIFIED|INVALID)/) != 0 && !ipn.nil?
   end
 
   def printo(vars)
