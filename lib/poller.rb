@@ -1,4 +1,5 @@
 require 'rest_client'
+require_relative '../lib/load_config'
 class Poller
 
   PROCESS_FILE_NAME = '.process_id'
@@ -7,8 +8,10 @@ class Poller
     @router = router
     @server_url = server_url + 'computer_poll'
     sandbox.nil? ? @sandbox_id = @router.sandbox_id : @sandbox_id = sandbox
+    content = LoadConfig.new
     @ipn_received = false
     @time_polling_started = Time.now
+    @time_before_notification_of_no_ipn = content.no_ipn_time_before_notification
 
   end
 
@@ -53,7 +56,7 @@ class Poller
   def verify_ipn_received(time=5.0)
     loop do
       sleep time
-      if (Time.now <=> @time_polling_started + 60*10) == 1
+      if (Time.now <=> @time_polling_started + @time_before_notification_of_no_ipn) == 1
         puts 'an IPN has still not been received, 10 minutes after testing'
         break
       end

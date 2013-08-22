@@ -67,7 +67,7 @@ class LoadConfig
     @config['no_polling_time_before_email']
   end
 
-  def no_ipn_time_before_email
+  def no_ipn_time_before_notification
     @config['no_ipn_time_before_email']
   end
 

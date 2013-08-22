@@ -8,7 +8,9 @@ poll_checking_interval_seconds : '.1'
 
 no_polling_time_before_email : 3600
 
-no_ipn_time_before_email : 1
+no_ipn_time_before_email : 600
+
+
 
 sandbox_id : ['my_sandbox_id','my_sandbox_id_1']
 

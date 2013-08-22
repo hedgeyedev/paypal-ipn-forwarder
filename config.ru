@@ -29,7 +29,7 @@ class ServerRack < Sinatra::Base
 
   post '/payments/ipn' do
     ipn = request.body.read
-    unless ipn.nil? || @@server.actual_ipn?(ipn)
+    if @@server.ipn_valid?(ipn)
       puts ipn
       @@server_client.receive_ipn(ipn)
       response = @@server_client.ipn_response(ipn)
