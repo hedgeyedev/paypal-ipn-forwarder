@@ -91,8 +91,8 @@ class ServerRack < Sinatra::Base
   end
 
   get '/send_email' do
-    @@mail.send('developer@gmail.com', "fracking test", "hello from the imac" )
-
+    params = request['email']
+    @@mail.send(params, "This is a test email from the Paypal IPN forwarder", "hello from the imac" )
   end
 
 

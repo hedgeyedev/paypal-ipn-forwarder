@@ -169,6 +169,13 @@ On your server:
 
       rackup -p <whatever port is set up to receive the PayPal IPN messages> -s thin
 
+_NOTE: The server gem sends out emails when errors occur. In order to make sure that they are sent to your inbox
+and not stuck in the spam folder, hit the url of the server with the extensions '/test_email' with the email as a parameter and mark the email that
+will be received in your inbox as "not spam".
+
+To assemble the url to trigger the test email, use the url of the forwarder, then add '/test_email' followed by '?' and the email. But, the '@'
+symbol of the email must be replaced with '%40'. So an email of 'bob@example.com' would have a url of 'url.com/test_email?bob%40example.com'
+
 ### Start your Development computer's Router that talks with the server
 
 Using the alias, run the gem on the Developer's computer. Once started, the gem will alert the developer
