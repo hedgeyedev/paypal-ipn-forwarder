@@ -25,8 +25,9 @@ class LoadConfig
 
   def mail_creator
     hash = Hash.new
-    hash[:via] = @config[:via]
-    hash[:via_options] = @config[:via_options]
+    #if via and via options are needed, they can be added using the following line. Not needed for Imac email-sender
+    #hash[:via_options] = @config[:via_options]
+    # hash[:via] = @config[:via]
     hash
   end
 
@@ -66,7 +67,7 @@ class LoadConfig
     @config['no_polling_time_before_email']
   end
 
-  def no_ipn_time_before_email
+  def no_ipn_time_before_notification
     @config['no_ipn_time_before_email']
   end
 

@@ -1,10 +1,6 @@
 server_url : 'http://localhost:8810/'
 development_computer_url : 'http://localhost:3000/payments/ipn'
 
-:via : :smtp
-:via_options:
-  :address : 0.0.0.1
-  :openssl_verify_mode : none
 
 polling_interval_seconds : '5.0'
 
@@ -12,7 +8,9 @@ poll_checking_interval_seconds : '.1'
 
 no_polling_time_before_email : 3600
 
-no_ipn_time_before_email : 1
+no_ipn_time_before_email : 600
+
+
 
 sandbox_id : ['my_sandbox_id','my_sandbox_id_1']
 
@@ -29,7 +27,7 @@ last_poll_time :
   'my_sandbox_id_1': ~
 
 email_map :
-  'my_sandbox_id': dmitri.ostapenko@gmail.com
+  'my_sandbox_id': developer@gmail.com
   'my_sandbox_id_1': bob@example.com
 
 poll_checker_instance :

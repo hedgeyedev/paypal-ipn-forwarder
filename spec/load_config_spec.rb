@@ -24,7 +24,7 @@ describe LoadConfig do
   end
 
   it 'retrieves the email info which is constant' do
-    @config.mail_creator.should == {:via=>:smtp, :via_options=>{:address=>'0.0.0.1', :openssl_verify_mode=>'none'}}
+    @config.mail_creator.should == {}
   end
 
   it 'retrieves the sandbox ids' do
@@ -44,7 +44,7 @@ describe LoadConfig do
   end
 
   it 'retrieves the map of ids to developer emails for sending email notificaitons' do
-    @config.email_map.should == {'my_sandbox_id'=>'dmitri.ostapenko@gmail.com', 'my_sandbox_id_1'=>'bob@example.com'}
+    @config.email_map.should == {'my_sandbox_id'=>'developer@gmail.com', 'my_sandbox_id_1'=>'bob@example.com'}
   end
 
   it 'retrieves a hash of when the last unexpected poll occured' do
@@ -60,6 +60,6 @@ describe LoadConfig do
   end
 
   it 'should retrieve the time that passes before an email is send to a developer stating that no IPNs are being received on the server' do
-   @config.no_ipn_time_before_email.should == 1
+   @config.no_ipn_time_before_notification.should == 1
   end
 end
