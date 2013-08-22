@@ -43,15 +43,12 @@ class Server
   end
 
   def computer_online?(id)
-    puts @computers_testing[id]
-    puts "computer online?? #{id}"
+
     @computers_testing[id]
   end
 
   def begin_test_mode(id, params)
     @computers_testing[id] = true
-    puts @computers_testing[id]
-    puts 'computer testing started'
     @queue_map[id] = Queue.new
     email_mapper(id, params['email'])
 

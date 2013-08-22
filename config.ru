@@ -22,7 +22,6 @@ class ServerRack < Sinatra::Base
     ipn_send_test.send_via_http "localhost:8810/payments/ipn"
   end
 
- #TODO: test DeMorgan's boolean statement
   get '/computer_poll' do
     params = request['sandbox_id']
     @@server_client.respond_to_computer_poll(params) unless params.nil? || params.length == 0
@@ -30,9 +29,6 @@ class ServerRack < Sinatra::Base
 
   post '/payments/ipn' do
     ipn = request.body.read
-    puts 'blob'
-    puts ipn.nil?
-    puts @@server.actual_ipn?(ipn)
     unless ipn.nil? || @@server.actual_ipn?(ipn)
       puts ipn
       @@server_client.receive_ipn(ipn)
@@ -51,7 +47,6 @@ class ServerRack < Sinatra::Base
     id = params_parsed['sandbox_id'].first
     email = params_parsed['email'].first
     test_mode = params_parsed['test_mode'].first
-    puts 'testing'
     if id != '' && email != '' && test_mode != ''
       @@server_client.computer_testing(params_parsed)
     elsif email != ''

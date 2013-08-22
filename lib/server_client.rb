@@ -21,8 +21,6 @@ class ServerClient
 
   def respond_to_computer_poll(paypal_id, now=Time.now)
     @server.record_computer_poll(paypal_id)
-    puts @server.computer_online?(paypal_id)
-    puts "test #{paypal_id}"
     if(@server.computer_online?(paypal_id))
       @server.send_ipn_if_present(paypal_id)
     else
