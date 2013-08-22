@@ -12,7 +12,7 @@ require_relative '../lib/server_ipn_reception_checker'
 
 class Server
 
-  PROCESS_ID = '.process_id_for_poll_checker'
+  PROCESS_ID = '.process_id_for_ipn_checker'
 
   def initialize(test=nil)
     @test_mode = !test.nil?
@@ -43,7 +43,6 @@ class Server
   end
 
   def computer_online?(id)
-
     @computers_testing[id]
   end
 
@@ -60,7 +59,6 @@ class Server
 
     unless @test_mode
       @ipn_reception_checker_instance[id].check_ipn_received
-
       @process_id =  fork do
 
         Signal.trap("HUP") do
@@ -68,15 +66,8 @@ class Server
         end
 
         @poll_checker_instance[id].check_testing_polls_occurring(id)
-
       end
       Process.detach(@process_id)
-
-
-      #discussion point: is it worth it to write the process id in a file? This could seem helpful if a developer
-      #went to the program and was trying to find errant processes. On the other hand, could also be simply implemented
-      #by storing the process ids in a hash.
-      #File.write(PROCESS_ID+'_'+id, @process_id, nil)
     end
   end
 

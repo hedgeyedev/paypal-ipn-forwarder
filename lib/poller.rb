@@ -40,13 +40,11 @@ class Poller
   def check_ipn_received
     @process_id =  fork do
 
-
       Signal.trap("HUP") do
         @ipn_received = true
       end
 
       verify_ipn_received
-
     end
     Process.detach(@process_id)
     File.write(Poller::PROCESS_FILE_NAME, @process_id, nil, nil)

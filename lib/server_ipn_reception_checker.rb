@@ -3,7 +3,7 @@ require_relative '../lib/mail_sender'
 
 class ServerIpnReceptionChecker
 
-  PROCESS_FILE_NAME = '.process_id_for_poll_checker'
+  PROCESS_FILE_NAME = '.process_id_for_ipn_checker'
 
   def initialize(server, paypal_id, test=nil)
     LoadConfig.set_test_mode(!test.nil?)
