@@ -12,7 +12,8 @@ require_relative '../lib/server_ipn_reception_checker'
 
 class Server
 
-  PROCESS_ID = '.process_id_for_poll_checker'
+  PROCESS_ID_IPN_CHECKER = '.process_id_for_ipn_checker'
+  POLL_CHECKER_PROCESS_ID = '.process_id_for_poll_checker'
 
   def initialize(test=nil)
     @test_mode = !test.nil?
@@ -22,7 +23,7 @@ class Server
     @queue_map = content.queue_map.clone
     @email_map = content.email_map.clone
     @poll_checker_instance = content.poll_checker_instance.clone
-    @ipn_reception_checker_instance = content.ipn_reception_checker_instance
+    @ipn_reception_checker_instance = Hash.new
   end
 
   def paypal_id(ipn)
@@ -48,7 +49,7 @@ class Server
 
   def begin_test_mode(id, params)
     @computers_testing[id] = true
-    @queue_map[id]     = Queue.new
+    @queue_map[id] = Queue.new
     email_mapper(id, params['email'])
 
     #the following line is needed in case the sandbox is a new one.
@@ -61,29 +62,26 @@ class Server
       @ipn_reception_checker_instance[id].check_ipn_received
       @process_id =  fork do
 
-        @poll_checker_instance[id].check_testing_polls_occurring(id)
-
         Signal.trap("HUP") do
           @poll_checker_instance[id].loop_boolean = false
         end
 
+        @poll_checker_instance[id].check_testing_polls_occurring(id)
       end
+
+      File.write(POLL_CHECKER_PROCESS_ID+'_'+id, @process_id, nil, nil)
       Process.detach(@process_id)
-
-
-      #discussion point: is it worth it to write the process id in a file? This could seem helpful if a developer
-      #went to the program and was trying to find errant processes. On the other hand, could also be simply implemented
-      #by storing the process ids in a hash.
-      File.write(PROCESS_ID+'_'+id, @process_id, nil)
     end
   end
 
   def cancel_test_mode(id)
     @computers_testing[id] = false
     @queue_map[id] = nil
-    process_id = File.read(PROCESS_ID+'_'+id).to_i
-    Process.kill("HUP", process_id) unless @test_mode
-    Process.kill("HUP", @process_id) unless @test_mode
+    process_id_ipn_checker = File.read(PROCESS_ID_IPN_CHECKER+'_'+id).to_i
+    process_id_poll_checker = File.read(POLL_CHECKER_PROCESS_ID+'_'+id).to_i
+    Process.kill("HUP", process_id_ipn_checker) unless @test_mode
+    Process.kill("HUP", process_id_poll_checker) unless @test_mode
+    @ipn_reception_checker_instance[id] = nil
   end
 
   def same_sandbox_being_tested_twice?(id, params)
@@ -177,6 +175,17 @@ class Server
 
   def email_map
     @email_map
+  end
+
+  def ipn_valid?(ipn)
+    !ipn.nil? && ipn.length > 0 && (ipn =~ /(VERIFIED|INVALID)/) != 0
+  end
+
+  def printo(vars)
+    id = paypal_id(vars)
+    puts vars +'\n'
+    puts id
+
   end
 
 end
