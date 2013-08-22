@@ -39,6 +39,7 @@ polling_interval = config.polling_interval_seconds
 server_url = config.server_url
 poller = Poller.new(router, server_url)
 poller.time_in_sec=polling_interval
+poller.check_ipn_received
 
 @process_id =  fork{poller.poll_for_ipn}
 
@@ -46,7 +47,7 @@ poller.time_in_sec=polling_interval
 while command = STDIN.gets
    if command.downcase == "stop\n"
      Process.kill("HUP", @process_id)
-     process_id = File.read(Poller::PROCESS_FILE_NAME)
+     process_id = File.read(Poller::PROCESS_FILE_NAME).to_i
      Process.kill("HUP", process_id)
      router.turn_test_mode_off(ARGV[1])
      puts 'Paypal testing has been terminated'
