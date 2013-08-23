@@ -49,7 +49,7 @@ while command = STDIN.gets
     puts 'shutdown'
      Process.kill("HUP", @process_id_for_polling)
      process_id_for_ipn_reception = File.read(Poller::PROCESS_FILE_NAME).to_i
-     Process.kill("HUP", process_id_for_ipn_reception)
+     Process.kill("HUP", process_id_for_ipn_reception) if poller.ipn_received_on_dev_machine? || poller.notified?
      router.turn_test_mode_off(ARGV[1])
      puts 'Paypal testing has been terminated'
      break
