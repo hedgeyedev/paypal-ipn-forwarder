@@ -59,7 +59,8 @@ class Poller
       if (Time.now <=> @time_polling_started + @time_before_notification_of_no_ipn) == 1
         puts 'an IPN has still not been received, 10 minutes after testing'
         @notified = true
-        break  #?????
+        @ipn_received = true
+        break
       end
       break if @ipn_received
     end
