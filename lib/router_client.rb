@@ -10,11 +10,8 @@ class RouterClient
   end
 
   def send_ipn(ipn)
-    begin
-      RestClient.post @final_destination_url, ipn
-    rescue StandardError
-      puts 'There was an error with the App where the IPN needs to be delivered. Please make sure it is running'
-    end
+    puts 'An IPN was received! I am now trying to send it to the final destination.'
+    RestClient.post @final_destination_url, ipn
   end
 
   def set_test_mode(mode, email, sandbox_id)

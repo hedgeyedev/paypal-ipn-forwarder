@@ -20,7 +20,7 @@ class LoadConfig
   end
 
   def final_destination_url
-    @config['development_computer_url']
+    @config['target_url']
   end
 
   def mail_creator
