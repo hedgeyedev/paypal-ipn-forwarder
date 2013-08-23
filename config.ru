@@ -81,7 +81,7 @@ class ServerRack < Sinatra::Base
     @@server.computer_online?('id@example.com')
   end
 
-  post '/hello' do
+  get '/hello' do
     "hello scott"
   end
 

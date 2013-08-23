@@ -28,7 +28,7 @@ class Server
 
   def paypal_id(ipn)
     params = CGI::parse(ipn)
-    params['receiver_id'].first
+    params['receiver_email'].first
   end
 
   def receive_ipn(ipn=nil)
