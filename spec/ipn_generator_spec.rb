@@ -1,10 +1,10 @@
 require 'rspec'
 require_relative '../lib/ipn_generator'
 
-describe IpnGenerator do
+describe PaypalIpnForwarder::IpnGenerator do
 
   before(:each) do
-    @ipn_generator = IpnGenerator.new
+    @ipn_generator = PaypalIpnForwarder::IpnGenerator.new
     @ipn = @ipn_generator.ipn
   end
 

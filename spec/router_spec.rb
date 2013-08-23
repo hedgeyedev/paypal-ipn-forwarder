@@ -6,18 +6,18 @@ require_relative '../lib/load_config'
 require_relative '../lib/ipn_generator'
 require_relative '../lib/router_client'
 
-describe Router do
+describe PaypalIpnForwarder::Router do
 
   TEST_MODE_ON = true
 
   before(:each) do
-    @router_client = RouterClient.new(TEST_MODE_ON)
-    LoadConfig.set_test_mode(true)
-    content = LoadConfig.new
+    @router_client = PaypalIpnForwarder::RouterClient.new(TEST_MODE_ON)
+    PaypalIpnForwarder::LoadConfig.set_test_mode(true)
+    content = PaypalIpnForwarder::LoadConfig.new
     @server_url = content.server_url + 'test'
-    @router = Router.new(@router_client, TEST_MODE_ON)
+    @router = PaypalIpnForwarder::Router.new(@router_client, TEST_MODE_ON)
     @router.sandbox_id=('my_sandbox_id')
-    @poller = Poller.new(@router, @server_url)
+    @poller = PaypalIpnForwarder::Poller.new(@router, @server_url)
     @email = 'bob@example.com'
     @sandbox_id = 'my_sandbox_id'
   end
@@ -56,12 +56,12 @@ describe Router do
   context 'handshake between router and development computer' do
 
     def create_an_ipn_somehow
-      ipn_gen = IpnGenerator.new
+      ipn_gen = PaypalIpnForwarder::IpnGenerator.new
       ipn = ipn_gen.ipn
     end
 
     def create_ipn_response_somehow
-      ipn_gen = IpnGenerator.new
+      ipn_gen = PaypalIpnForwarder::IpnGenerator.new
       ipn = ipn_gen.verified_ipn
     end
 

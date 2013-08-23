@@ -7,7 +7,7 @@ require_relative '../lib/server'
 
 TEST_MODE_ON = true
 
-describe ServerPollChecker do
+describe PaypalIpnForwarder::ServerPollChecker do
 
   before(:each) do
     @server = Server.new(TEST_MODE_ON)

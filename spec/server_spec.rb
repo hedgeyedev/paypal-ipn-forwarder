@@ -3,7 +3,7 @@ require_relative '../lib/server'
 require_relative '../lib/ipn_generator'
 require_relative '../lib/router_client'
 
-describe Server do
+describe PaypalIpnForwarder::Server do
 
   TEST_MODE_ON = true
 

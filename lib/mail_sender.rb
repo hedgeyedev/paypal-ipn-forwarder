@@ -1,5 +1,7 @@
 require 'pony'
 require_relative 'mail_creator'
+
+module PaypalIpnForwarder
 class MailSender
 
   def send(to, subject, body)
@@ -28,3 +30,4 @@ class MailSender
   end
 
 end
+  end

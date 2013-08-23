@@ -1,13 +1,13 @@
 require 'rspec'
 require_relative '../lib/load_config'
 
-describe LoadConfig do
+describe PaypalIpnForwarder::LoadConfig do
 
   TEST_MODE_ON = true
 
   before(:each) do
-    LoadConfig.set_test_mode(TEST_MODE_ON)
-    @config = LoadConfig.new
+    PaypalIpnForwarder::LoadConfig.set_test_mode(TEST_MODE_ON)
+    @config = PaypalIpnForwarder::LoadConfig.new
   end
 
   it 'retrieves the server URL' do

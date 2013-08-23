@@ -4,18 +4,18 @@ require_relative '../lib/poller'
 require_relative '../lib/router'
 require_relative '../lib/load_config'
 
-describe Poller do
+describe PaypalIpnForwarder::Poller do
 
   TEST_MODE_ON = true
 
   before(:each) do
-    @router = Router.new(nil, TEST_MODE_ON)
-    LoadConfig.set_test_mode(true)
-    content = LoadConfig.new
+    @router = PaypalIpnForwarder::Router.new(nil, TEST_MODE_ON)
+    PaypalIpnForwarder::LoadConfig.set_test_mode(true)
+    content = PaypalIpnForwarder::LoadConfig.new
     @sandbox_id = 'my_sandbox_id'
     @url = content.server_url
     @router.sandbox_id=(@sandbox_id)
-    @poller = Poller.new(@router, @url)
+    @poller = PaypalIpnForwarder::Poller.new(@router, @url)
     @time_before_no_ipn_notification = content.no_ipn_time_before_notification
   end
 

@@ -4,7 +4,7 @@ require_relative '../lib/server_ipn_reception_checker'
 require_relative '../lib/server'
 require_relative '../lib/load_config'
 
-describe ServerIpnReceptionChecker do
+describe PaypalIpnForwarder::ServerIpnReceptionChecker do
 
   TEST_MODE_ON = true
 

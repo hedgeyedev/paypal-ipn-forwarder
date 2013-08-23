@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 require_relative '../lib/mail_sender'
 require_relative '../lib/mail_creator'
 
-describe MailSender do
+describe PaypalIpnForwarder::MailSender do
 
   YAML_HASH = {
       :via => :smtp,

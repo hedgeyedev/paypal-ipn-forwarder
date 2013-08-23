@@ -3,7 +3,7 @@ require_relative '../lib/server_client'
 require_relative '../lib/server'
 require_relative '../lib/ipn_generator'
 
-describe ServerClient do
+describe PaypalIpnForwarder::ServerClient do
 
   TEST_MODE_ON = true
 
@@ -12,7 +12,7 @@ describe ServerClient do
     server = Server.new(TEST_MODE_ON)
     server.should_receive(:begin_test_mode).with('my_sandbox_id', {'sandbox_id' => ['my_sandbox_id'], 'test_mode' => ['on'], 'email' => ['bob@example.com']})
 
-    server_client = ServerClient.new(server)
+    server_client = PaypalIpnForwarder::ServerClient.new(server)
     server_client.computer_testing( {'sandbox_id' => ['my_sandbox_id'], 'test_mode' => ['on'], 'email' => ['bob@example.com']})
 
   end

@@ -1,7 +1,7 @@
 require_relative 'spec_helper'
 require_relative '../lib/mail_sender'
 require_relative '../lib/mail_creator'
-describe MailCreator do
+describe PaypalIpnForwarder::MailCreator do
 
   YAML_HASH = {
       :via => :smtp,
@@ -24,7 +24,7 @@ describe MailCreator do
 
 
   it 'should put together the fed in paramaters into the hash' do
-    sgrid = MailCreator.new(true)
+    sgrid = PaypalIpnForwarder::MailCreator.new(true)
     sgrid.create_email
     hash = sgrid.combine_params(YAML_HASH)
     YAML_HASH.each_key do |key|
@@ -33,7 +33,7 @@ describe MailCreator do
   end
 
   it 'should combine the fed in parameters and the private paramaters' do
-    sgrid = MailCreator.new(true)
+    sgrid = PaypalIpnForwarder::MailCreator.new(true)
     hash = sgrid.create(FED_IN_PARAMS)
     COMBINED.each_key do |key|
       COMBINED[key].should == hash[key]

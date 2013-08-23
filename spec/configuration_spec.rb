@@ -2,10 +2,10 @@ require_relative 'spec_helper'
 require_relative '../lib/server'
 require_relative '../lib/ipn_generator'
 
-  describe Server do
+  describe PaypalIpnForwarder::Server do
 
   before(:each) do
-    @server = Server.new(TEST_MODE_ON)
+    @server = PaypalIpnForwarder::Server.new(TEST_MODE_ON)
     @server.begin_test_mode('my_sandbox_id', {'my_sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', '@email' => 'bob@example.com'})
   end
 
@@ -18,7 +18,7 @@ require_relative '../lib/ipn_generator'
     TEST_MODE_ON = true
 
     it 'retrieves the Paypal sandbox id from the IPN' do
-      ipn_generator = IpnGenerator.new
+      ipn_generator = PaypalIpnForwarder::IpnGenerator.new
       sample_ipn = ipn_generator.ipn
       paypal_id = @server.paypal_id(sample_ipn)
       paypal_id.should == 'my_sandbox_id'
