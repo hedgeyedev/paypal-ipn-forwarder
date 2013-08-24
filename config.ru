@@ -1,12 +1,12 @@
 require 'sinatra/base'
 require 'rest_client'
 require 'cgi'
-require File.expand_path('../lib/server_client', __FILE__)
-require File.expand_path('../lib/server', __FILE__)
-require File.expand_path('../lib/poller', __FILE__)
-require File.expand_path('../lib/ipn_generator', __FILE__)
-require File.expand_path('../lib/router_client', __FILE__)
-require File.expand_path('../lib/mail_sender', __FILE__)
+require_relative './paypal_ipn_forwarder//lib/server_client', __FILE__)
+require_relative './paypal_ipn_forwarder//lib/server', __FILE__)
+require_relative './paypal_ipn_forwarder//lib/poller', __FILE__)
+require_relative './paypal_ipn_forwarder//lib/ipn_generator', __FILE__)
+require_relative './paypal_ipn_forwarder//lib/router_client', __FILE__)
+require_relative './paypal_ipn_forwarder//lib/mail_sender', __FILE__)
 
 class ServerRack < Sinatra::Base
   configure do
