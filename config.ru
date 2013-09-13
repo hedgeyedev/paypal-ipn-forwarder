@@ -1,12 +1,12 @@
 require 'sinatra/base'
 require 'rest_client'
 require 'cgi'
-require_relative './paypal_ipn_forwarder//lib/server_client', __FILE__)
-require_relative './paypal_ipn_forwarder//lib/server', __FILE__)
-require_relative './paypal_ipn_forwarder//lib/poller', __FILE__)
-require_relative './paypal_ipn_forwarder//lib/ipn_generator', __FILE__)
-require_relative './paypal_ipn_forwarder//lib/router_client', __FILE__)
-require_relative './paypal_ipn_forwarder//lib/mail_sender', __FILE__)
+require_relative './lib/paypal-ipn-forwarder/server_client'
+require_relative './lib/paypal-ipn-forwarder/server'
+require_relative './lib/paypal-ipn-forwarder/poller'
+require_relative './lib/paypal-ipn-forwarder/ipn_generator'
+require_relative './lib/paypal-ipn-forwarder/router_client'
+require_relative './lib/paypal-ipn-forwarder/mail_sender'
 
 class ServerRack < Sinatra::Base
   configure do
@@ -19,7 +19,7 @@ class ServerRack < Sinatra::Base
 
   get '/invoke_ipn' do
     ipn_send_test = IpnGenerator.new
-    ipn_send_test.send_via_http "localhost:8810/payments/ipn"
+    ipn_send_test.send_via_http 'localhost:8810/payments/ipn'
   end
 
   get '/computer_poll' do
@@ -57,7 +57,7 @@ class ServerRack < Sinatra::Base
   # Pretend to be the PayPal sandbox you're sending the response back to
   post '/fake_paypal' do
     url = 'localhost:8810/receive_ipn/'
-    RestClient.post url, "VERIFIED"
+    RestClient.post url, 'VERIFIED'
   end
 
   get '/' do
@@ -82,7 +82,7 @@ class ServerRack < Sinatra::Base
   end
 
   get '/hello' do
-    "hello scott"
+    'hello scott'
   end
 
   post '/show_ipn' do
@@ -92,7 +92,7 @@ class ServerRack < Sinatra::Base
 
   get '/send_email' do
     params = request['email']
-    @@mail.send(params, "This is a test email from the Paypal IPN forwarder", "hello from the imac" )
+    @@mail.send(params, 'This is a test email from the Paypal IPN forwarder', 'hello from the imac' )
   end
 
 

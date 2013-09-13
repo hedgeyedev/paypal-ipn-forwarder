@@ -1,6 +1,6 @@
 require_relative 'spec_helper'
-require_relative '../lib/server'
-require_relative '../lib/ipn_generator'
+require_relative '../lib/paypal-ipn-forwarder/server'
+require_relative '../lib/paypal-ipn-forwarder/ipn_generator'
 
   describe PaypalIpnForwarder::Server do
 

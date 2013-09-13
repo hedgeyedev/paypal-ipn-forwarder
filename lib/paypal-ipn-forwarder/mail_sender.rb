@@ -23,7 +23,7 @@ module PaypalIpnForwarder
     def param_definer(to, subject, body)
       email = {
           :to      => to,
-          :from    => 'email-proxy@paypal_ipn_forwarder.com',
+          :from    => 'email-proxy@paypal-ipn-forwarder.com',
           :subject => subject,
           :body    => body
       }

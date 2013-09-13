@@ -26,7 +26,7 @@ EOF
     end
 
     def verified_ipn
-      verified_ipn = 'cmd=_notify-validate&' + ipn
+      'cmd=_notify-validate&' + ipn
     end
 
 
