@@ -114,6 +114,10 @@ profile tab, it is the second item which is presented.
 
 For this, the developer's email is used in order to deliver some notifications and identify the developer.
 
+### Run Tests
+
+*To Do*
+
 ### Assemble a config.ru file:
 
 On your server, put together this `config.ru` Ruby task:
