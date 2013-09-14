@@ -1,6 +1,6 @@
 require_relative 'load_config'
-require_relative '../lib/server'
-require_relative '../lib/mail_sender'
+require_relative 'server'
+require_relative 'mail_sender'
 
 module PaypalIpnForwarder
   class ServerIpnReceptionChecker
@@ -21,7 +21,7 @@ module PaypalIpnForwarder
     def check_ipn_received
       @process_id = fork do
 
-        Signal.trap("HUP") do
+        Signal.trap('HUP') do
           @ipn_received = true
         end
 
@@ -34,7 +34,7 @@ module PaypalIpnForwarder
 
     def verify_ipn_received(time=1.0)
       loop do
-        if (Time.now >= @time_test_started + @time_before_email)
+        if Time.now >= @time_test_started + @time_before_email
           send_email_that_no_ipn_received
           break
         end

@@ -1,5 +1,5 @@
 require 'rspec'
-require_relative '../lib/ipn_generator'
+require_relative '../lib/paypal-ipn-forwarder/ipn_generator'
 
 describe PaypalIpnForwarder::IpnGenerator do
 

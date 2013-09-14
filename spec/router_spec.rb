@@ -1,10 +1,10 @@
 require 'rspec'
-require_relative '../lib/router'
-require_relative '../lib/poller'
-require_relative '../lib/server_client'
-require_relative '../lib/load_config'
-require_relative '../lib/ipn_generator'
-require_relative '../lib/router_client'
+require_relative '../lib/paypal-ipn-forwarder/router'
+require_relative '../lib/paypal-ipn-forwarder/poller'
+require_relative '../lib/paypal-ipn-forwarder/server_client'
+require_relative '../lib/paypal-ipn-forwarder/load_config'
+require_relative '../lib/paypal-ipn-forwarder/ipn_generator'
+require_relative '../lib/paypal-ipn-forwarder/router_client'
 
 describe PaypalIpnForwarder::Router do
 

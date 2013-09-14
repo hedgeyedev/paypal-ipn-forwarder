@@ -1,8 +1,8 @@
 require 'timecop'
 require_relative 'spec_helper'
-require_relative '../lib/poller'
-require_relative '../lib/router'
-require_relative '../lib/load_config'
+require_relative '../lib/paypal-ipn-forwarder/poller'
+require_relative '../lib/paypal-ipn-forwarder/router'
+require_relative '../lib/paypal-ipn-forwarder/load_config'
 
 describe PaypalIpnForwarder::Poller do
 

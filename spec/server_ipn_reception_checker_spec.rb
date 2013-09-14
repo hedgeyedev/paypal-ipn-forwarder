@@ -1,8 +1,8 @@
 require 'rspec'
 require 'timecop'
-require_relative '../lib/server_ipn_reception_checker'
-require_relative '../lib/server'
-require_relative '../lib/load_config'
+require_relative '../lib/paypal-ipn-forwarder/server_ipn_reception_checker'
+require_relative '../lib/paypal-ipn-forwarder/server'
+require_relative '../lib/paypal-ipn-forwarder/load_config'
 
 describe PaypalIpnForwarder::ServerIpnReceptionChecker do
 

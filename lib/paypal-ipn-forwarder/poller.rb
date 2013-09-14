@@ -1,5 +1,5 @@
 require 'rest_client'
-require_relative '../lib/load_config'
+require_relative 'load_config'
 
 module PaypalIpnForwarder
   class Poller

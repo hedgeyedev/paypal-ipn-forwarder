@@ -1,5 +1,5 @@
 require 'rspec'
-require_relative '../lib/load_config'
+require_relative '../lib/paypal-ipn-forwarder/load_config'
 
 describe PaypalIpnForwarder::LoadConfig do
 

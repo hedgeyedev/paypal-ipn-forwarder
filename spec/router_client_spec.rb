@@ -1,6 +1,6 @@
 require 'rspec'
 require 'rest_client'
-require_relative '../lib/router_client'
+require_relative '../lib/paypal-ipn-forwarder/router_client'
 
 describe PaypalIpnForwarder::RouterClient do
 

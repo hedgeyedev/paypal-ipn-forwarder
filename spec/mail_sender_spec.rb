@@ -1,6 +1,6 @@
 require_relative 'spec_helper'
-require_relative '../lib/mail_sender'
-require_relative '../lib/mail_creator'
+require_relative '../lib/paypal-ipn-forwarder/mail_sender'
+require_relative '../lib/paypal-ipn-forwarder/mail_creator'
 
 describe PaypalIpnForwarder::MailSender do
 

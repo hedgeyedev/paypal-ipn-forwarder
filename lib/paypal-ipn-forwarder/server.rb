@@ -6,7 +6,7 @@ require 'awesome_print'
 require_relative 'load_config'
 require_relative 'mail_sender'
 require_relative 'server_poll_checker'
-require_relative '../lib/server_ipn_reception_checker'
+require_relative 'server_ipn_reception_checker'
 
 
 module PaypalIpnForwarder

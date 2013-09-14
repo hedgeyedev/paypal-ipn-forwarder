@@ -1,5 +1,5 @@
 require_relative 'load_config'
-require_relative '../lib/mail_sender'
+require_relative 'mail_sender'
 
 module PaypalIpnForwarder
   class ServerPollChecker
