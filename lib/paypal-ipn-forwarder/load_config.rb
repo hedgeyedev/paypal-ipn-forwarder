@@ -5,7 +5,7 @@ module PaypalIpnForwarder
 
     def initialize
       dev_version = @@test_mode ? '_test' : ''
-      @config = YAML::load_file(File.expand_path("../../config#{dev_version}.yml", __FILE__))
+      @config = YAML::load_file(File.expand_path("../../../config#{dev_version}.yml", __FILE__))
     end
 
     def self.set_test_mode(mode_boolean)
