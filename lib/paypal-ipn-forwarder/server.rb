@@ -16,7 +16,6 @@ module PaypalIpnForwarder
     POLL_CHECKER_PROCESS_ID = '.process_id_for_poll_checker'
 
     def initialize(is_test_mode=false)
-      ap "In initialize - is_test_mode: #{is_test_mode}"
       @is_test_mode                   = is_test_mode
       content                         = LoadConfig.new(is_test_mode)
       @computers_testing              = content.computer_testing.clone
