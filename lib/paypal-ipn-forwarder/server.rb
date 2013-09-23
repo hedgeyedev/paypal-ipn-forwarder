@@ -12,17 +12,16 @@ require_relative 'server_ipn_reception_checker'
 module PaypalIpnForwarder
   class Server
 
-    PROCESS_ID_IPN_CHECKER = '.process_id_for_ipn_checker'
+    PROCESS_ID_IPN_CHECKER  = '.process_id_for_ipn_checker'
     POLL_CHECKER_PROCESS_ID = '.process_id_for_poll_checker'
 
-    def initialize(test=nil)
-      @test_mode = !test.nil?
-      LoadConfig.set_test_mode(!test.nil?)
-      content = LoadConfig.new
-      @computers_testing = content.computer_testing.clone
-      @queue_map = content.queue_map.clone
-      @email_map = content.email_map.clone
-      @poll_checker_instance = content.poll_checker_instance.clone
+    def initialize(is_test_mode=false)
+      @is_test_mode                   = is_test_mode
+      content                         = LoadConfig.new(is_test_mode)
+      @computers_testing              = content.computer_testing.clone
+      @queue_map                      = content.queue_map.clone
+      @email_map                      = content.email_map.clone
+      @poll_checker_instance          = content.poll_checker_instance.clone
       @ipn_reception_checker_instance = Hash.new
     end
 
@@ -33,7 +32,7 @@ module PaypalIpnForwarder
 
     def receive_ipn(ipn=nil)
       paypal_id = paypal_id(ipn)
-      if (computer_online?(paypal_id) && !ipn.nil?)
+      if computer_online?(paypal_id) && !ipn.nil?
         queue_push(ipn)
         paypal_id = paypal_id(ipn)
         @ipn_reception_checker_instance[paypal_id].ipn_received
@@ -41,8 +40,7 @@ module PaypalIpnForwarder
     end
 
     def ipn_response(ipn)
-      response = 'cmd=_notify-validate&' + ipn
-      response
+      'cmd=_notify-validate&' + ipn
     end
 
     def computer_online?(id)
@@ -51,7 +49,7 @@ module PaypalIpnForwarder
 
     def begin_test_mode(id, params)
       @computers_testing[id] = true
-      @queue_map[id] = Queue.new
+      @queue_map[id]         = Queue.new
       email_mapper(id, params['email'])
 
       #the following line is needed in case the sandbox is a new one.
@@ -60,11 +58,11 @@ module PaypalIpnForwarder
 
       @ipn_reception_checker_instance[id] = ServerIpnReceptionChecker.new(self, id)
 
-      unless @test_mode
+      unless @is_test_mode
         @ipn_reception_checker_instance[id].check_ipn_received
         @process_id = fork do
 
-          Signal.trap("HUP") do
+          Signal.trap('HUP') do
             @poll_checker_instance[id].loop_boolean = false
           end
 
@@ -77,15 +75,15 @@ module PaypalIpnForwarder
     end
 
     def cancel_test_mode(id)
-      @computers_testing[id] = false
-      @queue_map[id] = nil
-      process_id_ipn_checker = File.read(PROCESS_ID_IPN_CHECKER+'_'+id).to_i
+      @computers_testing[id]  = false
+      @queue_map[id]          = nil
+      process_id_ipn_checker  = File.read(PROCESS_ID_IPN_CHECKER+'_'+id).to_i
       process_id_poll_checker = File.read(POLL_CHECKER_PROCESS_ID+'_'+id).to_i
-      Process.kill("HUP", process_id_ipn_checker) unless @test_mode || @ipn_reception_checker_instance[id].ipn_received?
-      Process.kill("HUP", process_id_poll_checker) unless @test_mode
+      unless @is_test_mode
+        Process.kill('HUP', process_id_ipn_checker)
+        Process.kill('HUP', process_id_poll_checker)
+      end
       @ipn_reception_checker_instance[id] = nil
-      File.delete(PROCESS_ID_IPN_CHECKER+'_'+id)
-      File.delete(POLL_CHECKER_PROCESS_ID+'_'+id)
     end
 
     def same_sandbox_being_tested_twice?(id, params)
@@ -93,15 +91,15 @@ module PaypalIpnForwarder
     end
 
     def send_conflict_email(paypal_id, email)
-      to = @email_map[paypal_id]
+      to      = @email_map[paypal_id]
       subject = 'You have turned on an already-testing sandbox. IT HAS BEEN TAKEN OFF OF TESTING MODE'
-      body = "on the Superbox IPN forwarder, you have turned on an already testing sandbox. The sandbox has the id #{paypal_id}. The sandbox has been taken down from testing mode.
+      body    = "on the Superbox IPN forwarder, you have turned on an already testing sandbox. The sandbox has the id #{paypal_id}. The sandbox has been taken down from testing mode.
     The other user of the sandbox was #{email}"
 
       mailsender = MailSender.new
       mailsender.send(to, subject, body)
 
-      to1 = email
+      to1  = email
       body = "on the Superbox IPN forwarder, you have turned on an already testing sandbox. The sandbox has the id #{paypal_id}. The sandbox has been taken down from testing mode.
     The other user of the sandbox was #{to}"
       mailsender.send(to1, subject, body)
@@ -118,9 +116,9 @@ module PaypalIpnForwarder
     end
 
     def email_content_generator(method_called_by, paypal_id)
-      to = @email_map[paypal_id]
+      to      = @email_map[paypal_id]
       subject = 'There is no queue on the Superbox IPN forwarder'
-      body = "on the Superbox IPN forwarder, there is no queue set up for this function: #{method_called_by} for your developer_id #{paypal_id}"
+      body    = "on the Superbox IPN forwarder, there is no queue set up for this function: #{method_called_by} for your developer_id #{paypal_id}"
 
       mailsender = MailSender.new
       mailsender.send(to, subject, body)
@@ -128,8 +126,8 @@ module PaypalIpnForwarder
 
     def queue_push(ipn)
       paypal_id = paypal_id(ipn)
-      queue = queue_identify(paypal_id, 'queue push')
-      unless (queue.nil?)
+      queue     = queue_identify(paypal_id, 'queue push')
+      unless queue.nil?
         queue.push(ipn)
       end
     end
@@ -137,16 +135,12 @@ module PaypalIpnForwarder
     #if the queue does not exist(due to sandbox not being in test mode), then the size of the queue will be 0
     def queue_size(paypal_id)
       queue = @queue_map[paypal_id]
-      if (queue.nil?)
-        0
-      else
-        queue.size
-      end
+      (queue.nil?) ? 0 : queue.size
     end
 
     def queue_pop(paypal_id)
       queue = queue_identify(paypal_id, 'queue pop')
-      unless (queue.nil?)
+      unless queue.nil?
         queue.pop
       end
     end
@@ -156,8 +150,8 @@ module PaypalIpnForwarder
     end
 
     def send_ipn_if_present(paypal_id)
-      if (ipn_present?(paypal_id))
-        ipn = queue_pop(paypal_id)
+      if ipn_present?(paypal_id)
+        queue_pop(paypal_id)
       end
     end
 
@@ -187,10 +181,8 @@ module PaypalIpnForwarder
 
     def printo(vars)
       id = paypal_id(vars)
-      puts vars +'\n'
+      puts vars
       puts id
-
     end
 
   end
-end

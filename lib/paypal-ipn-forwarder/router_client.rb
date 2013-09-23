@@ -3,9 +3,8 @@ require_relative 'load_config'
 module PaypalIpnForwarder
   class RouterClient
 
-    def initialize(test=nil)
-      LoadConfig.set_test_mode(test)
-      @config = LoadConfig.new
+    def initialize(set_test_mode=false)
+      @config = LoadConfig.new(set_test_mode)
       @server_url = @config.server_url
       @server_url += 'test'
       @final_destination_url = @config.final_destination_url

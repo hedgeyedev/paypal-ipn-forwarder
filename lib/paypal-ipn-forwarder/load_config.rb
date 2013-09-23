@@ -1,11 +1,14 @@
 require 'yaml'
+require_relative 'host_info'
 
 module PaypalIpnForwarder
   class LoadConfig
 
-    def initialize
-      dev_version = @@test_mode ? '_test' : ''
-      @config = YAML::load_file(File.expand_path("../../../config#{dev_version}.yml", __FILE__))
+    SET_TEST_MODE = true
+
+    def initialize(is_test_mode=false)
+      dev_version = is_test_mode ? '_test' : ''
+      @config     = YAML::load_file(File.expand_path("../../config#{dev_version}.yml", __FILE__))
     end
 
     def self.set_test_mode(mode_boolean)
@@ -20,15 +23,17 @@ module PaypalIpnForwarder
       @config['server_url']
     end
 
-    def final_destination_url
+    def development_computer_url
       @config['development_computer_url']
     end
 
     def mail_creator
       hash = Hash.new
-      #if via and via options are needed, they can be added using the following line. Not needed for Imac email-sender
-      #hash[:via_options] = @config[:via_options]
-      # hash[:via] = @config[:via]
+      # via and via options are not needed for Imac email-sender, but are needed for Linux
+      unless HostInfo.running_on_osx()
+        hash[:via_options] = @config[:via_options]
+        hash[:via]         = @config[:via]
+      end
       hash
     end
 
