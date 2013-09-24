@@ -4,6 +4,8 @@ require_relative 'host_info'
 module PaypalIpnForwarder
   class LoadConfig
 
+    include HostInfo
+
     SET_TEST_MODE = true
 
     def initialize(is_test_mode=false)
@@ -30,7 +32,7 @@ module PaypalIpnForwarder
     def mail_creator
       hash = Hash.new
       # via and via options are not needed for Imac email-sender, but are needed for Linux
-      unless HostInfo.running_on_osx()
+      unless running_on_osx()
         hash[:via_options] = @config[:via_options]
         hash[:via]         = @config[:via]
       end
