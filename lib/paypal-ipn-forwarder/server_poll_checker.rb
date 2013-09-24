@@ -6,9 +6,8 @@ module PaypalIpnForwarder
 
     attr_accessor :last_unexpected_poll, :loop_boolean
 
-    def initialize(server, test=nil)
-      LoadConfig.set_test_mode(!test.nil?)
-      @content = LoadConfig.new
+    def initialize(server, is_test_mode=false)
+      @content = LoadConfig.new(is_test_mode)
       #places variables to 2 day before creation of class instance
       @last_unexpected_poll = Time.now - 2*24*60*60
       @last_incomplete_poll = Time.now - 2*24*60*60

@@ -10,8 +10,7 @@ describe PaypalIpnForwarder::Poller do
 
   before(:each) do
     @router = PaypalIpnForwarder::Router.new(nil, TEST_MODE_ON)
-    PaypalIpnForwarder::LoadConfig.set_test_mode(true)
-    content = PaypalIpnForwarder::LoadConfig.new
+    content = PaypalIpnForwarder::LoadConfig.new(TEST_MODE_ON)
     @sandbox_id = 'my_sandbox_id'
     @url = content.server_url
     @router.sandbox_id=(@sandbox_id)

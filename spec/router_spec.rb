@@ -12,8 +12,7 @@ describe PaypalIpnForwarder::Router do
 
   before(:each) do
     @router_client = PaypalIpnForwarder::RouterClient.new(TEST_MODE_ON)
-    PaypalIpnForwarder::LoadConfig.set_test_mode(true)
-    content = PaypalIpnForwarder::LoadConfig.new
+    content = PaypalIpnForwarder::LoadConfig.new(TEST_MODE_ON)
     @server_url = content.server_url + 'test'
     @router = PaypalIpnForwarder::Router.new(@router_client, TEST_MODE_ON)
     @router.sandbox_id=('my_sandbox_id')

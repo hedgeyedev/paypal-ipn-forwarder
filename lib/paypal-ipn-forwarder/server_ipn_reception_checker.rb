@@ -7,9 +7,8 @@ module PaypalIpnForwarder
 
     PROCESS_ID_IPN_CHECKER = '.process_id_for_ipn_checker'
 
-    def initialize(server, paypal_id, test=nil)
-      LoadConfig.set_test_mode(!test.nil?)
-      @content = LoadConfig.new
+    def initialize(server, paypal_id, is_test_mode=false)
+      @content = LoadConfig.new(is_test_mode)
       @server = server
       @paypal_id = paypal_id
       @time_test_started = Time.now

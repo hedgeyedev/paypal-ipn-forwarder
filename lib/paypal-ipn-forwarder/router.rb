@@ -10,7 +10,7 @@ module PaypalIpnForwarder
 
     attr_accessor :sandbox_id
 
-    def initialize(target, test=nil)
+    def initialize(target)
       @router_client = target
     end
 

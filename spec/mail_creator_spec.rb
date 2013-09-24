@@ -1,8 +1,12 @@
+require 'awesome_print'
 require_relative 'spec_helper'
+require_relative '../lib/paypal-ipn-forwarder/load_config'
 require_relative '../lib/paypal-ipn-forwarder/mail_sender'
 require_relative '../lib/paypal-ipn-forwarder/mail_creator'
 
 describe PaypalIpnForwarder::MailCreator do
+
+  include PaypalIpnForwarder::HostInfo
 
   NEEDED_BY_LINUX     = {
       via:         :smtp,
@@ -18,7 +22,7 @@ describe PaypalIpnForwarder::MailCreator do
 
 
   it 'should put together the fed-in parameters into the hash' do
-    mail_creator = MailCreator.new(LoadConfig::SET_TEST_MODE)
+    mail_creator = PaypalIpnForwarder::MailCreator.new(PaypalIpnForwarder::LoadConfig::SET_TEST_MODE)
     mail_creator.create_email
     hash = mail_creator.combine_params(NEEDED_BY_LINUX)
     NEEDED_BY_LINUX.each_key do |key|
@@ -26,10 +30,11 @@ describe PaypalIpnForwarder::MailCreator do
     end
   end
 
-  it 'should combine the fed-in parameters and the private parameters' do
-    mail_creator = MailCreator.new(LoadConfig::SET_TEST_MODE)
+  it 'should combine the fed-in parameters and the Linux-specific parameters' do
+    stub!(:running_on_osx).and_return(false)
+    mail_creator = PaypalIpnForwarder::MailCreator.new(PaypalIpnForwarder::LoadConfig::SET_TEST_MODE)
     hash  = mail_creator.create(FED_IN_PARAMS)
-    LoadConfig.send(:running_on_osx).and_return(false)
+    ap COMBINED;1
     COMBINED.each_key do |key|
       COMBINED[key].should == hash[key]
     end
