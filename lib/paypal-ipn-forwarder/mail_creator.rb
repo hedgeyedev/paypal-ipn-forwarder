@@ -1,30 +1,27 @@
 require_relative 'load_config'
+require_relative 'host_info'
 
 module PaypalIpnForwarder
   class MailCreator
 
-    def initialize(set_test_mode=false)
-      content = LoadConfig.new(set_test_mode)
-      @config = content.mail_creator
+    attr_reader :config
+
+    def initialize
+      @config = Hash.new
+      unless PaypalIpnForwarder::HostInfo.running_on_osx?()
+        configure_for_linux
+      end
     end
 
     def create(mail)
-      create_email
-      @email = @config.clone
-      combine_params(mail)
-      @config.clone
-      @email
+      @config.merge(mail)
     end
 
-    def create_email
-      @email = Hash.new
-    end
+    private
 
-    def combine_params(mail)
-      mail.each_key do |key|
-        @email[key] = mail[key]
-      end
-      @email
+    def configure_for_linux
+      @config[:via_options] = @config[:via_options]
+      @config[:via]         = @config[:via]
     end
 
   end

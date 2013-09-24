@@ -23,7 +23,7 @@ describe PaypalIpnForwarder::LoadConfig do
   end
 
   it 'retrieves the email info which is constant' do
-    @config.mail_creator.should == {}
+    @config.create_mail_info.should == {}
   end
 
   it 'retrieves the sandbox ids' do

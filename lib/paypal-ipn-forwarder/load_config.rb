@@ -29,16 +29,6 @@ module PaypalIpnForwarder
       @config['development_computer_url']
     end
 
-    def mail_creator
-      hash = Hash.new
-      # via and via options are not needed for iMac email-sender, but are needed for Linux
-      unless running_on_osx()
-        hash[:via_options] = @config[:via_options]
-        hash[:via]         = @config[:via]
-      end
-      hash
-    end
-
     def polling_interval_seconds
       @config['polling_interval_seconds']
     end
