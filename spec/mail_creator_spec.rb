@@ -6,8 +6,6 @@ require_relative '../lib/paypal-ipn-forwarder/mail_creator'
 
 describe PaypalIpnForwarder::MailCreator do
 
-  include PaypalIpnForwarder::HostInfo
-
   MAIL_PARAMS = {
       to:      'bob@example.com',
       from:    'james@example.com',
