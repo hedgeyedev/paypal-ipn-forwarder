@@ -29,6 +29,12 @@ describe PaypalIpnForwarder::MailCreator do
     it 'should be included when running under Linux' do
       setup_test(false).length.should == 6
     end
+
+    it 'should contain Linux mail configuration parameters under Linux' do
+      mail_hash = setup_test false
+      mail_hash.keys.should include(:via_options)
+      mail_hash.keys.should include(:via)
+    end
   end
 
 end
