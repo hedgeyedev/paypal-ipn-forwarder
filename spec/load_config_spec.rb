@@ -22,10 +22,6 @@ describe PaypalIpnForwarder::LoadConfig do
     @config.polling_interval_seconds.should == '5.0'
   end
 
-  it 'retrieves the email info which is constant' do
-    @config.create_mail_info.should == {}
-  end
-
   it 'retrieves the sandbox ids' do
     @config.sandbox_ids.should == ['my_sandbox_id', 'my_sandbox_id_1']
   end

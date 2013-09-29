@@ -13,14 +13,6 @@ module PaypalIpnForwarder
       @config     = YAML::load_file(File.expand_path("../../../config#{dev_version}.yml", __FILE__))
     end
 
-    def self.set_test_mode(mode_boolean)
-      if (mode_boolean)
-        @@test_mode = true
-      else
-        @@test_mode = false
-      end
-    end
-
     def server_url
       @config['server_url']
     end
