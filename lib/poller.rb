@@ -58,10 +58,20 @@ class Poller
       sleep time
       if (Time.now <=> @time_polling_started + @time_before_notification_of_no_ipn) == 1
         puts 'an IPN has still not been received, 10 minutes after testing'
+        @notified = true
+        @ipn_received = true
         break
       end
       break if @ipn_received
     end
+  end
+
+  def ipn_received_on_dev_machine?
+    @ipn_received
+  end
+
+  def notified?
+    @notified
   end
 
   attr_writer :time_in_sec
