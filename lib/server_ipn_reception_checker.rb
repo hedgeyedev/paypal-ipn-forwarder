@@ -4,7 +4,7 @@ require_relative '../lib/mail_sender'
 
 class ServerIpnReceptionChecker
 
-  PROCESS_FILE_NAME = '.process_id_for_ipn_checker'
+  PROCESS_ID_IPN_CHECKER = '.process_id_for_ipn_checker'
 
   def initialize(server, paypal_id, test=nil)
     LoadConfig.set_test_mode(!test.nil?)
@@ -13,6 +13,7 @@ class ServerIpnReceptionChecker
     @paypal_id = paypal_id
     @time_test_started = Time.now
     @time_before_email = @content.no_ipn_time_before_notification
+    @ipn_received = false
 
   end
 
@@ -27,7 +28,7 @@ class ServerIpnReceptionChecker
 
     end
     Process.detach(@process_id)
-    File.write(SERVER::PROCESS_ID_IPN_CHECKER + '_' + @paypal_id, @process_id, nil, nil)
+    File.write(ServerIpnReceptionChecker::PROCESS_ID_IPN_CHECKER + '_' + @paypal_id, @process_id, nil, nil)
   end
 
   def verify_ipn_received(time=1.0)
@@ -49,6 +50,14 @@ class ServerIpnReceptionChecker
 There most likely is an issue with the paypal sandbox."
     mailsender = MailSender.new
     mailsender.send(to, subject, body)
+  end
+
+  def ipn_received
+    @ipn_received = true
+  end
+
+  def ipn_received?
+    @ipn_received
   end
 
 end

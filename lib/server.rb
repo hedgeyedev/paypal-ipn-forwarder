@@ -28,13 +28,15 @@ class Server
 
   def paypal_id(ipn)
     params = CGI::parse(ipn)
-    params['receiver_id'].first
+    params['receiver_email'].first
   end
 
   def receive_ipn(ipn=nil)
     paypal_id = paypal_id(ipn)
     if (computer_online?(paypal_id) && !ipn.nil?)
       queue_push(ipn)
+      paypal_id = paypal_id(ipn)
+      @ipn_reception_checker_instance[paypal_id].ipn_received
     end
   end
 
@@ -79,9 +81,11 @@ class Server
     @queue_map[id] = nil
     process_id_ipn_checker = File.read(PROCESS_ID_IPN_CHECKER+'_'+id).to_i
     process_id_poll_checker = File.read(POLL_CHECKER_PROCESS_ID+'_'+id).to_i
-    Process.kill("HUP", process_id_ipn_checker) unless @test_mode
+    Process.kill("HUP", process_id_ipn_checker) unless @test_mode || @ipn_reception_checker_instance[id].ipn_received?
     Process.kill("HUP", process_id_poll_checker) unless @test_mode
     @ipn_reception_checker_instance[id] = nil
+    File.delete(PROCESS_ID_IPN_CHECKER+'_'+id)
+    File.delete(POLL_CHECKER_PROCESS_ID+'_'+id)
   end
 
   def same_sandbox_being_tested_twice?(id, params)

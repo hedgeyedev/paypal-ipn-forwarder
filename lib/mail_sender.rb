@@ -21,7 +21,7 @@ class MailSender
   def param_definer(to, subject, body)
     email = {
         :to => to,
-        :from => 'email-proxy-problems@superbox.com',
+        :from => 'email-proxy@paypal_ipn_forwarder.com',
         :subject => subject,
         :body => body
     }

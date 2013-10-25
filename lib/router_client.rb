@@ -10,6 +10,7 @@ class RouterClient
   end
 
   def send_ipn(ipn)
+    puts 'An IPN was received! I am now trying to send it to the final destination.'
     begin
       RestClient.post @final_destination_url, ipn
     rescue StandardError

@@ -41,7 +41,6 @@ class ServerRack < Sinatra::Base
   end
 
   post '/test' do
-
     params = request.body.read
     params_parsed = CGI::parse(params)
     id = params_parsed['sandbox_id'].first
@@ -52,6 +51,7 @@ class ServerRack < Sinatra::Base
     elsif email != ''
        @@server.poll_with_incomplete_info(email, test_mode, id)
     end
+    Rack::Utils.status_code(:ok)
   end
 
   # Pretend to be the PayPal sandbox you're sending the response back to
@@ -81,7 +81,7 @@ class ServerRack < Sinatra::Base
     @@server.computer_online?('id@example.com')
   end
 
-  post '/hello' do
+  get '/hello' do
     "hello scott"
   end
 
