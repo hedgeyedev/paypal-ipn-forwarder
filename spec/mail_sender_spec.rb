@@ -12,10 +12,14 @@ describe PaypalIpnForwarder::MailSender do
       subject: 'hey, look this went through'
   }
 
+  TO_EMAIL = 'developer@gmail.com'
+  TO_BODY = 'this is a test email body message. HEY scott or Dmitri or James'
+  TO_SUBJECT = 'test email from hedgeye. is this working?'
+
   TO = {
-      :to => 'developer@gmail.com',
-      :body => 'this is a test email body message. HEY scott or Dmitri or James',
-      :subject => 'test email from hedgeye. is this working? '
+      :to => TO_EMAIL,
+      :body => TO_BODY,
+      :subject => TO_SUBJECT
   }
 
   TEST_MODE_ON = true
@@ -28,13 +32,13 @@ describe PaypalIpnForwarder::MailSender do
 
   it 'should send an email' do
     PaypalIpnForwarder::HostInfo.stub!(:running_on_osx?).and_return(false)
-    Pony.should_receive(:mail).with({:to => 'developer@gmail.com',
-                                     :body => 'this is a test email body message. HEY scott or Dmitri or James',
-                                     :subject => 'test email from hedgeye. is this working? ',
+    Pony.should_receive(:mail).with({:to => TO_EMAIL,
+                                     :body => TO_BODY,
+                                     :subject => TO_SUBJECT,
                                      :via => :smtp,
                                      :via_options => {
                                          :address => '0.0.0.1',
-                                         :openssl_verify_mode => 'none'}, :subject => 'test email from hedgeye. is this working? '})
+                                         :openssl_verify_mode => 'none'}, :subject => TO_SUBJECT })
     sender = PaypalIpnForwarder::MailSender.new
     sender.send(TO[:to], TO[:subject], TO[:body])
   end

@@ -32,8 +32,10 @@ describe PaypalIpnForwarder::MailCreator do
 
     it 'should contain Linux mail configuration parameters under Linux' do
       mail_hash = setup_test false
-      mail_hash.keys.should include(:via_options)
-      mail_hash.keys.should include(:via)
+      mail_hash[:via].should == :smtp
+      mail_hash[:via_options].should == {
+          :address             => '0.0.0.1',
+          :openssl_verify_mode => 'none' }
     end
   end
 
