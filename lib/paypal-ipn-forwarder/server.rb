@@ -97,12 +97,12 @@ module PaypalIpnForwarder
     The other user of the sandbox was #{email}"
 
       mailsender = MailSender.new
-      mailsender.send(to, subject, body)
+      mailsender.send_mail(to, subject, body)
 
       to1  = email
       body = "on the Superbox IPN forwarder, you have turned on an already testing sandbox. The sandbox has the id #{paypal_id}. The sandbox has been taken down from testing mode.
     The other user of the sandbox was #{to}"
-      mailsender.send(to1, subject, body)
+      mailsender.send_mail(to1, subject, body)
     end
 
     def email_mapper(id, email)
@@ -121,12 +121,11 @@ module PaypalIpnForwarder
       body    = "on the Superbox IPN forwarder, there is no queue set up for this function: #{method_called_by} for your developer_id #{paypal_id}"
 
       mailsender = MailSender.new
-      mailsender.send(to, subject, body)
+      mailsender.send_mail(to, subject, body)
     end
 
     def queue_push(ipn)
-      paypal_id = paypal_id(ipn)
-      queue     = queue_identify(paypal_id, 'queue push')
+      queue     = queue_identify(paypal_id(ipn), 'queue push')
       unless queue.nil?
         queue.push(ipn)
       end

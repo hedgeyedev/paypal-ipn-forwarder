@@ -1,9 +1,9 @@
 require 'rspec'
 require_relative '../lib/paypal-ipn-forwarder/host_info'
 
-describe PaypalIpnForwarder::HostInfo do
+include PaypalIpnForwarder
 
-  include PaypalIpnForwarder::HostInfo
+describe HostInfo do
 
   context '#running_on_osx?' do
 
@@ -11,7 +11,8 @@ describe PaypalIpnForwarder::HostInfo do
       old_env = RbConfig::CONFIG['host_os']
       begin
         RbConfig::CONFIG['host_os'] = rb_config_string
-        running_on_osx?
+        host = HostInfo.new
+        host.running_on_osx?
       ensure
         RbConfig::CONFIG['host_os'] = old_env
       end

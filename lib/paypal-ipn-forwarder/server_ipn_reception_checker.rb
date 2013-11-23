@@ -49,7 +49,7 @@ module PaypalIpnForwarder
       body = "Test mode has been turned on for sandbox with id: #{@paypal_id} but no IPN has been received for it in an 9 minutes.
 There most likely is an issue with the paypal sandbox."
       mailsender = MailSender.new
-      mailsender.send(to, subject, body)
+      mailsender.send_mail(to, subject, body)
     end
 
     def ipn_received

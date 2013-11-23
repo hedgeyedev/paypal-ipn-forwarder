@@ -3,16 +3,17 @@ require_relative '../lib/paypal-ipn-forwarder/server_client'
 require_relative '../lib/paypal-ipn-forwarder/server'
 require_relative '../lib/paypal-ipn-forwarder/ipn_generator'
 
-describe PaypalIpnForwarder::ServerClient do
+include PaypalIpnForwarder
+
+describe ServerClient do
 
   TEST_MODE_ON = true
-
 
   it 'should receive a testing ON HTTP request from the router and tell the server to turn test mode ON' do
     server = Server.new(TEST_MODE_ON)
     server.should_receive(:begin_test_mode).with('my_sandbox_id', {'sandbox_id' => ['my_sandbox_id'], 'test_mode' => ['on'], 'email' => ['bob@example.com']})
 
-    server_client = PaypalIpnForwarder::ServerClient.new(server)
+    server_client = ServerClient.new(server)
     server_client.computer_testing( {'sandbox_id' => ['my_sandbox_id'], 'test_mode' => ['on'], 'email' => ['bob@example.com']})
 
   end
@@ -30,7 +31,7 @@ describe PaypalIpnForwarder::ServerClient do
     server_client = ServerClient.new(server)
     ipn_generator = IpnGenerator.new
     ipn = ipn_generator.ipn
-    server_client.computer_testing({'sandbox_id' => ['my_sandbox_id'], 'test_mode' => ['on'], 'email' => ['bob@example.com']})
+    server_client.computer_testing({'sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
     server.queue_push(ipn)
     server_client.respond_to_computer_poll('my_sandbox_id').should == ipn
 

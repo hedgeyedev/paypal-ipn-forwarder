@@ -39,14 +39,14 @@ module PaypalIpnForwarder
         subject = "A problem occured on the IPN proxy with sandbox #{paypal_id}"
         body = body + 'This problem is happening on a superbox belonging to you so this email was only sent to you. Please address it'
         mailsender = MailSender.new
-        mailsender.send(to, subject, body)
+        mailsender.send_mail(to, subject, body)
       else
         @email_map.each_value { |value|
           to = value
           subject = "A problem occured on the IPN proxy with sandbox #{paypal_id}"
           body = body
           mailsender = MailSender.new
-          mailsender.send(to, subject, body)
+          mailsender.send_mail(to, subject, body)
         }
       end
     end
@@ -79,7 +79,7 @@ module PaypalIpnForwarder
       if (@last_incomplete_poll + 60*60 <=> time) == -1
         @last_incomplete_poll = Time.now
         mailsender = MailSender.new
-        mailsender.send(to, subject, body)
+        mailsender.send_mail(to, subject, body)
       end
     end
   end

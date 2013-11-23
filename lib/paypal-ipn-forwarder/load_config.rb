@@ -4,8 +4,6 @@ require_relative 'host_info'
 module PaypalIpnForwarder
   class LoadConfig
 
-    include HostInfo
-
     SET_TEST_MODE = true
 
     def initialize(is_test_mode=false)

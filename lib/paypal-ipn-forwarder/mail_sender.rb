@@ -4,24 +4,19 @@ require_relative 'mail_creator'
 module PaypalIpnForwarder
   class MailSender
 
-    def send(to, subject, body)
+    def initialize(mail_generator=MailCreator.new)
+      @mail_generator = mail_generator
+    end
+
+    def send_mail(to, subject, body)
       mail = param_definer(to, subject, body)
-      create(mail)
-      send_email
+      Pony.mail(@mail_generator.create(mail))
     end
 
-    def create(mail, mail_generator=MailCreator.new)
-      @email_creator = mail_generator
-      @email_content = @email_creator.create(mail)
-      @email_content
-    end
-
-    def send_email
-      Pony.mail(@email_content)
-    end
+    private
 
     def param_definer(to, subject, body)
-      email = {
+      {
           :to      => to,
           :from    => 'email-proxy@paypal-ipn-forwarder.com',
           :subject => subject,
