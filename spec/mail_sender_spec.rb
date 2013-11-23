@@ -35,6 +35,7 @@ describe PaypalIpnForwarder::MailSender do
     Pony.should_receive(:mail).with({:to => TO_EMAIL,
                                      :body => TO_BODY,
                                      :subject => TO_SUBJECT,
+                                     :from    => 'email-proxy@paypal-ipn-forwarder.com',
                                      :via => :smtp,
                                      :via_options => {
                                          :address => '0.0.0.1',
