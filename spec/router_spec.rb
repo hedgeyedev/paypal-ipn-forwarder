@@ -14,7 +14,7 @@ describe PaypalIpnForwarder::Router do
     @router_client = PaypalIpnForwarder::RouterClient.new(TEST_MODE_ON)
     content = PaypalIpnForwarder::LoadConfig.new(TEST_MODE_ON)
     @server_url = content.server_url + 'test'
-    @router = PaypalIpnForwarder::Router.new(@router_client, TEST_MODE_ON)
+    @router = PaypalIpnForwarder::Router.new(@router_client)
     @router.sandbox_id=('my_sandbox_id')
     @poller = PaypalIpnForwarder::Poller.new(@router, @server_url)
     @email = 'bob@example.com'
@@ -39,12 +39,12 @@ describe PaypalIpnForwarder::Router do
       end
 
       it 'has started' do
-        expected_rest_client_message(Router::TEST_ON)
+        expected_rest_client_message(PaypalIpnForwarder::Router::TEST_ON)
         @router.turn_test_mode_on(@email)
       end
 
       it 'has stopped' do
-        expected_rest_client_message(Router::TEST_OFF)
+        expected_rest_client_message(PaypalIpnForwarder::Router::TEST_OFF)
         @router.turn_test_mode_off(@email)
       end
 
