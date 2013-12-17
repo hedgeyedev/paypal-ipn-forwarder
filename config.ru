@@ -9,6 +9,8 @@ require_relative './lib/paypal-ipn-forwarder/ipn_generator'
 require_relative './lib/paypal-ipn-forwarder/router_client'
 require_relative './lib/paypal-ipn-forwarder/mail_sender'
 
+# This is the configuration for running the 'server' on the public-facing server
+# and also the 'server_client' which runs on the developer's laptop.
 class ServerRack < Sinatra::Base
   configure do
     TEST_MODE_ON = true
