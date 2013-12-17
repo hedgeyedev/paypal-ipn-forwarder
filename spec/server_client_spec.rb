@@ -9,21 +9,20 @@ describe ServerClient do
 
   TEST_MODE_ON = true
 
+  SANDBOX_INFO = { 'sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com' }
+
   it 'should receive a testing ON HTTP request from the router and tell the server to turn test mode ON' do
     server = Server.new(TEST_MODE_ON)
-    server.should_receive(:begin_test_mode).with('my_sandbox_id', {'sandbox_id' => ['my_sandbox_id'], 'test_mode' => ['on'], 'email' => ['bob@example.com']})
-
+    server.should_receive(:begin_test_mode).with('my_sandbox_id', SANDBOX_INFO)
     server_client = ServerClient.new(server)
-    server_client.computer_testing( {'sandbox_id' => ['my_sandbox_id'], 'test_mode' => ['on'], 'email' => ['bob@example.com']})
-
+    server_client.computer_testing(SANDBOX_INFO)
   end
 
   it 'should receive a testing OFF HTTP request from the router and tell the server to turn test mode OFF' do
     server = Server.new(TEST_MODE_ON)
     server.should_receive(:cancel_test_mode).with('my_sandbox_id')
-
     server_client = ServerClient.new(server)
-    server_client.computer_testing({'sandbox_id' => ['my_sandbox_id'], 'test_mode' => ['off'], 'email' => ['bob@example.com']})
+    server_client.computer_testing({'sandbox_id' => 'my_sandbox_id', 'test_mode' => 'off', 'email' => 'bob@example.com'})
   end
 
   it 'should receive a poll from a development computer and respond to it' do
@@ -31,18 +30,18 @@ describe ServerClient do
     server_client = ServerClient.new(server)
     ipn_generator = IpnGenerator.new
     ipn = ipn_generator.ipn
-    server_client.computer_testing({'sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com'})
+    server_client.computer_testing(SANDBOX_INFO)
     server.queue_push(ipn)
     server_client.respond_to_computer_poll('my_sandbox_id').should == ipn
-
   end
 
 
   it 'should receive IPNs and forward them to the server' do
     server = mock('server')
-    server.stub(:receive_ipn).with('an ipn')
+    ipn = Ipn.generate
+    server.stub(:receive_ipn).with(ipn)
     server_client = ServerClient.new(server)
-    server_client.receive_ipn('an ipn')
+    server_client.receive_ipn(ipn)
   end
 
   it 'should create the response to a sandbox when the sandbox sent an IPN' do

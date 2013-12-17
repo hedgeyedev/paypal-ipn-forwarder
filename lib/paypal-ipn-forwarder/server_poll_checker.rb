@@ -25,9 +25,10 @@ module PaypalIpnForwarder
     end
 
     def unexpected_poll_time(paypal_id, time=Time.now)
-      if (@last_unexpected_poll + 24*60*60 <=> time) == -1
-        body = "Your computer made an unexpected poll on the Superbox IPN forwarder. The poll occurred before test mode was turned on. The sandox id is #{paypal_id}."
-        send_email(paypal_id, body)
+      puts "******** paypal_id: '#{paypal_id}'; time: '#{time}'"
+      if @last_unexpected_poll + 24*60*60 <= time
+        puts "******** time is in past for time '#{time.to_s}'"
+        send_email(paypal_id, MailSender::POLL_BEFORE_TEST_MODE_ON_ERROR)
         @last_unexpected_poll = time
       end
     end
@@ -36,14 +37,14 @@ module PaypalIpnForwarder
       @email_map = @server.email_map
       unless @email_map[paypal_id].nil?
         to = @email_map[paypal_id]
-        subject = "A problem occured on the IPN proxy with sandbox #{paypal_id}"
-        body = body + 'This problem is happening on a superbox belonging to you so this email was only sent to you. Please address it'
+        subject = MailSender.build_subject_line(paypal_id)
+        body = body + HAPPENING_ONLY_TO_YOU
         mailsender = MailSender.new
         mailsender.send_mail(to, subject, body)
       else
         @email_map.each_value { |value|
           to = value
-          subject = "A problem occured on the IPN proxy with sandbox #{paypal_id}"
+          subject = MailSender.build_subject_line(paypal_id)
           body = body
           mailsender = MailSender.new
           mailsender.send_mail(to, subject, body)

@@ -1,8 +1,8 @@
 require 'rest_client'
 module PaypalIpnForwarder
   class IpnGenerator
-    def ipn
-      @sample_ipn = <<EOF
+
+    IPN = <<EOF
 mc_gross=19.95&protection_eligibility=Eligible&address_status=confirmed&pay\
 er_id=LPLWNMTBWMFAY&tax=0.00&address_street=1+Main+St&payment_date=20%3A12%\
 3A59+Jan+13%2C+2009+PST&payment_status=Completed&charset=windows-\
@@ -17,23 +17,14 @@ gpmac_1231902686_biz%40paypal.com&payment_fee=0.88&receiver_id=my_sandbox_id\
 e_country=US&test_ipn=1&handling_amount=0.00&transaction_subject=&payment_g\
 ross=19.95&shipping=0.00
 EOF
-    end
-
-    def fake_email
-      string_ipn = ipn
-      string_ipn['my_sandbox_id'] = 'fake_id'
-      string_ipn
-    end
 
     def verified_ipn
-      'cmd=_notify-validate&' + ipn
+      'cmd=_notify-validate&' + IPN
     end
 
 
     def send_via_http(url)
-      @url = url
-      sample_ipn = ipn
-      RestClient.post @url, sample_ipn
+      RestClient.post url, IPN
     end
 
   end

@@ -1,5 +1,7 @@
 require 'yaml'
 require_relative 'host_info'
+require_relative 'queue'
+require_relative 'queue_map'
 
 module PaypalIpnForwarder
   class LoadConfig

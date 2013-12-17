@@ -1,4 +1,5 @@
 require 'rest-client'
+
 module PaypalIpnForwarder
   class ServerClient
 
@@ -7,15 +8,15 @@ module PaypalIpnForwarder
     end
 
     def computer_testing(params_parsed)
-      id = params_parsed['sandbox_id'].first
-      if params_parsed['test_mode'].first == 'on'
+      id = params_parsed['sandbox_id']
+      if params_parsed['test_mode'] == 'on'
         if !@server.computer_online?(id)
           @server.begin_test_mode(id, params_parsed)
         elsif @server.same_sandbox_being_tested_twice?(id, params_parsed)
-          @server.send_conflict_email(id, params_parsed['email'].first)
+          @server.send_conflict_email(id, params_parsed['email'])
           @server.cancel_test_mode(id)
         end
-      elsif params_parsed['test_mode'].first == 'off'
+      elsif params_parsed['test_mode'] == 'off'
         @server.cancel_test_mode(id)
       end
     end
@@ -30,12 +31,12 @@ module PaypalIpnForwarder
     end
 
     def ipn_response(ipn)
-      response = 'cmd=_notify-validate&' + ipn
-      response
+      'cmd=_notify-validate&' + ipn
     end
 
-    def receive_ipn(ipn=nil)
-      @server.receive_ipn(ipn)
+    # @param [String] ipn_str the PayPal string representation
+    def receive_ipn(ipn_str)
+      @server.receive_ipn(Ipn.new(ipn_str))
     end
 
     def send_paypal_response(url, message)

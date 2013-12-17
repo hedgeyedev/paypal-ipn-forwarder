@@ -1,6 +1,7 @@
 require 'sinatra/base'
 require 'rest_client'
 require 'cgi'
+require_relative './lib/paypal-ipn-forwarder/ipn'
 require_relative './lib/paypal-ipn-forwarder/server_client'
 require_relative './lib/paypal-ipn-forwarder/server'
 require_relative './lib/paypal-ipn-forwarder/poller'
@@ -17,20 +18,24 @@ class ServerRack < Sinatra::Base
     @@mail = MailSender.new
   end
 
+  # Send a test ipn to the development computer as though the PayPal sandbox sent it.
+  # This command is received from the router and sent by the router.
   get '/invoke_ipn' do
     ipn_send_test = IpnGenerator.new
     ipn_send_test.send_via_http 'localhost:8810/payments/ipn'
   end
 
+  # Poll the server to see if it has anything for the router to do.
+  # This command is sent by the router.
   get '/computer_poll' do
     params = request['sandbox_id']
     @@server_client.respond_to_computer_poll(params) unless params.nil? || params.length == 0
   end
 
+  # Receive an ipn.  Typically this is sent by the router to the server.
   post '/payments/ipn' do
-    ipn = request.body.read
+    ipn = Ipn.new(request.body.read)
     if @@server.ipn_valid?(ipn)
-      puts ipn
       @@server_client.receive_ipn(ipn)
       response = @@server_client.ipn_response(ipn)
       url      = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
@@ -40,16 +45,17 @@ class ServerRack < Sinatra::Base
     end
   end
 
+  # Request server to change test mode for a developer and his PayPal sandbox.
   post '/test' do
     params = request.body.read
-    params_parsed = CGI::parse(params)
-    id = params_parsed['sandbox_id'].first
-    email = params_parsed['email'].first
-    test_mode = params_parsed['test_mode'].first
+    params_parsed = Rack::Utils.parse_nested_query(params)
+    id = params_parsed['sandbox_id']
+    email = params_parsed['email']
+    test_mode = params_parsed['test_mode']
     if id != '' && email != '' && test_mode != ''
       @@server_client.computer_testing(params_parsed)
     elsif email != ''
-       @@server.poll_with_incomplete_info(email, test_mode, id)
+      @@server.poll_with_incomplete_info(email, test_mode, id)
     end
     Rack::Utils.status_code(:ok)
   end
@@ -86,7 +92,7 @@ class ServerRack < Sinatra::Base
   end
 
   post '/show_ipn' do
-    ipn = request.body.read
+    ipn = Ipn.new(request.body.read)
     @@server.printo(ipn)
   end
 

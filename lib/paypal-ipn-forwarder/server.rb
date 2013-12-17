@@ -1,8 +1,8 @@
-require 'cgi'
 require 'sinatra/base'
 require 'yaml'
 require 'awesome_print'
 
+require_relative 'ipn'
 require_relative 'load_config'
 require_relative 'mail_sender'
 require_relative 'server_poll_checker'
@@ -15,27 +15,31 @@ module PaypalIpnForwarder
     PROCESS_ID_IPN_CHECKER  = '.process_id_for_ipn_checker'
     POLL_CHECKER_PROCESS_ID = '.process_id_for_poll_checker'
 
-    def initialize(is_test_mode=false)
-      @is_test_mode                   = is_test_mode
-      content                         = LoadConfig.new(is_test_mode)
+    def initialize(is_load_test_config=false)
+      content                         = LoadConfig.new(is_load_test_config)
       @computers_testing              = content.computer_testing.clone
       @queue_map                      = content.queue_map.clone
       @email_map                      = content.email_map.clone
       @poll_checker_instance          = content.poll_checker_instance.clone
+      @is_load_test_config            = is_load_test_config
       @ipn_reception_checker_instance = Hash.new
     end
 
+    #@param [Ipn] ipn the parsed Ipn of interest
     def paypal_id(ipn)
-      params = CGI::parse(ipn)
-      params['receiver_email'].first
+      parse_ipn(ipn)['receiver_email']
     end
 
-    def receive_ipn(ipn=nil)
-      paypal_id = paypal_id(ipn)
-      if computer_online?(paypal_id) && !ipn.nil?
+    def parse_ipn(ipn)
+      hash = Rack::Utils.parse_nested_query(ipn)
+      #ap hash
+      hash
+    end
+
+    def receive_ipn(ipn)
+      if computer_online?(ipn.paypal_id)
         queue_push(ipn)
-        paypal_id = paypal_id(ipn)
-        @ipn_reception_checker_instance[paypal_id].ipn_received
+        @ipn_reception_checker_instance[ipn.paypal_id].ipn_received
       end
     end
 
@@ -58,7 +62,7 @@ module PaypalIpnForwarder
 
       @ipn_reception_checker_instance[id] = ServerIpnReceptionChecker.new(self, id)
 
-      unless @is_test_mode
+      unless @is_load_test_config
         @ipn_reception_checker_instance[id].check_ipn_received
         @process_id = fork do
 
@@ -74,16 +78,26 @@ module PaypalIpnForwarder
       end
     end
 
-    def cancel_test_mode(id)
-      @computers_testing[id]  = false
-      @queue_map[id]          = nil
-      process_id_ipn_checker  = File.read(PROCESS_ID_IPN_CHECKER+'_'+id).to_i
-      process_id_poll_checker = File.read(POLL_CHECKER_PROCESS_ID+'_'+id).to_i
-      unless @is_test_mode
-        Process.kill('HUP', process_id_ipn_checker)
-        Process.kill('HUP', process_id_poll_checker)
-      end
-      @ipn_reception_checker_instance[id] = nil
+    def cancel_test_mode(developer_id)
+      @computers_testing[developer_id] = false
+      @queue_map[developer_id]         = nil
+      kill_process_for_filename(PROCESS_ID_IPN_CHECKER+'_'+developer_id)
+      kill_pid_from_filename(POLL_CHECKER_PROCESS_ID+'_'+developer_id)
+      @ipn_reception_checker_instance[developer_id] = nil
+    end
+
+    def kill_pid_from_filename(filename)
+      process_id_poll_checker = git_pid_from_file(filename)
+      Process.kill('HUP', process_id_poll_checker) if process_id_poll_checker
+    end
+
+    def kill_process_for_filename(filename)
+      process_id_ipn_checker = git_pid_from_file(filename)
+      Process.kill('HUP', process_id_ipn_checker) if process_id_ipn_checker
+    end
+
+    def git_pid_from_file(filename)
+      File.exist?(filename) ? File.read(filename).to_i : nil
     end
 
     def same_sandbox_being_tested_twice?(id, params)
@@ -109,13 +123,15 @@ module PaypalIpnForwarder
       @email_map[id] = email
     end
 
-    def queue_identify(paypal_id, method_called_by)
+    def queue_identify(paypal_id, queue_action)
       queue = @queue_map[paypal_id]
-      email_content_generator(method_called_by, paypal_id) if queue.nil?
+      if queue.nil?
+        email_no_queue(queue_action, paypal_id)
+      end
       queue
     end
 
-    def email_content_generator(method_called_by, paypal_id)
+    def email_no_queue(method_called_by, paypal_id)
       to      = @email_map[paypal_id]
       subject = 'There is no queue on the Superbox IPN forwarder'
       body    = "on the Superbox IPN forwarder, there is no queue set up for this function: #{method_called_by} for your developer_id #{paypal_id}"
@@ -124,15 +140,16 @@ module PaypalIpnForwarder
       mailsender.send_mail(to, subject, body)
     end
 
+    # @param [Ipn] ipn
     def queue_push(ipn)
-      queue     = queue_identify(paypal_id(ipn), 'queue push')
+      queue     = queue_identify(ipn.paypal_id, 'queue push')
       unless queue.nil?
         queue.push(ipn)
       end
     end
 
     #if the queue does not exist(due to sandbox not being in test mode), then the size of the queue will be 0
-    def queue_size(paypal_id)
+    def   queue_size(paypal_id)
       queue = @queue_map[paypal_id]
       (queue.nil?) ? 0 : queue.size
     end
@@ -154,14 +171,15 @@ module PaypalIpnForwarder
       end
     end
 
-    def record_computer_poll(paypal_id)
+    def record_computer_poll(paypal_id, time=Time.now)
       #a new instance of poll checker needs to be created in case poll is before test mode is turned on
       #and the sandbox is not registered beforehand
       @poll_checker_instance[paypal_id] = ServerPollChecker.new(self) if @poll_checker_instance[paypal_id].nil?
-      @poll_checker_instance[paypal_id].record_poll_time(paypal_id)
+      @poll_checker_instance[paypal_id].record_poll_time(paypal_id, time)
     end
 
     def unexpected_poll(paypal_id, time=Time.now)
+      puts "******** #unexpected_poll: time = '#{time}'"
       @poll_checker_instance[paypal_id].unexpected_poll_time(paypal_id, time)
     end
 
@@ -174,14 +192,9 @@ module PaypalIpnForwarder
       @email_map
     end
 
-    def ipn_valid?(ipn)
-      !ipn.nil? && ipn.length > 0 && (ipn =~ /(VERIFIED|INVALID)/) != 0
-    end
-
-    def printo(vars)
-      id = paypal_id(vars)
-      puts vars
-      puts id
+    # @param [Ipn] ipn
+    def printo(ipn)
+      ap ipn
     end
 
   end
