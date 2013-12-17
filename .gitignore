@@ -18,5 +18,4 @@ tmp
 .idea/
 config.yml
 .process_id
-.process_id_for_ipn_checker_my_sandbox_id
-.process_id_for_poll_checker_my_sandbox_id
+.process_id*
