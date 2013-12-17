@@ -15,12 +15,17 @@ module PaypalIpnForwarder
     PROCESS_ID_IPN_CHECKER  = '.process_id_for_ipn_checker'
     POLL_CHECKER_PROCESS_ID = '.process_id_for_poll_checker'
 
+    EMAIL_NO_QUEUE_SUBJECT = 'There is no queue on the PayPal IPN forwarder'
+
+    attr_reader :developers_email
+
     def initialize(is_load_test_config=false)
       content                         = LoadConfig.new(is_load_test_config)
       @computers_testing              = content.computer_testing.clone
       @queue_map                      = content.queue_map.clone
       @email_map                      = content.email_map.clone
       @poll_checker_instance          = content.poll_checker_instance.clone
+      @developers_email               = content.developers_email
       @is_load_test_config            = is_load_test_config
       @ipn_reception_checker_instance = Hash.new
     end
@@ -132,12 +137,20 @@ module PaypalIpnForwarder
     end
 
     def email_no_queue(method_called_by, paypal_id)
-      to      = @email_map[paypal_id]
-      subject = 'There is no queue on the Superbox IPN forwarder'
-      body    = "on the Superbox IPN forwarder, there is no queue set up for this function: #{method_called_by} for your developer_id #{paypal_id}"
+      to      = @email_map[paypal_id] ? @email_map[paypal_id] : developers_email
+      subject = EMAIL_NO_QUEUE_SUBJECT
+      body    = email_no_queue_body(method_called_by, paypal_id)
 
       mailsender = MailSender.new
       mailsender.send_mail(to, subject, body)
+    end
+
+    def email_no_queue_body(method_called_by, paypal_id)
+      'On the PayPal IPN forwarder, there is no queue set up for the function, \'' +
+      method_called_by +
+      '\', for your developer_id \'' +
+      paypal_id +
+      '\''
     end
 
     # @param [Ipn] ipn
@@ -179,7 +192,6 @@ module PaypalIpnForwarder
     end
 
     def unexpected_poll(paypal_id, time=Time.now)
-      puts "******** #unexpected_poll: time = '#{time}'"
       @poll_checker_instance[paypal_id].unexpected_poll_time(paypal_id, time)
     end
 

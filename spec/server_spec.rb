@@ -121,13 +121,24 @@ describe Server do
       @server.unexpected_poll('my_sandbox_unknown')
     end
 
-    #it 'should send another notification email if last email sent 24 ago as issue still not resolved' do
-    #  UNKNOWN_SANDBOX = 'my_sandbox_unknown'
-    #  Pony.should_receive(:mail).with(any_args).twice
-    #  @server.record_computer_poll(UNKNOWN_SANDBOX, Time.now - 4.days)
-    #  @server.unexpected_poll(UNKNOWN_SANDBOX, Time.now - 4*24*60*60)
-    #  @server.unexpected_poll(UNKNOWN_SANDBOX, Time.now - 2*24*60*60)
-    #end
+    it 'should send another notification email if last email sent 24 ago as issue still not resolved' do
+
+      def days(days_count)
+        days_count * 24 * 60 * 60
+      end
+
+      UNKNOWN_SANDBOX = 'my_sandbox_unknown'
+      Pony.should_receive(:mail).with(any_args).twice
+      Timecop.freeze(Time.now - days(90)) do
+        @server.record_computer_poll(UNKNOWN_SANDBOX)
+        Timecop.freeze(Time.now + days(32)) do
+          @server.unexpected_poll(UNKNOWN_SANDBOX)
+          Timecop.freeze(Time.now + days(32)) do
+            @server.unexpected_poll(UNKNOWN_SANDBOX)
+          end
+        end
+      end
+    end
   end
 
   context 'receives polling request with missing information' do
@@ -152,34 +163,35 @@ describe Server do
       @sandbox_id = @ipn.paypal_id
     end
 
-    #not sure if test is too basic but added just in case
-    #it 'begins testings' do
-    #  @server.begin_test_mode(@sandbox_id, { 'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob@example.com' })
-    #  @server.computer_online?('my_sandbox_id').should == true
-    #end
+    # not sure if test is too basic but added just in case
+    it 'begins testings' do
+      @server.begin_test_mode(@sandbox_id, { 'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob@example.com' })
+      @server.computer_online?(@sandbox_id).should == true
+    end
+
   end
 
-  #context 'queue is not in test mode and something is trying to access it' do
-  #
-  #  before(:each) do
-  #    @server     = Server.new
-  #    @ipn        = Ipn.generate
-  #    @sandbox_id = @ipn.paypal_id
-  #  end
-  #
-  #  it 'sends an email to a developer' do
-  #
-  #    mail_hash = { :to      => 'developer@gmail.com',
-  #                  :from    => MailSender::EMAIL,
-  #                  :subject => 'There is no queue on the Superbox IPN forwarder',
-  #                  :body    => 'on the Superbox IPN forwarder, there is no queue set up for this function: my method for your developer_id my_sandbox_id',
-  #    }
-  #    mail_hash = add_linux_params_if_linux(mail_hash)
-  #    Pony.should_receive(:mail).with(mail_hash)
-  #    @server.queue_identify(@ipn.paypal_id, 'my method')
-  #
-  #  end
-  #
-  #end
+  context 'queue is not in test mode and something is trying to access it' do
+
+    before(:each) do
+      @server     = Server.new
+      @ipn        = Ipn.generate
+      @sandbox_id = @ipn.paypal_id
+    end
+
+    it 'sends an email to the developers' do
+
+      mail_hash = { :to      => @server.developers_email,
+                    :from    => MailSender::EMAIL,
+                    :subject => Server::EMAIL_NO_QUEUE_SUBJECT,
+                    :body    => @server.email_no_queue_body('my method', @sandbox_id)
+      }
+      mail_hash = add_linux_params_if_linux(mail_hash)
+      Pony.should_receive(:mail).with(mail_hash)
+      @server.queue_identify(@ipn.paypal_id, 'my method')
+
+    end
+
+  end
 
 end

@@ -25,9 +25,7 @@ module PaypalIpnForwarder
     end
 
     def unexpected_poll_time(paypal_id, time=Time.now)
-      puts "******** paypal_id: '#{paypal_id}'; time: '#{time}'"
-      if @last_unexpected_poll + 24*60*60 <= time
-        puts "******** time is in past for time '#{time.to_s}'"
+      if(@last_unexpected_poll + 24*60*60 <= time)
         send_email(paypal_id, MailSender::POLL_BEFORE_TEST_MODE_ON_ERROR)
         @last_unexpected_poll = time
       end

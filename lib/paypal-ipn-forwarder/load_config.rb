@@ -65,5 +65,9 @@ module PaypalIpnForwarder
       @config['ipn_reception_checker_instance']
     end
 
+    def developers_email
+      @config['developers_email']
+    end
+
   end
 end
