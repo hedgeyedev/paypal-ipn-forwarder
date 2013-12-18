@@ -3,20 +3,22 @@ require_relative '../lib/paypal-ipn-forwarder/router'
 require_relative '../lib/paypal-ipn-forwarder/poller'
 require_relative '../lib/paypal-ipn-forwarder/server_client'
 require_relative '../lib/paypal-ipn-forwarder/load_config'
+require_relative '../lib/paypal-ipn-forwarder/ipn'
 require_relative '../lib/paypal-ipn-forwarder/ipn_generator'
 require_relative '../lib/paypal-ipn-forwarder/router_client'
 
-describe PaypalIpnForwarder::Router do
+include PaypalIpnForwarder
+describe Router do
 
   TEST_MODE_ON = true
 
   before(:each) do
-    @router_client = PaypalIpnForwarder::RouterClient.new(TEST_MODE_ON)
-    content = PaypalIpnForwarder::LoadConfig.new(TEST_MODE_ON)
+    @router_client = RouterClient.new(TEST_MODE_ON)
+    content = LoadConfig.new(TEST_MODE_ON)
     @server_url = content.server_url + 'test'
-    @router = PaypalIpnForwarder::Router.new(@router_client)
+    @router = Router.new(@router_client)
     @router.sandbox_id=('my_sandbox_id')
-    @poller = PaypalIpnForwarder::Poller.new(@router, @server_url)
+    @poller = Poller.new(@router, @server_url)
     @email = 'bob@example.com'
     @sandbox_id = 'my_sandbox_id'
   end
@@ -39,12 +41,12 @@ describe PaypalIpnForwarder::Router do
       end
 
       it 'has started' do
-        expected_rest_client_message(PaypalIpnForwarder::Router::TEST_ON)
+        expected_rest_client_message(Router::TEST_ON)
         @router.turn_test_mode_on(@email)
       end
 
       it 'has stopped' do
-        expected_rest_client_message(PaypalIpnForwarder::Router::TEST_OFF)
+        expected_rest_client_message(Router::TEST_OFF)
         @router.turn_test_mode_off(@email)
       end
 
@@ -55,12 +57,11 @@ describe PaypalIpnForwarder::Router do
   context 'handshake between router and development computer' do
 
     def create_an_ipn_somehow
-      ipn_gen = PaypalIpnForwarder::IpnGenerator.new
-      ipn = ipn_gen.ipn
+      Ipn.generate.ipn_str
     end
 
     def create_ipn_response_somehow
-      ipn_gen = PaypalIpnForwarder::IpnGenerator.new
+      ipn_gen = IpnGenerator.new
       ipn = ipn_gen.verified_ipn
     end
 
