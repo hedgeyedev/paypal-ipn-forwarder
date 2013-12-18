@@ -11,7 +11,6 @@ module PaypalIpnForwarder
     end
 
     def send_ipn(ipn)
-      puts 'An IPN was received! I am now trying to send it to the final destination.'
       begin
         RestClient.post @development_computer_url, ipn
       rescue StandardError

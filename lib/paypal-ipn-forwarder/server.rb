@@ -89,7 +89,6 @@ EOF
 
     def kill_process_for_filename(filename)
       process_id_ipn_checker = git_pid_from_file(filename)
-      puts "******** process_id_ipn_checker: '#{process_id_ipn_checker}'"
       Process.kill('HUP', process_id_ipn_checker) if process_id_ipn_checker
     end
 
