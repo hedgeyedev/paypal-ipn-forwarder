@@ -32,9 +32,7 @@ module PaypalIpnForwarder
 
     # param [Ipn] ipn the PayPal representation of the IPN
     def receive_ipn(ipn)
-      puts '******** begin Server#receive_ipn'
       if computer_online?(ipn.paypal_id)
-        puts '******** took branch'
         queue_push(ipn)
         @ipn_reception_checker_instance[ipn.paypal_id].ipn_received
       end

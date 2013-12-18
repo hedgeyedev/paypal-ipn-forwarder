@@ -24,10 +24,8 @@ module PaypalIpnForwarder
     def respond_to_computer_poll(paypal_id, now=Time.now)
       @server.record_computer_poll(paypal_id)
       if (@server.computer_online?(paypal_id))
-        puts "******** respond_to_computer_online?: paypal_id '#{paypal_id}'"
         @server.send_ipn_if_present(paypal_id)
       else
-        puts "******** respond_to_computer_poll: paypal '#{paypal_id}' not found"
         @server.unexpected_poll(paypal_id)
       end
     end
@@ -38,7 +36,6 @@ module PaypalIpnForwarder
 
     # @param [String] ipn_str the PayPal string representation
     def receive_ipn(ipn_str)
-      puts '******** begin ServerClient#receive_ipn'
       @server.receive_ipn(Ipn.new(ipn_str))
     end
 

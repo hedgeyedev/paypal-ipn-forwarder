@@ -40,7 +40,7 @@ describe ServerClient do
   it 'should receive IPNs and forward them to the server' do
     server = mock('server')
     ipn = Ipn.generate
-    server.should_receive(:receive_ipn).with(ipn.ipn_str)
+    server.should_receive(:receive_ipn).with(ipn)
     server_client = ServerClient.new(server)
     server_client.receive_ipn(ipn.ipn_str)
   end
