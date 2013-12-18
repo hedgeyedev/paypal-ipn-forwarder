@@ -7,8 +7,6 @@ require_relative '../lib/paypal-ipn-forwarder/server'
 
 include PaypalIpnForwarder
 
-TEST_MODE_ON = true
-
 describe ServerPollChecker do
 
   before(:each) do

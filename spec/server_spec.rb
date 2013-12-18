@@ -7,8 +7,6 @@ include PaypalIpnForwarder
 
 describe Server do
 
-  TEST_MODE_ON = true
-
   def add_linux_params_if_linux(mail_hash)
     unless HostInfo.new.running_on_osx?
       mail_hash.merge({ :via         => :smtp,

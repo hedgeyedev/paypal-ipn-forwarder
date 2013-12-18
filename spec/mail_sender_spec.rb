@@ -24,8 +24,6 @@ describe MailSender do
       :subject => TO_SUBJECT
   }
 
-  TEST_MODE_ON = true
-
   before do
     @host = HostInfo.new
     @mail_creator = MailCreator.new(@host)

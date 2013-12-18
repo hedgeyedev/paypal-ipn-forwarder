@@ -6,8 +6,6 @@ require_relative '../lib/paypal-ipn-forwarder/load_config'
 
 describe PaypalIpnForwarder::Poller do
 
-  TEST_MODE_ON = true
-
   before(:each) do
     @router = PaypalIpnForwarder::Router.new(nil)
     content = PaypalIpnForwarder::LoadConfig.new(TEST_MODE_ON)

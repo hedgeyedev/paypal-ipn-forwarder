@@ -10,8 +10,6 @@ require_relative '../lib/paypal-ipn-forwarder/router_client'
 include PaypalIpnForwarder
 describe Router do
 
-  TEST_MODE_ON = true
-
   before(:each) do
     @router_client = RouterClient.new(TEST_MODE_ON)
     content = LoadConfig.new(TEST_MODE_ON)

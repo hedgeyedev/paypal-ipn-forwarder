@@ -7,8 +7,6 @@ include PaypalIpnForwarder
 
 describe ServerClient do
 
-  TEST_MODE_ON = true
-
   SANDBOX_INFO = { 'sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', 'email' => 'bob@example.com' }
 
   it 'should receive a testing ON HTTP request from the router and tell the server to turn test mode ON' do
