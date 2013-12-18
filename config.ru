@@ -43,7 +43,7 @@ class ServerRack < Sinatra::Base
       url      = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
       #used for testing
       #url = 'localhost:6810/receive_ipn/'
-      @@server_client.send_paypal_response(url, response)
+      @@server_client.send_response_to_paypal(url, response)
     end
   end
 

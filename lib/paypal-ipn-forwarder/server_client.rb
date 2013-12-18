@@ -39,7 +39,7 @@ module PaypalIpnForwarder
       @server.receive_ipn(Ipn.new(ipn_str))
     end
 
-    def send_paypal_response(url, message)
+    def send_response_to_paypal(url, message)
       RestClient.post url, message
     end
 
