@@ -7,6 +7,7 @@ Rake::TestTask.new do |t|
   t.libs << 'lib/paypal-ipn-forwarder'
   t.test_files = FileList['spec/*_spec.rb']
   t.verbose = true
+  `rspec`
 end
 
 task :default => :spec

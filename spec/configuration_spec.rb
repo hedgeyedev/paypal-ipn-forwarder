@@ -7,7 +7,7 @@ include PaypalIpnForwarder
 describe Server do
 
   before(:each) do
-    @server = PaypalIpnForwarder::Server.new(TEST_MODE_ON)
+    @server = Server.new(TEST_MODE_ON)
     @server.begin_test_mode('my_sandbox_id', { 'my_sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', '@email' => 'bob@example.com' })
   end
 

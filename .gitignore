@@ -14,7 +14,7 @@ rdoc
 spec/reports
 test/tmp
 test/version_tmp
-tmp
+tmp/
 .idea/
 config.yml
 .process_id
