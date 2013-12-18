@@ -7,13 +7,6 @@ include PaypalIpnForwarder
 
 describe MailSender do
 
-  MAIL_PARAMS = {
-      to:      'bob@example.com',
-      from:    'james@example.com',
-      title:   'this works! awesome',
-      subject: 'hey, look this went through'
-  }
-
   TO_EMAIL = 'developer@gmail.com'
   TO_BODY = 'Test email body'
   TO_SUBJECT = 'Test Email Subject'
