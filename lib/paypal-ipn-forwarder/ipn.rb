@@ -24,15 +24,8 @@ module PaypalIpnForwarder
     end
 
     def ipn_valid?
-      !empty? && (@ipn_str =~ /(VERIFIED|INVALID)/) != 0
+      !@ipn_str.empty? && (@ipn_str =~ /(VERIFIED|INVALID)/) != 0
     end
-
-    private
-
-    def empty?
-      @ipn_str.empty?
-    end
-
 
   end
 end

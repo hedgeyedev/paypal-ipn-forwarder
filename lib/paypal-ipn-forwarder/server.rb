@@ -42,7 +42,9 @@ module PaypalIpnForwarder
     end
 
     def receive_ipn(ipn)
+      puts '******** begin Server#receive_ipn'
       if computer_online?(ipn.paypal_id)
+        puts '******** took branch'
         queue_push(ipn)
         @ipn_reception_checker_instance[ipn.paypal_id].ipn_received
       end
@@ -98,6 +100,7 @@ module PaypalIpnForwarder
 
     def kill_process_for_filename(filename)
       process_id_ipn_checker = git_pid_from_file(filename)
+      puts "******** process_id_ipn_checker: '#{process_id_ipn_checker}'"
       Process.kill('HUP', process_id_ipn_checker) if process_id_ipn_checker
     end
 

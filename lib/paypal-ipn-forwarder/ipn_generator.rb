@@ -1,4 +1,5 @@
 require 'rest_client'
+
 module PaypalIpnForwarder
   class IpnGenerator
 

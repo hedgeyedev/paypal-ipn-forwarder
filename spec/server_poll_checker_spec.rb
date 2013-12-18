@@ -5,9 +5,11 @@ require 'timecop'
 require_relative '../lib/paypal-ipn-forwarder/server_poll_checker'
 require_relative '../lib/paypal-ipn-forwarder/server'
 
+include PaypalIpnForwarder
+
 TEST_MODE_ON = true
 
-describe PaypalIpnForwarder::ServerPollChecker do
+describe ServerPollChecker do
 
   before(:each) do
     @server = Server.new(TEST_MODE_ON)
