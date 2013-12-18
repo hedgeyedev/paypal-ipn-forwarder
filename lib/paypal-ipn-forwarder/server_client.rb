@@ -30,13 +30,13 @@ module PaypalIpnForwarder
       end
     end
 
-    def ipn_response(ipn)
-      'cmd=_notify-validate&' + ipn
+    def ipn_response(ipn_str)
+      'cmd=_notify-validate&' + ipn_str
     end
 
-    # @param [String] ipn_str the PayPal string representation
-    def receive_ipn(ipn_str)
-      @server.receive_ipn(Ipn.new(ipn_str))
+    # @param [Ipn] ipn the PayPal IPN as an object
+    def receive_ipn(ipn)
+      @server.receive_ipn(ipn)
     end
 
     def send_response_to_paypal(url, message)

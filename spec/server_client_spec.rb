@@ -42,7 +42,7 @@ describe ServerClient do
     ipn = Ipn.generate
     server.should_receive(:receive_ipn).with(ipn)
     server_client = ServerClient.new(server)
-    server_client.receive_ipn(ipn.ipn_str)
+    server_client.receive_ipn(ipn)
   end
 
   it 'should create the response to a sandbox when the sandbox sent an IPN' do

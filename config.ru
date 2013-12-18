@@ -36,10 +36,11 @@ class ServerRack < Sinatra::Base
 
   # Receive an ipn.  Typically this is sent by the router to the server.
   post '/payments/ipn' do
-    ipn = Ipn.new(request.body.read)
+    ipn_str = request.body.read
+    ipn = Ipn.new(ipn_str)
     if @@server.ipn_valid?(ipn)
       @@server_client.receive_ipn(ipn)
-      response = @@server_client.ipn_response(ipn)
+      response = @@server_client.ipn_response(ipn_str)
       url      = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
       #used for testing
       #url = 'localhost:6810/receive_ipn/'
