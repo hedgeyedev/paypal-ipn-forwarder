@@ -4,15 +4,17 @@ require_relative '../lib/paypal-ipn-forwarder/poller'
 require_relative '../lib/paypal-ipn-forwarder/router'
 require_relative '../lib/paypal-ipn-forwarder/load_config'
 
-describe PaypalIpnForwarder::Poller do
+include PaypalIpnForwarder
+
+describe Poller do
 
   before(:each) do
-    @router = PaypalIpnForwarder::Router.new(nil)
-    content = PaypalIpnForwarder::LoadConfig.new(TEST_MODE_ON)
+    @router = Router.new(nil)
+    content = LoadConfig.new(TEST_MODE_ON)
     @sandbox_id = 'my_sandbox_id'
     @url = content.server_url
     @router.sandbox_id=(@sandbox_id)
-    @poller = PaypalIpnForwarder::Poller.new(@router, @url)
+    @poller = Poller.new(@router, @url)
     @time_before_no_ipn_notification = content.no_ipn_time_before_notification
   end
 

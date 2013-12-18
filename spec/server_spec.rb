@@ -102,7 +102,7 @@ describe Server do
       @server.cancel_test_mode('bob@example.com')
 
       mail_hash = { :to      => 'bob@example.com',
-                    :from    => PaypalIpnForwarder::EMAIL,
+                    :from    => EMAIL,
                     :subject => MailSender.build_subject_line(paypal_id),
                     :body    => MailSender::POLL_BEFORE_TEST_MODE_ON_ERROR + MailSender::HAPPENING_ONLY_TO_YOU,
       }

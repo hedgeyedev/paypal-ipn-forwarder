@@ -2,12 +2,14 @@ require 'rspec'
 require 'rest_client'
 require_relative '../lib/paypal-ipn-forwarder/router_client'
 
-describe PaypalIpnForwarder::RouterClient do
+include PaypalIpnForwarder
+
+describe RouterClient do
 
   TEST_MODE = true
 
   before(:each) do
-    @dev_computer = PaypalIpnForwarder::RouterClient.new(TEST_MODE)
+    @dev_computer = RouterClient.new(TEST_MODE)
   end
 
   it 'should forward an ipn' do

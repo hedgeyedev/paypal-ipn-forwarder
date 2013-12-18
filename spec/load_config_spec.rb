@@ -1,10 +1,13 @@
 require 'rspec'
+require_relative 'spec_helper'
 require_relative '../lib/paypal-ipn-forwarder/load_config'
 
-describe PaypalIpnForwarder::LoadConfig do
+include PaypalIpnForwarder
+
+describe LoadConfig do
 
   before(:each) do
-    @config = PaypalIpnForwarder::LoadConfig.new(TEST_MODE_ON)
+    @config = LoadConfig.new(TEST_MODE_ON)
   end
 
   it 'retrieves the server URL' do
