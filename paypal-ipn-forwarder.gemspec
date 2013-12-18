@@ -44,4 +44,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rack-protection', '~> 1.5.0'
   spec.add_dependency 'pony', '~> 1.4.1'
   spec.add_dependency 'rest-client', '~> 1.6.7'
+
+  # For source code debugging in RubyMine
+  spec.add_dependency 'linecache19', '>= 0.5.12'
+  spec.add_dependency 'ruby-debug-base19x', '>= 0.11.30.pre10'
+  spec.add_dependency 'ruby-debug-ide', '>= 0.4.17.beta14'
 end

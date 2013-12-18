@@ -17,6 +17,9 @@ module PaypalIpnForwarder
 
     EMAIL_NO_QUEUE_SUBJECT = 'There is no queue on the PayPal IPN forwarder'
 
+    CONFLICT_EMAIL_BODY = <<EOF
+EOF
+
     attr_reader :developers_email
 
     def initialize(is_load_test_config=false)
@@ -57,20 +60,18 @@ module PaypalIpnForwarder
 
       @ipn_reception_checker_instance[id] = ServerIpnReceptionChecker.new(self, id)
 
-      unless @is_load_test_config
-        @ipn_reception_checker_instance[id].check_ipn_received
-        @process_id = fork do
+      @ipn_reception_checker_instance[id].check_ipn_received
+      @process_id = fork do
 
-          Signal.trap('HUP') do
-            @poll_checker_instance[id].loop_boolean = false
-          end
-
-          @poll_checker_instance[id].check_testing_polls_occurring(id)
+        Signal.trap('HUP') do
+          @poll_checker_instance[id].loop_boolean = false
         end
 
-        File.write(POLL_CHECKER_PROCESS_ID+'_'+id, @process_id, nil, nil)
-        Process.detach(@process_id)
+        @poll_checker_instance[id].check_testing_polls_occurring(id)
       end
+
+      File.write(POLL_CHECKER_PROCESS_ID+'_'+id, @process_id, nil, nil)
+      Process.detach(@process_id)
     end
 
     def cancel_test_mode(developer_id)
@@ -97,22 +98,25 @@ module PaypalIpnForwarder
     end
 
     def same_sandbox_being_tested_twice?(id, params)
-      params['email'].first != @email_map[id].first
+      params['email'] != @email_map[id]
     end
 
     def send_conflict_email(paypal_id, email)
       to      = @email_map[paypal_id]
       subject = 'You have turned on an already-testing sandbox. IT HAS BEEN TAKEN OFF OF TESTING MODE'
-      body    = "on the Superbox IPN forwarder, you have turned on an already testing sandbox. The sandbox has the id #{paypal_id}. The sandbox has been taken down from testing mode.
-    The other user of the sandbox was #{email}"
+      body    = conflict_email_body(paypal_id, email)
 
       mailsender = MailSender.new
       mailsender.send_mail(to, subject, body)
 
       to1  = email
-      body = "on the Superbox IPN forwarder, you have turned on an already testing sandbox. The sandbox has the id #{paypal_id}. The sandbox has been taken down from testing mode.
-    The other user of the sandbox was #{to}"
+      body = conflict_email_body(paypal_id, to)
       mailsender.send_mail(to1, subject, body)
+    end
+
+    def conflict_email_body(paypal_id, email)
+      "on the Superbox IPN forwarder, you have turned on an already testing sandbox. The sandbox has the id #{paypal_id}. The sandbox has been taken down from testing mode.
+    The other user of the sandbox was #{email}"
     end
 
     def email_mapper(id, email)
@@ -138,22 +142,22 @@ module PaypalIpnForwarder
 
     def email_no_queue_body(method_called_by, paypal_id)
       'On the PayPal IPN forwarder, there is no queue set up for the function, \'' +
-      method_called_by +
-      '\', for your developer_id \'' +
-      paypal_id +
-      '\''
+          method_called_by +
+          '\', for your developer_id \'' +
+          paypal_id +
+          '\''
     end
 
     # @param [Ipn] ipn
     def queue_push(ipn)
-      queue     = queue_identify(ipn.paypal_id, 'queue push')
+      queue = queue_identify(ipn.paypal_id, 'queue push')
       unless queue.nil?
         queue.push(ipn)
       end
     end
 
     #if the queue does not exist(due to sandbox not being in test mode), then the size of the queue will be 0
-    def   queue_size(paypal_id)
+    def queue_size(paypal_id)
       queue = @queue_map[paypal_id]
       (queue.nil?) ? 0 : queue.size
     end

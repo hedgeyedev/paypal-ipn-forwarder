@@ -58,11 +58,12 @@ describe ServerClient do
     server = Server.new(TEST_MODE_ON)
     server_client = ServerClient.new(server)
     @my_id = 'my_sandbox_id'
-    server_client.computer_testing({'sandbox_id' => [@my_id], 'test_mode' => ['on'], 'email' => ['bob@example.com']})
-    server_client.computer_testing({'sandbox_id' => [@my_id], 'test_mode' => ['on'], 'email' => ['bob_1@example.com']})
+    server_client.computer_testing({'sandbox_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
+    server_client.computer_testing({'sandbox_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob_1@example.com'})
   end
 
-  it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing but doesnt send out email because it is the same person' do
+  it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing but does not send out email because it is the same person' do
+    Pony.should_not_receive(:mail).with(any_args)
     server = Server.new(TEST_MODE_ON)
     @my_id = 'my_sandbox_id'
     server_client = ServerClient.new(server)
