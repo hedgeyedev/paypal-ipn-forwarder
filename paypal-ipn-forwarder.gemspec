@@ -38,6 +38,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 2.13.0'
   spec.add_development_dependency 'awesome_print', '~> 1.1.0'
   spec.add_development_dependency 'timecop'
+  #spec.add_development_dependency 'ruby-debug-base'
   spec.add_dependency 'sinatra', '~> 1.4.2'
   spec.add_dependency 'rack', '~> 1.5.2'
   spec.add_dependency 'rack-protection', '~> 1.5.0'
