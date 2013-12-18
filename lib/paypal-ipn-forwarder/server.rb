@@ -30,17 +30,7 @@ module PaypalIpnForwarder
       @ipn_reception_checker_instance = Hash.new
     end
 
-    #@param [Ipn] ipn the parsed Ipn of interest
-    def paypal_id(ipn)
-      parse_ipn(ipn)['receiver_email']
-    end
-
-    def parse_ipn(ipn)
-      hash = Rack::Utils.parse_nested_query(ipn)
-      #ap hash
-      hash
-    end
-
+    # param [Ipn] ipn the PayPal representation of the IPN
     def receive_ipn(ipn)
       puts '******** begin Server#receive_ipn'
       if computer_online?(ipn.paypal_id)

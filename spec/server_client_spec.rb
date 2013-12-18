@@ -30,17 +30,17 @@ describe ServerClient do
     server_client = ServerClient.new(server)
     ipn = Ipn.generate
     server_client.computer_testing(
-        { 'my_sandbox_id' => ipn.paypal_id, 'test_mode' => 'on', 'email' => 'bob@example.com' }
+        { 'sandbox_id' => ipn.paypal_id, 'test_mode' => 'on', 'email' => 'bob@example.com' }
     )
     server.queue_push(ipn)
-    server_client.respond_to_computer_poll(ipn.paypal_id).should == ipn.paypal_id
+    server_client.respond_to_computer_poll(ipn.paypal_id).should == ipn
   end
 
 
   it 'should receive IPNs and forward them to the server' do
     server = mock('server')
     ipn = Ipn.generate
-    server.should_receive(:receive_ipn).with(ipn)
+    server.should_receive(:receive_ipn).with(ipn.ipn_str)
     server_client = ServerClient.new(server)
     server_client.receive_ipn(ipn.ipn_str)
   end
