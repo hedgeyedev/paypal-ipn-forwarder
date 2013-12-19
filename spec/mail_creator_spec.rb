@@ -16,6 +16,7 @@ describe MailCreator do
   context 'OSX' do
 
     it 'should not include Linux parameters' do
+      HostInfo.new.stub!(:running_on_osx?).and_return(true)
       MailCreator.new.create(MAIL_PARAMS).length.should == 4
     end
 
