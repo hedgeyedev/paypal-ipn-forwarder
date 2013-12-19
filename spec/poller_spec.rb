@@ -1,17 +1,16 @@
 require 'timecop'
 require_relative 'spec_helper'
-require_relative '../lib/poller'
-require_relative '../lib/router'
-require_relative '../lib/load_config'
+require_relative '../lib/paypal-ipn-forwarder/poller'
+require_relative '../lib/paypal-ipn-forwarder/router'
+require_relative '../lib/paypal-ipn-forwarder/load_config'
+
+include PaypalIpnForwarder
 
 describe Poller do
 
-  TEST_MODE_ON = true
-
   before(:each) do
-    @router = Router.new(nil, TEST_MODE_ON)
-    LoadConfig.set_test_mode(true)
-    content = LoadConfig.new
+    @router = Router.new(nil)
+    content = LoadConfig.new(TEST_MODE_ON)
     @sandbox_id = 'my_sandbox_id'
     @url = content.server_url
     @router.sandbox_id=(@sandbox_id)
