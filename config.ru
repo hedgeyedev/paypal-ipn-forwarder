@@ -1,13 +1,16 @@
 require 'sinatra/base'
 require 'rest_client'
 require 'cgi'
-require File.expand_path('../lib/server_client', __FILE__)
-require File.expand_path('../lib/server', __FILE__)
-require File.expand_path('../lib/poller', __FILE__)
-require File.expand_path('../lib/ipn_generator', __FILE__)
-require File.expand_path('../lib/router_client', __FILE__)
-require File.expand_path('../lib/mail_sender', __FILE__)
+require_relative './lib/paypal-ipn-forwarder/ipn'
+require_relative './lib/paypal-ipn-forwarder/server_client'
+require_relative './lib/paypal-ipn-forwarder/server'
+require_relative './lib/paypal-ipn-forwarder/poller'
+require_relative './lib/paypal-ipn-forwarder/ipn_generator'
+require_relative './lib/paypal-ipn-forwarder/router_client'
+require_relative './lib/paypal-ipn-forwarder/mail_sender'
 
+# This is the configuration for running the 'server' on the public-facing server
+# and also the 'server_client' which runs on the developer's laptop.
 class ServerRack < Sinatra::Base
   configure do
     TEST_MODE_ON = true
@@ -17,39 +20,45 @@ class ServerRack < Sinatra::Base
     @@mail = MailSender.new
   end
 
+  # Send a test ipn to the development computer as though the PayPal sandbox sent it.
+  # This command is received from the router and sent by the router.
   get '/invoke_ipn' do
     ipn_send_test = IpnGenerator.new
-    ipn_send_test.send_via_http "localhost:8810/payments/ipn"
+    ipn_send_test.send_via_http 'localhost:8810/payments/ipn'
   end
 
+  # Poll the server to see if it has anything for the router to do.
+  # This command is sent by the router.
   get '/computer_poll' do
     params = request['sandbox_id']
     @@server_client.respond_to_computer_poll(params) unless params.nil? || params.length == 0
   end
 
+  # Receive an ipn.  Typically this is sent by the router to the server.
   post '/payments/ipn' do
-    ipn = request.body.read
+    ipn_str = request.body.read
+    ipn = Ipn.new(ipn_str)
     if @@server.ipn_valid?(ipn)
-      puts ipn
       @@server_client.receive_ipn(ipn)
-      response = @@server_client.ipn_response(ipn)
+      response = @@server_client.ipn_response(ipn_str)
       url      = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
       #used for testing
       #url = 'localhost:6810/receive_ipn/'
-      @@server_client.send_paypal_response(url, response)
+      @@server_client.send_response_to_paypal(url, response)
     end
   end
 
+  # Request server to change test mode for a developer and his PayPal sandbox.
   post '/test' do
     params = request.body.read
-    params_parsed = CGI::parse(params)
-    id = params_parsed['sandbox_id'].first
-    email = params_parsed['email'].first
-    test_mode = params_parsed['test_mode'].first
+    params_parsed = Rack::Utils.parse_nested_query(params)
+    id = params_parsed['sandbox_id']
+    email = params_parsed['email']
+    test_mode = params_parsed['test_mode']
     if id != '' && email != '' && test_mode != ''
       @@server_client.computer_testing(params_parsed)
     elsif email != ''
-       @@server.poll_with_incomplete_info(email, test_mode, id)
+      @@server.poll_with_incomplete_info(email, test_mode, id)
     end
     Rack::Utils.status_code(:ok)
   end
@@ -57,7 +66,7 @@ class ServerRack < Sinatra::Base
   # Pretend to be the PayPal sandbox you're sending the response back to
   post '/fake_paypal' do
     url = 'localhost:8810/receive_ipn/'
-    RestClient.post url, "VERIFIED"
+    RestClient.post url, 'VERIFIED'
   end
 
   get '/' do
@@ -82,17 +91,17 @@ class ServerRack < Sinatra::Base
   end
 
   get '/hello' do
-    "hello scott"
+    'hello scott'
   end
 
   post '/show_ipn' do
-    ipn = request.body.read
+    ipn = Ipn.new(request.body.read)
     @@server.printo(ipn)
   end
 
   get '/send_email' do
     params = request['email']
-    @@mail.send(params, "This is a test email from the Paypal IPN forwarder", "hello from the imac" )
+    @@mail.send(params, 'This is a test email from the Paypal IPN forwarder', 'hello from the imac' )
   end
 
 

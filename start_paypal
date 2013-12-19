@@ -19,16 +19,16 @@
 #
 #    start_paypal '<your paypal sandbox ID>' '<your email address>' 'test'
 #
-require_relative 'lib/router'
-require_relative 'lib/poller'
-require_relative 'lib/load_config'
-require_relative 'lib/router_client'
+require_relative 'lib/paypal-ipn-forwarder/router'
+require_relative 'lib/paypal-ipn-forwarder/poller'
+require_relative 'lib/paypal-ipn-forwarder/load_config'
+require_relative 'lib/paypal-ipn-forwarder/router_client'
 
 TEST_MODE_ON = true
 TEST_MODE_OFF = false
-ARGV[2].nil? ? TEST_MODE = TEST_MODE_OFF : TEST_MODE = TEST_MODE_ON
+TEST_MODE = ARGV[2].nil? ? TEST_MODE_OFF : TEST_MODE_ON
 router_client = RouterClient.new(TEST_MODE)
-router = Router.new(router_client, TEST_MODE)
+router = Router.new(router_client)
 router.sandbox_id = ARGV[0]
 
 puts 'Paypal testing sequence has started'
@@ -44,12 +44,12 @@ poller.check_ipn_received
 
 @process_id_for_polling =  fork{poller.poll_for_ipn}
  #TODO: make sure an error isnt issued if the 2nd process has already been terminated
-while command = STDIN.gets
-   if command.downcase == "stop\n"
-    puts 'shutdown'
-     Process.kill("HUP", @process_id_for_polling)
+while (command = STDIN.gets)
+   if command.downcase.chomp == 'stop'
+     puts 'shutdown'
+     Process.kill('HUP', @process_id_for_polling)
      process_id_for_ipn_reception = File.read(Poller::PROCESS_FILE_NAME).to_i
-     Process.kill("HUP", process_id_for_ipn_reception) if poller.ipn_received_on_dev_machine? || poller.notified?
+     Process.kill('HUP', process_id_for_ipn_reception) if poller.ipn_received_on_dev_machine? || poller.notified?
      router.turn_test_mode_off(ARGV[1])
      puts 'Paypal testing has been terminated'
      break

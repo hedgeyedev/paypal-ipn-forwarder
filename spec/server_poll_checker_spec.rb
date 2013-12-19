@@ -2,10 +2,10 @@ require 'rspec'
 require 'pony'
 require 'timecop'
 
-require_relative '../lib/server_poll_checker'
-require_relative '../lib/server'
+require_relative '../lib/paypal-ipn-forwarder/server_poll_checker'
+require_relative '../lib/paypal-ipn-forwarder/server'
 
-TEST_MODE_ON = true
+include PaypalIpnForwarder
 
 describe ServerPollChecker do
 

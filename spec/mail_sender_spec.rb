@@ -1,54 +1,47 @@
 require_relative 'spec_helper'
-require_relative '../lib/mail_sender'
-require_relative '../lib/mail_creator'
+require_relative '../lib/paypal-ipn-forwarder/host_info'
+require_relative '../lib/paypal-ipn-forwarder/mail_sender'
+require_relative '../lib/paypal-ipn-forwarder/mail_creator'
+
+include PaypalIpnForwarder
 
 describe MailSender do
 
-  YAML_HASH = {
-      :via => :smtp,
-      :via_options => {:address => '0.0.0.1', :openssl_verify_mode => 'none'}
-  }
-  FED_IN_PARAMS = {
-      'to' => 'bob@example.com',
-      'from' => 'james@example.com',
-      'title' => 'this works! awesome',
-      'subject' => 'hey, look this went through'
-  }
-  COMBINED = {
-      :via => :smtp,
-      :via_options => {:address => '0.0.0.1', :openssl_verify_mode => 'none'},
-      'to' => 'bob@example.com',
-      'from' => 'james@example.com',
-      'title' => 'this works! awesome',
-      'subject' => 'hey, look this went through'
-  }
+  TO_EMAIL = 'developer@gmail.com'
+  TO_BODY = 'Test email body'
+  TO_SUBJECT = 'Test Email Subject'
+
   TO = {
-      :to => 'developer@gmail.com',
-      :body => 'this is a test email body message. HEY scott or Dmitri or James',
-      :subject => 'test email from hedgeye. is this working? '
+      :to => TO_EMAIL,
+      :body => TO_BODY,
+      :subject => TO_SUBJECT
   }
 
-  TEST_MODE_ON = true
-
+  before do
+    @host = HostInfo.new
+    @mail_creator = MailCreator.new(@host)
+    @mail_sender = MailSender.new(@mail_creator)
+  end
   it 'should create the email content from mail_sender' do
-    sender = MailSender.new
-    hash = sender.create(FED_IN_PARAMS, MailCreator.new(TEST_MODE_ON))
-    YAML_HASH.each_key do |key|
-      YAML_HASH[key].should == hash[key]
-    end
+    @host.stub!(:running_on_osx?).and_return(true)
+    Pony.should_receive(:mail).with({:to => TO_EMAIL,
+                                     :body => TO_BODY,
+                                     :subject => TO_SUBJECT,
+                                     :from    => 'email-proxy@paypal-ipn-forwarder.com'})
+    @mail_sender.send_mail(TO_EMAIL, TO_SUBJECT, TO_BODY)
   end
 
   it 'should send an email' do
-    Pony.should_receive(:mail).with({:to => 'developer@gmail.com',
-                                     :body => 'this is a test email body message. HEY scott or Dmitri or James',
-                                     :subject => 'test email from hedgeye. is this working? ',
+    @host.stub!(:running_on_osx?).and_return(false)
+    Pony.should_receive(:mail).with({:to => TO_EMAIL,
+                                     :subject => TO_SUBJECT,
+                                     :body => TO_BODY,
+                                     :from    => 'email-proxy@paypal-ipn-forwarder.com',
                                      :via => :smtp,
                                      :via_options => {
                                          :address => '0.0.0.1',
-                                         :openssl_verify_mode => 'none'}, :subject => 'test email from hedgeye. is this working? '})
-    sender = MailSender.new
-    hash = sender.create(TO, MailCreator.new(TEST_MODE_ON))
-    sender.send_email
-
+                                         :openssl_verify_mode => 'none'}})
+    @mail_sender.send_mail(TO[:to], TO[:subject], TO[:body])
   end
+
 end
