@@ -46,7 +46,7 @@ poller.check_ipn_received
  #TODO: make sure an error isnt issued if the 2nd process has already been terminated
 while (command = STDIN.gets)
    if command.downcase.chomp == 'stop'
-    puts 'shutdown'
+     puts 'shutdown'
      Process.kill('HUP', @process_id_for_polling)
      process_id_for_ipn_reception = File.read(Poller::PROCESS_FILE_NAME).to_i
      Process.kill('HUP', process_id_for_ipn_reception) if poller.ipn_received_on_dev_machine? || poller.notified?
