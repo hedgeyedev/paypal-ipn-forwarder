@@ -39,7 +39,7 @@ describe MailSender do
                                      :from    => 'email-proxy@paypal-ipn-forwarder.com',
                                      :via => :smtp,
                                      :via_options => {
-                                         :address => '0.0.0.1',
+                                         :address => 'localhost',
                                          :openssl_verify_mode => 'none'}})
     @mail_sender.send_mail(TO[:to], TO[:subject], TO[:body])
   end

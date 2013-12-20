@@ -35,7 +35,7 @@ describe MailCreator do
       mail_hash = setup_test
       mail_hash[:via].should == :smtp
       mail_hash[:via_options].should == {
-          :address             => '0.0.0.1',
+          :address             => 'localhost',
           :openssl_verify_mode => 'none' }
     end
   end

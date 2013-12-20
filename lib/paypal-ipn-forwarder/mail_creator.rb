@@ -22,7 +22,7 @@ module PaypalIpnForwarder
     private
 
     def configure_for_linux(config)
-      config[:via_options] = { :address => '0.0.0.1', :openssl_verify_mode => 'none' }
+      config[:via_options] = { :address => 'localhost', :openssl_verify_mode => 'none' }
       config[:via]         = :smtp
     end
 
