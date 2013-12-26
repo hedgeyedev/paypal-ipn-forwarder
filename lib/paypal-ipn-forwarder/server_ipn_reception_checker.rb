@@ -28,7 +28,7 @@ module PaypalIpnForwarder
 
       end
       Process.detach(@process_id)
-      File.write(ServerIpnReceptionChecker::PROCESS_ID_IPN_CHECKER + '_' + @paypal_id, @process_id, nil, nil)
+      File.write(PROCESS_ID_IPN_CHECKER + '_' + @paypal_id, @process_id, nil, nil)
     end
 
     def verify_ipn_received(time=1.0)
