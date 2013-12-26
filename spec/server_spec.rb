@@ -83,7 +83,6 @@ describe Server do
     end
 
     after do
-      puts '********'
       @server.cancel_test_mode(@sandbox_id)
     end
 
@@ -123,7 +122,7 @@ describe Server do
 
       # register test user and then cancel him so he has a entry:
       @server.begin_test_mode(@sandbox_id, { 'sandbox_id' => paypal_id, 'test_mode' => 'on', 'email' => 'bob@example.com' })
-      @server.cancel_test_mode('bob@example.com')
+      @server.cancel_test_mode(@sandbox_id)
 
       mail_hash = { :to      => 'bob@example.com',
                     :from    => EMAIL,
@@ -179,16 +178,23 @@ describe Server do
 
   context 'receives start test mode' do
 
-    before(:each) do
+    before do
       @server     = Server.new
       @ipn        = Ipn.generate
       @sandbox_id = @ipn.paypal_id
+      @server.begin_test_mode(@sandbox_id, { 'sandbox_id' => @sandbox_id,
+                                             'test_mode' => 'on',
+                                             'email' => 'bob@example.com'
+      })
+    end
+
+    after do
+      @server.cancel_test_mode(@sandbox_id)
     end
 
     # not sure if test is too basic but added just in case
     it 'begins testings' do
-      @server.begin_test_mode(@sandbox_id, { 'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob@example.com' })
-      @server.computer_online?(@sandbox_id).should == true
+       @server.computer_online?(@sandbox_id).should == true
     end
 
   end
