@@ -1,4 +1,5 @@
 require 'rspec'
+require_relative 'spec_helper'
 require_relative '../lib/paypal-ipn-forwarder/server_client'
 require_relative '../lib/paypal-ipn-forwarder/server'
 require_relative '../lib/paypal-ipn-forwarder/ipn'
@@ -27,11 +28,15 @@ describe ServerClient do
     server = Server.new(TEST_MODE_ON)
     server_client = ServerClient.new(server)
     ipn = Ipn.generate
-    server_client.computer_testing(
-        { 'sandbox_id' => ipn.paypal_id, 'test_mode' => 'on', 'email' => 'bob@example.com' }
-    )
-    server.queue_push(ipn)
-    server_client.respond_to_computer_poll(ipn.paypal_id).should == ipn
+    begin
+      server_client.computer_testing(
+          { 'sandbox_id' => ipn.paypal_id, 'test_mode' => 'on', 'email' => 'bob@example.com' }
+      )
+      server.queue_push(ipn)
+      server_client.respond_to_computer_poll(ipn.paypal_id).should == ipn
+    ensure
+      server.cancel_test_mode(ipn.paypal_id)
+    end
   end
 
 
