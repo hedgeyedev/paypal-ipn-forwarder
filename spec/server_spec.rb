@@ -31,41 +31,64 @@ describe Server do
     end
 
     it 'is responded to with an IPN when one is present' do
-      @server.begin_test_mode(@sandbox_id, { 'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob@example.com' })
-      @server.receive_ipn(@ipn)
-      @server.ipn_present?(@ipn.paypal_id).should == true
-      @server.send_ipn_if_present(@ipn.paypal_id).should == @ipn
+      begin
+        @server.begin_test_mode(@sandbox_id, { 'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob@example.com' })
+        @server.receive_ipn(@ipn)
+        @server.ipn_present?(@ipn.paypal_id).should == true
+        @server.send_ipn_if_present(@ipn.paypal_id).should == @ipn
+      ensure
+        @server.cancel_test_mode(@sandbox_id)
+      end
     end
 
     it 'does not forward an ipn to a computer from a paypal sandbox that does not belong to it' do
       id_1 = 'my_sandbox_id_1'
       id_2 = 'my_sandbox_id'
-      @server.begin_test_mode(id_1, { 'sandbox_id' => id_1, 'test_mode' => 'on', 'email' => 'bob@example.com' })
-      @server.begin_test_mode(id_2, { 'sandbox_id' => id_2, 'test_mode' => 'on', 'email' => 'bob@example.com' })
-      @server.receive_ipn(@ipn)
-      @server.ipn_present?(id_1).should == false
-      @server.send_ipn_if_present(id_1).should == nil
+      begin
+        @server.begin_test_mode(id_1, { 'sandbox_id' => id_1, 'test_mode' => 'on', 'email' => 'bob@example.com' })
+        @server.begin_test_mode(id_2, { 'sandbox_id' => id_2, 'test_mode' => 'on', 'email' => 'bob@example.com' })
+        @server.receive_ipn(@ipn)
+        @server.ipn_present?(id_1).should == false
+        @server.send_ipn_if_present(id_1).should == nil
+      ensure
+        @server.cancel_test_mode(id_1)
+        @server.cancel_test_mode(id_2)
+      end
     end
 
     it 'IPN denied from a router because no IPN exists for that router' do
-      @server.begin_test_mode(@sandbox_id, { 'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob@example.com' })
-      @server.send_ipn_if_present(@sandbox_id).should == nil
+      begin
+        @server.begin_test_mode(@sandbox_id, { 'sandbox_id' => @sandbox_id,
+                                               'test_mode'  => 'on',
+                                               'email'      => 'bob@example.com'
+        })
+        @server.send_ipn_if_present(@sandbox_id).should == nil
+      ensure
+        @server.cancel_test_mode(@sandbox_id)
+      end
     end
 
   end
 
   context 'queue' do
 
-    before(:each) do
+    before do
       @server     = Server.new(TEST_MODE_ON)
       @ipn        = Ipn.generate
       @sandbox_id = @ipn.paypal_id
-      @server.begin_test_mode(@sandbox_id, { 'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob@example.com' })
+      @server.begin_test_mode(@sandbox_id, { 'sandbox_id' => @sandbox_id,
+                                             'test_mode' => 'on',
+                                             'email' => 'bob@example.com'
+      })
+    end
+
+    after do
+      @server.cancel_test_mode(@sandbox_id)
     end
 
     it 'stores IPNs sent from a sandbox when a computer is testing' do
       @server.receive_ipn(@ipn)
-      @server.queue_size(@ipn.paypal_id).should == 1
+      @server.queue_size(@sandbox_id).should == 1
       @ipn.should == @server.queue_pop(@sandbox_id)
     end
 
@@ -99,7 +122,7 @@ describe Server do
 
       # register test user and then cancel him so he has a entry:
       @server.begin_test_mode(@sandbox_id, { 'sandbox_id' => paypal_id, 'test_mode' => 'on', 'email' => 'bob@example.com' })
-      @server.cancel_test_mode('bob@example.com')
+      @server.cancel_test_mode(@sandbox_id)
 
       mail_hash = { :to      => 'bob@example.com',
                     :from    => EMAIL,
@@ -155,16 +178,23 @@ describe Server do
 
   context 'receives start test mode' do
 
-    before(:each) do
+    before do
       @server     = Server.new
       @ipn        = Ipn.generate
       @sandbox_id = @ipn.paypal_id
+      @server.begin_test_mode(@sandbox_id, { 'sandbox_id' => @sandbox_id,
+                                             'test_mode' => 'on',
+                                             'email' => 'bob@example.com'
+      })
+    end
+
+    after do
+      @server.cancel_test_mode(@sandbox_id)
     end
 
     # not sure if test is too basic but added just in case
     it 'begins testings' do
-      @server.begin_test_mode(@sandbox_id, { 'sandbox_id' => @sandbox_id, 'test_mode' => 'on', 'email' => 'bob@example.com' })
-      @server.computer_online?(@sandbox_id).should == true
+       @server.computer_online?(@sandbox_id).should == true
     end
 
   end

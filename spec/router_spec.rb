@@ -1,4 +1,5 @@
 require 'rspec'
+require_relative 'spec_helper'
 require_relative '../lib/paypal-ipn-forwarder/router'
 require_relative '../lib/paypal-ipn-forwarder/poller'
 require_relative '../lib/paypal-ipn-forwarder/server_client'
@@ -8,6 +9,7 @@ require_relative '../lib/paypal-ipn-forwarder/ipn_generator'
 require_relative '../lib/paypal-ipn-forwarder/router_client'
 
 include PaypalIpnForwarder
+
 describe Router do
 
   before(:each) do

@@ -11,6 +11,10 @@ describe Server do
     @server.begin_test_mode('my_sandbox_id', { 'my_sandbox_id' => 'my_sandbox_id', 'test_mode' => 'on', '@email' => 'bob@example.com' })
   end
 
+  after do
+    @server.cancel_test_mode('my_sandbox_id')
+  end
+
   it 'turns on test mode for a computer once it receives a test-mode message' do
     @server.computer_online?('my_sandbox_id').should == true
   end

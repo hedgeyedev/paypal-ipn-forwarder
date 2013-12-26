@@ -2,6 +2,7 @@ require 'rspec'
 require 'pony'
 require 'timecop'
 
+require_relative 'spec_helper'
 require_relative '../lib/paypal-ipn-forwarder/server_poll_checker'
 require_relative '../lib/paypal-ipn-forwarder/server'
 

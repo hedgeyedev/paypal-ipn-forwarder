@@ -1,4 +1,5 @@
 require 'rspec'
+require_relative 'spec_helper'
 require_relative '../lib/paypal-ipn-forwarder/server_client'
 require_relative '../lib/paypal-ipn-forwarder/server'
 require_relative '../lib/paypal-ipn-forwarder/ipn'
@@ -27,11 +28,15 @@ describe ServerClient do
     server = Server.new(TEST_MODE_ON)
     server_client = ServerClient.new(server)
     ipn = Ipn.generate
-    server_client.computer_testing(
-        { 'sandbox_id' => ipn.paypal_id, 'test_mode' => 'on', 'email' => 'bob@example.com' }
-    )
-    server.queue_push(ipn)
-    server_client.respond_to_computer_poll(ipn.paypal_id).should == ipn
+    begin
+      server_client.computer_testing(
+          { 'sandbox_id' => ipn.paypal_id, 'test_mode' => 'on', 'email' => 'bob@example.com' }
+      )
+      server.queue_push(ipn)
+      server_client.respond_to_computer_poll(ipn.paypal_id).should == ipn
+    ensure
+      server.cancel_test_mode(ipn.paypal_id)
+    end
   end
 
 
@@ -51,13 +56,18 @@ describe ServerClient do
 
   end
 
+  # Leaves process
   it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing and send out emails' do
     Pony.should_receive(:mail).with(any_args).twice
-    server = Server.new(TEST_MODE_ON)
+    server        = Server.new(TEST_MODE_ON)
     server_client = ServerClient.new(server)
-    @my_id = 'my_sandbox_id'
-    server_client.computer_testing({'sandbox_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com'})
-    server_client.computer_testing({'sandbox_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob_1@example.com'})
+    @my_id        = 'my_sandbox_id'
+    begin
+      server_client.computer_testing({ 'sandbox_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob@example.com' })
+      server_client.computer_testing({ 'sandbox_id' => @my_id, 'test_mode' => 'on', 'email' => 'bob_1@example.com' })
+    ensure
+      server.cancel_test_mode(@my_id)
+    end
   end
 
   it 'receives a "test mode on" message for a paypal sandbox which is already being used for IPN testing but does not send out email because it is the same person' do
