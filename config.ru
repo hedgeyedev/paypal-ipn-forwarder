@@ -13,7 +13,6 @@ require_relative './lib/paypal-ipn-forwarder/mail_sender'
 # and also the 'server_client' which runs on the developer's laptop.
 class ServerRack < Sinatra::Base
   configure do
-    TEST_MODE_ON = true
     @@server = Server.new
     @@server_client = ServerClient.new(@@server)
     @@router = RouterClient.new
