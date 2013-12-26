@@ -17,9 +17,6 @@ module PaypalIpnForwarder
 
     EMAIL_NO_QUEUE_SUBJECT = 'There is no queue on the PayPal IPN forwarder'
 
-    CONFLICT_EMAIL_BODY = <<EOF
-EOF
-
     attr_reader :developers_email
 
     def initialize(is_load_test_config=false)
