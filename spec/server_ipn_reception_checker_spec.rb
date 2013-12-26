@@ -20,8 +20,4 @@ describe ServerIpnReceptionChecker do
 
   end
 
-  it 'should work' do
-    true == true
-  end
-
 end
