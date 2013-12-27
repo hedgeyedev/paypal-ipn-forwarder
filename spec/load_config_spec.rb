@@ -1,6 +1,7 @@
 require 'rspec'
 require_relative 'spec_helper'
 require_relative '../lib/paypal-ipn-forwarder/load_config'
+require_relative '../lib/paypal-ipn-forwarder/user_context'
 
 include PaypalIpnForwarder
 
@@ -25,6 +26,10 @@ describe LoadConfig do
 
   it 'retrieves the sandbox ids' do
     @config.sandbox_ids.should == ['my_sandbox_id', 'my_sandbox_id_1']
+  end
+
+  it 'retrieves the user context' do
+    @config.user_context.class.should == UserContext
   end
 
   it 'retrieves the computer_testing booleans for the server hash' do

@@ -14,29 +14,5 @@ sandbox_id : ['my_sandbox_id','my_sandbox_id_1']
 #developers_email : 'developers@hedgeye.com'
 developers_email : 'ssmith@hedgeye.com'
 
-computer_testing:
-  'my_sandbox_id': false
-  'my_sandbox_id_1': false
-
-queue_map:
-  'my_sandbox_id': ~
-  'my_sandbox_id_1': ~
-
-last_poll_time :
-  'my_sandbox_id': ~
-  'my_sandbox_id_1': ~
-
-email_map :
-  'my_sandbox_id': developer@gmail.com
-  'my_sandbox_id_1': bob@example.com
-
-poll_checker_instance :
-  'my_sandbox_id': ~
-  'my_sandbox_id_1': ~
-
-ipn_reception_checker_instance :
-  'my_sandbox_id': ~
-  'my_sandbox_id_1': ~
-
 
 

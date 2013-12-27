@@ -1,0 +1,17 @@
+# These are used to set up test cases only.
+-
+  paypal_id: my_sandbox_id
+  email: developer.gmail.com
+  testing: false
+  queue_map: ~
+  last_poll_time: ~
+  poll_checker: ~
+  ipn_reception_checker: ~
+-
+  paypal_id: my_sandbox_id_1
+  email: bob@example.com
+  testing: false
+  queue_map: ~
+  last_poll_time: ~
+  poll_checker: ~
+  ipn_reception_checker: ~

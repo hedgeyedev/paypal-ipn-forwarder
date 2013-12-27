@@ -11,7 +11,7 @@ module PaypalIpnForwarder
       #places variables to 2 day before creation of class instance
       @last_unexpected_poll = Time.now - 2*24*60*60
       @last_incomplete_poll = Time.now - 2*24*60*60
-      @last_poll_time = @content.last_poll_time.clone
+      @last_poll_time = @content.last_poll_time.clone unless @content.last_poll_time.nil?
       @server = server
 
     end
