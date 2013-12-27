@@ -21,13 +21,16 @@ module PaypalIpnForwarder
 
     def initialize(is_load_test_config=false)
       content                         = LoadConfig.new(is_load_test_config)
-      @computers_testing              = content.computer_testing.clone
-      @queue_map                      = content.queue_map.clone
-      @email_map                      = content.email_map.clone
-      @poll_checker_instance          = content.poll_checker_instance.clone
+#      @computers_testing              = content.computer_testing.clone
+#      @queue_map                      = content.queue_map.clone
+#      @email_map                      = content.email_map.clone
+#      @poll_checker_instance          = content.poll_checker_instance.clone
       @developers_email               = content.developers_email
       @is_load_test_config            = is_load_test_config
-      @ipn_reception_checker_instance = Hash.new
+#      @ipn_reception_checker_instance = Hash.new
+      if @is_load_test_config
+
+      end
     end
 
     # param [Ipn] ipn the PayPal representation of the IPN

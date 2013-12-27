@@ -69,5 +69,9 @@ module PaypalIpnForwarder
       @config['developers_email']
     end
 
+    def user_context
+      @config['user_context']
+    end
+
   end
 end
